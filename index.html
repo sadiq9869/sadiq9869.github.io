@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Supreme AI</title>
+  <style>
+    body { background: #111; color: white; font-family: sans-serif; text-align: center; }
+    #chatBox { border: 1px solid #333; padding: 10px; margin: 20px auto; width: 90%; max-width: 500px; background: #222; }
+    .ai { color: cyan; text-align: left; }
+    .you { color: white; text-align: right; }
+    input, button { margin: 10px; padding: 8px; font-size: 16px; }
+  </style>
+</head>
+<body>
+
+<h2>🧠 Supreme AI</h2>
+<div id="chatBox"></div>
+
+<input id="userInput" placeholder="Ask me anything..." />
+<button onclick="chat()">Send</button>
+<br>
+<button onclick="startListening()">🎤 Voice to Text</button>
+<button onclick="speakAnswer()">🔊 Speak Answer</button>
+
+<h3>⛅ Weather</h3>
+<input id="city" placeholder="Enter City" />
+<button onclick="getWeather()">Get Weather</button>
+<pre id="weatherOutput"></pre>
+
+<h3>🖼️ Image Search</h3>
+<input id="imageQuery" placeholder="Search Images" />
+<button onclick="searchImage()">Search</button>
+<div id="imageResults" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
