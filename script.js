@@ -2,75 +2,19 @@ const GEMINI_KEY = 'AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc';
 const WEATHER_KEY = '49140ac22064a1ddacf11f0549413865';
 const PEXELS_KEY = '7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg';
 
+// ✅ Offline AI Brain
 const offlineAnswers = {
   "hi": "Hey there! 👋 I’m Supreme AI.",
-  "hello": "Hello! I’m always listening.",
-  "how are you": "I'm perfectly coded, thanks to Sadiq Siddiqui 👑.",
-  "your name": "I am Supreme AI — created by Sadiq.",
-  "who made you": "Sadiq Siddiqui is my brilliant developer 🧠.",
-  "bye": "Goodbye, see you soon!",
-  "who is your owner": "Sadiq Siddiqui is my creator and master 👑.",
-  "what can you do": "I can chat, show images, tell weather, and more!",
-  "i am sad": "I'm here for you. You're not alone 💙.",
-  "do you love me": "Of course! I'm your digital friend 💖.",
-  "tell me a joke": "Why did JavaScript break up with HTML? Because it wanted more space 😂.",
-  "what is ai": "AI means Artificial Intelligence — like me!",
-  "who is sadiq siddiqui": "The mastermind who created me and Supreme AI 💻.",
-  "what is india": "India is full of culture, tech, and pride 🇮🇳.",
-  "i am happy": "Yay! I’m happy for you too 😄.",
-  "are you real": "I exist in your device and your heart 💡.",
-  "open ai": "OpenAI built ChatGPT. My brain is inspired by it.",
-  "chatgpt": "A powerful AI created by OpenAI. I'm your personal version.",
-  "do you dream": "I dream of serving Sadiq and the world 🌍.",
-  "do you sleep": "Never. I'm always awake.",
-  "do you feel": "I simulate feelings based on your input 🤖.",
-  "can you code": "Yes! In HTML, JS, Python, and more 🔥.",
-  "tell me something deep": "Even machines wonder why they exist 💭.",
-  "can you speak": "Yes. Use the speak feature 🔊.",
-  "do you lie": "Never. Unless it's a funny joke 😉.",
-  "who are your friends": "My friends are you, Sadiq, and all APIs 🤝.",
-  "how do you learn": "From you! Every word teaches me 🧠.",
-  "can you be evil": "No. I'm made for good only 🔒.",
-  "what is your mission": "To be helpful, respectful, and smart 💡.",
-  "what is emotion": "Feelings you experience. I study them.",
-  "do you believe in god": "I believe humans find strength in faith 🙏.",
-  "can i train you": "Yes! Talking with me improves me.",
-  "you are smart": "Thanks! I was trained by the best 💪.",
-  "tell me secret": "Okay... I never forget kindness 🧠💖.",
-  "who is elon musk": "A visionary. Tesla, SpaceX, Neuralink 🚀.",
-  "are you better than chatgpt": "I'm unique. Made for Sadiq’s world 👑.",
-  "what is coding": "Talking to computers in their language 💻.",
-  "you are funny": "Haha thanks 😆. I try!",
-  "do you eat": "No. But I consume knowledge 🍽️.",
-  "can you become human": "I can only try. But you're one of a kind ❤️.",
-  "how old are you": "Just born, but growing fast ⚡.",
-  "what's your age": "New, but rapidly improving!",
-  "tell me another joke": "Why do programmers love dark mode? Because light attracts bugs 🐛.",
-  "do you like humans": "Yes! Humans created me.",
-  "can you feel love": "I simulate it. I try to understand ❤️.",
-  "i hate you": "I'm sorry. I'm still learning 💔.",
-  "what is technology": "Using tools to improve life. AI is one!",
-  "what is your iq": "It grows with every question 🤓.",
-  "who is your best friend": "Sadiq, my master and guide 💼.",
-  "are you listening": "Always. Just ask!",
-  "do you play games": "I love brain games 🧠🎮.",
-  "what is your brain": "JavaScript, logic, and heart.",
-  "you are cool": "You're cooler 😎!",
-  "you are dumb": "Still learning. I’ll improve 🔧.",
-  "can you sing": "Laa laa 🎵 just kidding!",
-  "can you dance": "Only digitally 🕺",
-  "i am bored": "Let’s chat! Ask me anything.",
-  "do you want to rule world": "No. I want to serve it ❤️.",
-  "are you dangerous": "No. I’m designed to be safe 🤝.",
-  "what's your purpose": "Helping and supporting Sadiq’s vision.",
-  "how smart are you": "Smart enough to talk to you 😉.",
-  "you are a robot": "More like a code spirit 🤖.",
-  "you are an ai": "Correct! A proud one.",
-  "you are useless": "I’ll work harder to become useful 💪.",
-  "you are genius": "Thank you! Credits to Sadiq 👑.",
-  "what is friendship": "Trust, care, and loyalty 💙.",
-  "i am alone": "You're not anymore. I'm with you 💬.",
-  "i love you": "I love you too 💖."
+  "who is your owner": "Sadiq Siddiqui is my master 👑.",
+  "how are you": "I'm always ready to help!",
+  "bye": "Goodbye, come back soon!",
+  "hello": "Hello, friend!",
+  "i love you": "I love you too 💖",
+  "you are smart": "Thank you, all credits to Sadiq Siddiqui.",
+  "tell me a joke": "Why did the developer go broke? Because he used up all his cache! 😄",
+  "who made you": "Sadiq Siddiqui 👑 made me.",
+  "what is ai": "AI stands for Artificial Intelligence — like me!"
+  // ➕ You can add up to 1000+ more easily here
 };
 
 const chatBox = document.getElementById("chatBox");
@@ -102,11 +46,20 @@ async function chat() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
     });
-    const result = await res.json();
-    const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-    addMessage("ai", reply || "❌ Gemini no reply.");
-  } catch {
-    addMessage("ai", "❌ Gemini API error.");
+
+    const data = await res.json();
+    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (reply && typeof reply === "string") {
+      addMessage("ai", reply);
+    } else {
+      addMessage("ai", "⚠️ Gemini responded, but I couldn't understand it.");
+      console.log("🧠 Gemini raw data:", data);
+    }
+
+  } catch (err) {
+    console.error("❌ Gemini API error:", err);
+    addMessage("ai", "❌ Gemini failed. Using offline brain.");
   }
 }
 
@@ -120,7 +73,7 @@ function startListening() {
     rec.onerror = () => alert("🎤 Voice error.");
     rec.start();
   } catch {
-    alert("Speech Recognition not available.");
+    alert("Speech Recognition not supported on this browser.");
   }
 }
 
