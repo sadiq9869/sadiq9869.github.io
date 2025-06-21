@@ -11,7 +11,7 @@
     }
     #chatBox {
       border: 1px solid #444; background: #222;
-      padding: 10px; max-height: 200px;
+      padding: 10px; max-height: 250px;
       overflow-y: auto; margin-bottom: 10px;
     }
     .msg { text-align: left; margin: 5px 0; }
@@ -24,28 +24,23 @@
 
 <h2>🤖 Supreme AI - by Sadiq Siddiqui</h2>
 
-<!-- CHAT SYSTEM -->
 <div id="chatBox"></div>
-<input id="userInput" placeholder="Type your question to Gemini..." />
+<input id="userInput" placeholder="Type your question to AI..." />
 <button onclick="chat()">💬 Ask</button>
 
-<!-- VOICE TO TEXT -->
 <h3>🎤 Voice to Text</h3>
 <input id="voiceBox" placeholder="🎙️ Voice Result Here..." readonly />
 <button onclick="startListening()">🎙️ Start Listening</button>
 
-<!-- SPEAK TEXT -->
 <h3>🔊 Speak Any Text</h3>
 <input id="speakText" placeholder="Enter text to speak" />
 <button onclick="speakCustom()">🔊 Speak</button>
 
-<!-- WEATHER -->
 <h3>🌦️ Weather</h3>
 <input id="city" placeholder="City name" />
 <button onclick="getWeather()">Get Weather</button>
 <pre id="weatherOutput"></pre>
 
-<!-- IMAGE SEARCH -->
 <h3>🖼️ Image Search</h3>
 <input id="imageQuery" placeholder="Search image" />
 <button onclick="searchImage()">Search</button>
