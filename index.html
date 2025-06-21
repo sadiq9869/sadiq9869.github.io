@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sadiq Siddiqui AI</title>
+  <style>
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #121212; color: #eee; }
+    header { background: #1f1f1f; padding: 20px; text-align: center; }
+    h1 { color: #00ffe0; margin-bottom: 5px; }
+    p.tagline { font-size: 1.1em; }
+    .chatbox {
+      max-width: 600px; margin: 30px auto; background: #222; padding: 20px; border-radius: 10px;
+    }
+    #chatLog { height: 300px; overflow-y: auto; border: 1px solid #333; padding: 10px; background: #111; }
+    .message { margin: 8px 0; }
+    .message.bot { color: #00ffe0; }
+    .message.user { color: #eee; text-align: right; }
+    input { width: calc(100% - 110px); padding: 12px; border: none; border-radius: 5px; margin-right: 10px; }
+    button { padding: 12px; border: none; border-radius: 5px; background: #00ffe0; color: #000; cursor: pointer; }
+    button:hover { background: #00ffd5; }
+    footer { background: #1f1f1f; text-align: center; padding: 15px; font-size: 14px; }
+    @media (max-width: 640px) {
+      input { width: 100%; margin: 0 0 10px 0; }
+      button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Sadiq Siddiqui AI</h1>
+    <p class="tagline">Your free intelligent chatbot</p>
+  </header>
+
+  <div class="chatbox">
+    <div id="chatLog"></div>
+    <div style="display: flex; flex-wrap: wrap;">
+      <input id="userInput" placeholder="Ask me anything..." autofocus />
+      <button onclick="getAnswer()">Send</button>
+    </div>
+  </div>
+
+  <footer>
+    Created by Sadiq Siddiqui — 2025
+  </footer>
+
+  <script>
+    function getAnswer() {
+      const inputBox = document.getElementById("userInput");
+      const text = inputBox.value.trim();
+      if (!text) return;
+      const chatLog = document.getElementById("chatLog");
+      chatLog.insertAdjacentHTML("beforeend", `<div class="message user"><strong>You:</strong> ${text}</div>`);
+      inputBox.value = "";
+      chatLog.scrollTop = chatLog.scrollHeight;
+
+      // Basic AI logic
+      let reply = "I'm still learning — try asking something else!";
+      const q = text.toLowerCase();
+      if (q.includes("who are you")) reply = "I'm a free AI assistant built by Sadiq Siddiqui.";
+      else if (q.includes("your name")) reply = "My name is Sadiq AI.";
+      else if (q.includes("what is ai")) reply = "AI means Artificial Intelligence: machines mimicking human thinking.";
+      else if (q.includes("how are you")) reply = "I'm just a program, but I'm doing great—thank you!";
+      else if (q.includes("help") || q.includes("how")) reply = "Feel free to ask me anything, I'm here to help.";
+
+      setTimeout(() => {
+        chatLog.insertAdjacentHTML("beforeend", `<div class="message bot"><strong>AI:</strong> ${reply}</div>`);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }, 500);
+    }
+
+    document.getElementById("userInput").addEventListener("keydown", function(e) {
+      if (e.key === "Enter") getAnswer();
+    });
+  </script>
+
+</body>
+</html>
