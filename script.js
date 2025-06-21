@@ -19,28 +19,35 @@ async function chat() {
   addMessage("you", msg);
   input.value = "";
 
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_KEY, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
-  });
-  const data = await res.json();
-  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I can't answer that.";
-  addMessage("ai", reply);
+  try {
+    const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_KEY, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: msg }] }]
+      })
+    });
+    const result = await res.json();
+    const reply = result?.candidates?.[0]?.content?.parts?.[0]?.text || "Gemini gave no reply.";
+    addMessage("ai", reply);
+  } catch (err) {
+    addMessage("ai", "❌ Error: Cannot connect to Gemini.");
+  }
 }
 
 function startListening() {
-  const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  rec.lang = "en-US";
-  rec.onresult = (e) => document.getElementById("userInput").value = e.results[0][0].transcript;
-  rec.start();
+  const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  r.lang = "en-US";
+  r.onresult = e => document.getElementById("userInput").value = e.results[0][0].transcript;
+  r.start();
 }
 
-function speakAnswer() {
-  const msgs = document.querySelectorAll(".ai");
-  if (!msgs.length) return;
-  const last = msgs[msgs.length - 1].textContent.replace("Supreme AI:", "");
-  window.speechSynthesis.speak(new SpeechSynthesisUtterance(last));
+function speakCustom() {
+  const text = document.getElementById("speakText").value;
+  if (text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
 async function getWeather() {
@@ -56,13 +63,12 @@ async function searchImage() {
     headers: { Authorization: PEXELS_KEY }
   });
   const data = await res.json();
-  const results = document.getElementById("imageResults");
-  results.innerHTML = "";
+  const out = document.getElementById("imageResults");
+  out.innerHTML = "";
   data.photos.forEach(p => {
     const img = document.createElement("img");
     img.src = p.src.medium;
-    img.style = "width: 100px; margin: 5px;";
-    results.appendChild(img);
+    out.appendChild(img);
   });
 }
 
