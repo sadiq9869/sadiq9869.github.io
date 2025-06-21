@@ -2,7 +2,6 @@ const GEMINI_KEY = 'AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc';
 const WEATHER_KEY = '49140ac22064a1ddacf11f0549413865';
 const PEXELS_KEY = '7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg';
 
-// ✅ Offline AI Brain
 const offlineAnswers = {
   "hi": "Hey there! 👋 I’m Supreme AI.",
   "who is your owner": "Sadiq Siddiqui is my master 👑.",
@@ -14,7 +13,6 @@ const offlineAnswers = {
   "tell me a joke": "Why did the developer go broke? Because he used up all his cache! 😄",
   "who made you": "Sadiq Siddiqui 👑 made me.",
   "what is ai": "AI stands for Artificial Intelligence — like me!"
-  // ➕ You can add up to 1000+ more easily here
 };
 
 const chatBox = document.getElementById("chatBox");
@@ -25,6 +23,24 @@ function addMessage(role, text) {
   div.innerHTML = `<b>${role === "ai" ? "Supreme AI" : "You"}:</b> ${text}`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function extractGeminiReply(data) {
+  try {
+    const candidates = data?.candidates;
+    if (!candidates || !Array.isArray(candidates) || candidates.length === 0) return null;
+
+    const content = candidates[0]?.content;
+    const parts = content?.parts;
+    if (Array.isArray(parts) && parts.length > 0 && parts[0]?.text) {
+      return parts[0].text;
+    }
+
+    if (typeof content === 'string') return content;
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 async function chat() {
@@ -48,18 +64,18 @@ async function chat() {
     });
 
     const data = await res.json();
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    console.log("🔍 Gemini raw:", data);
 
-    if (reply && typeof reply === "string") {
+    const reply = extractGeminiReply(data);
+    if (reply) {
       addMessage("ai", reply);
     } else {
-      addMessage("ai", "⚠️ Gemini responded, but I couldn't understand it.");
-      console.log("🧠 Gemini raw data:", data);
+      addMessage("ai", "⚠️ Gemini responded, but gave no usable reply.");
     }
 
   } catch (err) {
-    console.error("❌ Gemini API error:", err);
-    addMessage("ai", "❌ Gemini failed. Using offline brain.");
+    console.error("❌ Gemini error:", err);
+    addMessage("ai", "❌ Gemini API error. Check your key or network.");
   }
 }
 
