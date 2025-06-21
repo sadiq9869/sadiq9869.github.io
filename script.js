@@ -1,6 +1,8 @@
-const GEMINI_KEY = 'AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc';
-const WEATHER_KEY = '49140ac22064a1ddacf11f0549413865';
-const PEXELS_KEY = '7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg';
+const GEMINI_KEY = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+const WEATHER_KEY = "49140ac22064a1ddacf11f0549413865";
+const PEXELS_KEY = "7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg";
+
+const chatBox = document.getElementById("chatBox");
 
 const offlineAnswers = {
   "hi": "Hey there! 👋 I’m Supreme AI.",
@@ -15,8 +17,6 @@ const offlineAnswers = {
   "what is ai": "AI stands for Artificial Intelligence — like me!"
 };
 
-const chatBox = document.getElementById("chatBox");
-
 function addMessage(role, text) {
   const div = document.createElement("div");
   div.className = "msg " + role;
@@ -25,22 +25,17 @@ function addMessage(role, text) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+function showDebug(text) {
+  const el = document.getElementById("debugOutput");
+  if (el) el.textContent = text;
+}
+
 function extractGeminiReply(data) {
   try {
-    const candidates = data?.candidates;
-    if (!candidates || !Array.isArray(candidates) || candidates.length === 0) return null;
-
-    const content = candidates[0]?.content;
-    const parts = content?.parts;
-    if (Array.isArray(parts) && parts.length > 0 && parts[0]?.text) {
-      return parts[0].text;
-    }
-
-    if (typeof content === 'string') return content;
-    return null;
-  } catch {
-    return null;
-  }
+    const parts = data?.candidates?.[0]?.content?.parts;
+    if (parts && parts[0]?.text) return parts[0].text;
+  } catch {}
+  return null;
 }
 
 async function chat() {
@@ -57,14 +52,24 @@ async function chat() {
   }
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_KEY}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: msg
+              }
+            ]
+          }
+        ]
+      })
     });
 
     const data = await res.json();
-    console.log("🔍 Gemini raw:", data);
+    showDebug(JSON.stringify(data, null, 2));
 
     const reply = extractGeminiReply(data);
     if (reply) {
@@ -74,8 +79,8 @@ async function chat() {
     }
 
   } catch (err) {
-    console.error("❌ Gemini error:", err);
-    addMessage("ai", "❌ Gemini API error. Check your key or network.");
+    showDebug("❌ Error: " + err.message);
+    addMessage("ai", "❌ Gemini failed. See debug.");
   }
 }
 
@@ -89,7 +94,7 @@ function startListening() {
     rec.onerror = () => alert("🎤 Voice error.");
     rec.start();
   } catch {
-    alert("Speech Recognition not supported on this browser.");
+    alert("Speech Recognition not supported.");
   }
 }
 
@@ -126,4 +131,3 @@ async function searchImage() {
     out.appendChild(img);
   });
 }
-
