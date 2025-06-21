@@ -5,8 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body { font-family: sans-serif; background: #111; color: #fff; padding: 10px; text-align: center; }
-    input, button, textarea { width: 90%; padding: 10px; margin: 5px auto; font-size: 16px; border-radius: 5px; border: none; }
-    #chatBox { border: 1px solid #444; background: #222; padding: 10px; max-height: 200px; overflow-y: auto; margin-bottom: 10px; }
+    input, button, textarea {
+      width: 90%; padding: 10px; margin: 5px auto;
+      font-size: 16px; border-radius: 5px; border: none;
+    }
+    #chatBox {
+      border: 1px solid #444; background: #222;
+      padding: 10px; max-height: 200px;
+      overflow-y: auto; margin-bottom: 10px;
+    }
     .msg { text-align: left; margin: 5px 0; }
     .ai { color: cyan; }
     .you { color: white; }
@@ -17,22 +24,28 @@
 
 <h2>🤖 Supreme AI - by Sadiq Siddiqui</h2>
 
+<!-- CHAT SYSTEM -->
 <div id="chatBox"></div>
-<input id="userInput" placeholder="Type your question..." />
+<input id="userInput" placeholder="Type your question to Gemini..." />
 <button onclick="chat()">💬 Ask</button>
 
+<!-- VOICE TO TEXT -->
 <h3>🎤 Voice to Text</h3>
+<input id="voiceBox" placeholder="🎙️ Voice Result Here..." readonly />
 <button onclick="startListening()">🎙️ Start Listening</button>
 
+<!-- SPEAK TEXT -->
 <h3>🔊 Speak Any Text</h3>
 <input id="speakText" placeholder="Enter text to speak" />
 <button onclick="speakCustom()">🔊 Speak</button>
 
+<!-- WEATHER -->
 <h3>🌦️ Weather</h3>
 <input id="city" placeholder="City name" />
 <button onclick="getWeather()">Get Weather</button>
 <pre id="weatherOutput"></pre>
 
+<!-- IMAGE SEARCH -->
 <h3>🖼️ Image Search</h3>
 <input id="imageQuery" placeholder="Search image" />
 <button onclick="searchImage()">Search</button>
