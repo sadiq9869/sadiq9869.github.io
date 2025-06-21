@@ -1,68 +1,68 @@
-const GEMINI_API_KEY = 'AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc';
-const PEXELS_KEY = '7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg';
+const GEMINI_KEY = 'AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc';
 const WEATHER_KEY = '49140ac22064a1ddacf11f0549413865';
+const PEXELS_KEY = '7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg';
 
-let chatBox = document.getElementById('chatBox');
-let userInput = document.getElementById('userInput');
+const chatBox = document.getElementById("chatBox");
 
-// Gemini Chat
-async function chat() {
-  const msg = userInput.value;
-  if (!msg) return;
-  chatBox.innerHTML += `<div class="you"><b>You:</b> ${msg}</div>`;
-  userInput.value = '';
-
-  const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: msg }] }]
-    })
-  });
-
-  const data = await response.json();
-  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No reply.";
-  chatBox.innerHTML += `<div class="ai"><b>Supreme AI:</b> ${reply}</div>`;
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  div.innerHTML = "<b>" + (role === "ai" ? "Supreme AI" : "You") + ":</b> " + text;
+  chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Voice to Text
+async function chat() {
+  const input = document.getElementById("userInput");
+  const msg = input.value.trim();
+  if (!msg) return;
+  addMessage("you", msg);
+  input.value = "";
+
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_KEY, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ contents: [{ parts: [{ text: msg }] }] })
+  });
+  const data = await res.json();
+  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I can't answer that.";
+  addMessage("ai", reply);
+}
+
 function startListening() {
-  const r = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  r.lang = 'en-US';
-  r.onresult = e => userInput.value = e.results[0][0].transcript;
-  r.start();
+  const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  rec.lang = "en-US";
+  rec.onresult = (e) => document.getElementById("userInput").value = e.results[0][0].transcript;
+  rec.start();
 }
 
-// Speak Answer
 function speakAnswer() {
-  const lastAI = Array.from(chatBox.querySelectorAll('.ai')).pop();
-  if (!lastAI) return;
-  const text = lastAI.textContent.replace('Supreme AI:', '');
-  window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+  const msgs = document.querySelectorAll(".ai");
+  if (!msgs.length) return;
+  const last = msgs[msgs.length - 1].textContent.replace("Supreme AI:", "");
+  window.speechSynthesis.speak(new SpeechSynthesisUtterance(last));
 }
 
-// Weather
 async function getWeather() {
-  const city = document.getElementById('city').value;
+  const city = document.getElementById("city").value;
   const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_KEY}&units=metric`);
   const data = await res.json();
-  document.getElementById('weatherOutput').textContent = JSON.stringify(data, null, 2);
+  document.getElementById("weatherOutput").textContent = JSON.stringify(data, null, 2);
 }
 
-// Image Search
 async function searchImage() {
-  const query = document.getElementById('imageQuery').value;
-  const res = await fetch(`https://api.pexels.com/v1/search?query=${query}&per_page=6`, {
+  const query = document.getElementById("imageQuery").value;
+  const res = await fetch("https://api.pexels.com/v1/search?query=" + query + "&per_page=6", {
     headers: { Authorization: PEXELS_KEY }
   });
   const data = await res.json();
-  let out = document.getElementById('imageResults');
-  out.innerHTML = '';
+  const results = document.getElementById("imageResults");
+  results.innerHTML = "";
   data.photos.forEach(p => {
-    const img = document.createElement('img');
+    const img = document.createElement("img");
     img.src = p.src.medium;
-    img.style = "width:100px;height:100px;margin:5px;";
-    out.appendChild(img);
+    img.style = "width: 100px; margin: 5px;";
+    results.appendChild(img);
   });
 }
+
