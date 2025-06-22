@@ -59,7 +59,7 @@
   </div>
 
 <script>
-const API_KEY = "sk-proj-21WMchjUPAjFmrOS5TH6wSerWQd9R66sk-proj-21WMchjUPAjFmrOS5TH6wSerWQd9R663ZIrDBWb0KQzPK-Gm5VcmJmGEXSomuKdr0NyKSE3F70T3BlbkFJGlkDa2Eln01fxG6MBdAEa1yyfL6leflspFz8SlMqTQ991pEG8rTT7l62cuFrEPzQFwGZ-KEfcA";
+const API_KEY = "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";
 
 async function sendMessage() {
   const input = document.getElementById('user-input');
@@ -94,8 +94,11 @@ async function sendMessage() {
     });
 
     const data = await res.json();
+    console.log(data); // Debug log
+    console.log(res.status); // Debug status log
     loadingDiv.remove();
-    const reply = data.choices?.[0]?.message?.content || "No reply";
+
+    const reply = (data.choices && data.choices[0]?.message?.content) || "⚠️ Error: No response from AI.";
 
     const aiDiv = document.createElement('div');
     aiDiv.textContent = "🤖 Supreme AI: " + reply;
@@ -115,7 +118,6 @@ function handleFile(file) {
   fileDiv.textContent = `📎 Uploaded: ${file.name}`;
   chatBox.appendChild(fileDiv);
 
-  // TODO: send video/image to backend for processing and analysis
   const loadingDiv = document.createElement('div');
   loadingDiv.textContent = `Analyzing your ${file.type.startsWith('video') ? 'video' : 'file'}...`;
   chatBox.appendChild(loadingDiv);
