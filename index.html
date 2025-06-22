@@ -3,47 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI - by Sadiq Siddiqui</title>
+  <title>Supreme AI - Debug Mode</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 10px; }
-  </style>
 </head>
 <body class="bg-gray-900 text-white h-screen flex">
 
   <!-- Sidebar -->
   <div class="w-72 bg-gray-800 p-4 flex flex-col">
     <h1 class="text-2xl font-bold mb-6">🤖 Supreme AI</h1>
-    <button class="bg-indigo-600 py-2 px-4 rounded mb-4 text-sm">➕ New Chat</button>
-    <div class="flex-grow overflow-y-auto">
-      <p class="text-sm text-gray-400 mb-1">Your Chats</p>
-      <ul class="space-y-2 text-sm text-white" id="history-list">
-        <li class="opacity-50">No previous chats</li>
-      </ul>
-    </div>
-    <div class="mt-6 text-xs text-gray-500 italic">
-      Tip: Ask "Who created you?"
-    </div>
   </div>
 
   <!-- Main Chat Area -->
   <div class="flex-1 flex flex-col">
-    <div class="flex justify-between items-center p-4 border-b border-gray-700">
-      <div class="text-gray-300 font-medium">Supreme AI</div>
-      <div class="space-x-2">
-        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Search Web</button>
-        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Write Code</button>
-        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Create Image</button>
-        <button class="bg-gray-700 text-sm px-3 py-1 rounded" onclick="document.getElementById('fileInput').click()">Upload File</button>
-        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Upload Screen Recording</button>
-        <input type="file" id="fileInput" class="hidden" accept="image/*,video/*" onchange="handleFile(this.files[0])">
-      </div>
+    <div class="p-4 border-b border-gray-700">
+      <div class="text-gray-300 font-medium">Debug Console Chat</div>
     </div>
 
     <!-- Chat Messages -->
     <div class="flex-1 p-6 overflow-y-auto space-y-4" id="chat-box">
-      <div class="text-center text-gray-400">How can I assist you today?</div>
+      <div class="text-center text-gray-400">Start chatting with Supreme AI...</div>
     </div>
 
     <!-- Message Input -->
@@ -51,16 +29,17 @@
       <input id="user-input" type="text" placeholder="Type your message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600" />
       <button onclick="sendMessage()" class="ml-2 bg-indigo-600 px-4 py-2 rounded">Send</button>
     </div>
-
-    <!-- Footer Notice -->
-    <div class="text-xs text-gray-500 text-center py-2 border-t border-gray-700">
-      Supreme AI can make mistakes. Check important info.
-    </div>
   </div>
 
 <script>
-  // ✅ Insert your OpenAI API key here:
-  const API_KEY = "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"; // 🔒 Replace this string
+  const API_KEY = "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"; // Insert your key here
+
+  function logToPage(text) {
+    const chatBox = document.getElementById("chat-box");
+    const div = document.createElement("div");
+    div.textContent = "📄 Log: " + text;
+    chatBox.appendChild(div);
+  }
 
   async function sendMessage() {
     const input = document.getElementById('user-input');
@@ -96,6 +75,8 @@
 
       const data = await res.json();
       loadingDiv.remove();
+      logToPage("Status: " + res.status);
+      logToPage("Data: " + JSON.stringify(data));
 
       if (!res.ok) {
         const errorText = data.error?.message || "Unknown error from OpenAI.";
@@ -117,17 +98,6 @@
       errDiv.textContent = "❌ Network Error: " + err.message;
       chatBox.appendChild(errDiv);
     }
-  }
-
-  function handleFile(file) {
-    const chatBox = document.getElementById('chat-box');
-    const fileDiv = document.createElement('div');
-    fileDiv.textContent = `📎 Uploaded: ${file.name}`;
-    chatBox.appendChild(fileDiv);
-
-    const loadingDiv = document.createElement('div');
-    loadingDiv.textContent = `Analyzing your ${file.type.startsWith('video') ? 'video' : 'file'}...`;
-    chatBox.appendChild(loadingDiv);
   }
 </script>
 
