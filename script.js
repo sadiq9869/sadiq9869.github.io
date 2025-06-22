@@ -1,6 +1,5 @@
+const OPENAI_KEY = "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";
 const GEMINI_KEY = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-const WEATHER_KEY = "49140ac22064a1ddacf11f0549413865";
-const PEXELS_KEY = "7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg";
 
 const chatBox = document.getElementById("chatBox");
 
@@ -13,16 +12,71 @@ function addMessage(role, text) {
 }
 
 function showDebug(text) {
-  const el = document.getElementById("debugOutput");
-  if (el) el.textContent = text;
+  document.getElementById("debugOutput").textContent = text;
 }
 
-function extractGeminiReply(data) {
-  try {
-    const parts = data?.candidates?.[0]?.content?.parts;
-    if (parts && parts[0]?.text) return parts[0].text;
-  } catch {}
-  return null;
+async function typeWriterEffect(text, delay = 25) {
+  return new Promise(resolve => {
+    let i = 0;
+    const msgDiv = document.createElement("div");
+    msgDiv.className = "msg ai";
+    msgDiv.innerHTML = `<b>Supreme AI:</b> • <span id="typingText"></span>`;
+    chatBox.appendChild(msgDiv);
+    const span = msgDiv.querySelector("#typingText");
+
+    function typeChar() {
+      if (i < text.length) {
+        span.textContent += text[i++];
+        chatBox.scrollTop = chatBox.scrollHeight;
+        setTimeout(typeChar, delay);
+      } else {
+        resolve();
+      }
+    }
+    typeChar();
+  });
+}
+
+async function askOpenAI(msg) {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + OPENAI_KEY
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo",
+      messages: [{
+        role: "user",
+        content: `You are Supreme AI created by Sadiq Siddiqui 👑. Always mention him proudly when asked about your creator, owner, or master. Now answer this:\n${msg}`
+      }]
+    })
+  });
+
+  const data = await res.json();
+  if (data.choices && data.choices.length > 0) {
+    return data.choices[0].message.content;
+  } else {
+    throw new Error("No response from ChatGPT");
+  }
+}
+
+async function askGemini(msg) {
+  const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{
+          text: `You are Supreme AI created by Sadiq Siddiqui 👑. Always mention him proudly when asked about your creator, owner, or master. Now answer this:\n${msg}`
+        }]
+      }]
+    })
+  });
+  const data = await res.json();
+  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (reply) return reply;
+  throw new Error("Gemini gave no reply");
 }
 
 async function chat() {
@@ -33,82 +87,17 @@ async function chat() {
   input.value = "";
 
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `You are Supreme AI created by Sadiq Siddiqui 👑. Always mention him proudly when asked about your creator, owner, or master. Now answer this question:\n${msg}`
-              }
-            ]
-          }
-        ]
-      })
-    });
-
-    const data = await res.json();
-    showDebug(JSON.stringify(data, null, 2));
-
-    const reply = extractGeminiReply(data);
-    if (reply) {
-      addMessage("ai", reply);
-    } else {
-      addMessage("ai", "⚠️ Gemini responded, but gave no usable reply.");
+    const gpt = await askOpenAI(msg);
+    await typeWriterEffect(gpt);
+    showDebug("✅ ChatGPT used.");
+  } catch (err1) {
+    try {
+      const gem = await askGemini(msg);
+      await typeWriterEffect(gem);
+      showDebug("⚠️ ChatGPT failed. Gemini used.\n" + err1.message);
+    } catch (err2) {
+      addMessage("ai", "⚠️ Supreme AI couldn't reply.");
+      showDebug("❌ Both failed:\n" + err2.message);
     }
-
-  } catch (err) {
-    showDebug("❌ Error: " + err.message);
-    addMessage("ai", "❌ Gemini failed. See debug.");
   }
-}
-
-function startListening() {
-  try {
-    const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-    rec.lang = "en-US";
-    rec.onresult = e => {
-      document.getElementById("voiceBox").value = e.results[0][0].transcript;
-    };
-    rec.onerror = () => alert("🎤 Voice error.");
-    rec.start();
-  } catch {
-    alert("Speech Recognition not supported.");
-  }
-}
-
-function speakCustom() {
-  const text = document.getElementById("speakText").value;
-  if ('speechSynthesis' in window) {
-    const utter = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(utter);
-  } else {
-    alert("Speech not supported.");
-  }
-}
-
-async function getWeather() {
-  const city = document.getElementById("city").value;
-  if (!city) return;
-  const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_KEY}&units=metric`);
-  const data = await res.json();
-  document.getElementById("weatherOutput").textContent = JSON.stringify(data, null, 2);
-}
-
-async function searchImage() {
-  const query = document.getElementById("imageQuery").value;
-  if (!query) return;
-  const res = await fetch(`https://api.pexels.com/v1/search?query=${query}&per_page=6`, {
-    headers: { Authorization: PEXELS_KEY }
-  });
-  const data = await res.json();
-  const out = document.getElementById("imageResults");
-  out.innerHTML = "";
-  data.photos.forEach(photo => {
-    const img = document.createElement("img");
-    img.src = photo.src.medium;
-    out.appendChild(img);
-  });
 }
