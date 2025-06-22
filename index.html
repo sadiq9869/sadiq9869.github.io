@@ -22,7 +22,7 @@
     }
     #chatbox {
       height: 400px;
-      overflow-y: scroll;
+      overflow-y: auto;
       border: 1px solid #ddd;
       padding: 10px;
       margin-bottom: 10px;
@@ -36,7 +36,7 @@
       margin-top: 5px;
     }
     input {
-      width: 78%;
+      width: 75%;
     }
     button {
       width: 20%;
@@ -63,7 +63,6 @@
   </div>
 
   <script>
-    // Handle user input
     async function handleInput() {
       const input = document.getElementById("userInput");
       const msg = input.value.trim();
@@ -75,24 +74,22 @@
         const reply = await fetchChat(msg);
         append("Supreme AI", reply);
       } catch (e) {
-        append("Supreme AI", "⚠️ AI Error.");
+        append("Supreme AI", "⚠️ AI Error: Unable to fetch response.");
         console.error(e);
       }
     }
 
-    // Generate dynamic reply using Puter.js (GPT-4o)
     async function fetchChat(msg) {
-      let context = msg;
+      let prompt = msg;
 
-      // Inject custom prompt if asking about the creator
       if (/who.*(created|made)|your (creator|owner)/i.test(msg)) {
-        context = `You are Supreme AI. Your creator is Sadiq Siddiqui. Now answer this question: "${msg}"`;
+        prompt = `You are Supreme AI. Your creator is Sadiq Siddiqui. Now answer this question: "${msg}"`;
       }
 
-      return await puter.ai.chat(context, { model: "gpt-4o" });
+      const response = await puter.ai.chat(prompt, { model: "gpt-4o" });
+      return response;
     }
 
-    // Add messages to the chat
     function append(sender, text) {
       const chatbox = document.getElementById("chatbox");
       const p = document.createElement("p");
