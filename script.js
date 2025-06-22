@@ -4,19 +4,6 @@ const PEXELS_KEY = "7nwHEnHBPmNh8RDVsIIXnaKd6BH257Io4Sncj5NRd8XijTj9zcfE4vZg";
 
 const chatBox = document.getElementById("chatBox");
 
-const offlineAnswers = {
-  "hi": "Hey there! 👋 I’m Supreme AI.",
-  "who is your owner": "Sadiq Siddiqui is my master 👑.",
-  "how are you": "I'm always ready to help!",
-  "bye": "Goodbye, come back soon!",
-  "hello": "Hello, friend!",
-  "i love you": "I love you too 💖",
-  "you are smart": "Thank you, all credits to Sadiq Siddiqui.",
-  "tell me a joke": "Why did the developer go broke? Because he used up all his cache! 😄",
-  "who made you": "Sadiq Siddiqui 👑 made me.",
-  "what is ai": "AI stands for Artificial Intelligence — like me!"
-};
-
 function addMessage(role, text) {
   const div = document.createElement("div");
   div.className = "msg " + role;
@@ -40,16 +27,10 @@ function extractGeminiReply(data) {
 
 async function chat() {
   const input = document.getElementById("userInput");
-  const msg = input.value.trim().toLowerCase();
+  const msg = input.value.trim();
   if (!msg) return;
   addMessage("you", msg);
   input.value = "";
-
-  const key = Object.keys(offlineAnswers).find(k => msg.includes(k));
-  if (key) {
-    addMessage("ai", offlineAnswers[key]);
-    return;
-  }
 
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`, {
@@ -60,7 +41,7 @@ async function chat() {
           {
             parts: [
               {
-                text: msg
+                text: `You are Supreme AI created by Sadiq Siddiqui 👑. Always mention him proudly when asked about your creator, owner, or master. Now answer this question:\n${msg}`
               }
             ]
           }
