@@ -1,3 +1,8 @@
+document.getElementById("sendBtn").addEventListener("click", sendMessage);
+document.getElementById("userInput").addEventListener("keypress", function (e) {
+  if (e.key === "Enter") sendMessage();
+});
+
 async function sendMessage() {
   const input = document.getElementById("userInput");
   const message = input.value.trim();
@@ -15,14 +20,10 @@ async function sendMessage() {
   let reply = "";
 
   try {
-    // Smart model selection
-    let model = "gpt-4o";
-    if (message.length < 10) model = "o3-mini";
-    else if (message.includes("who") || message.includes("owner")) model = "gpt-4.1";
-
+    // Use Puter AI (OpenAI, O3, GPT-4o, etc.)
     const response = await puter.ai.chat(message, {
       stream: true,
-      model
+      model: "gpt-4o"
     });
 
     for await (const part of response) {
@@ -33,7 +34,7 @@ async function sendMessage() {
       }
     }
 
-    // Gemini Backup if puter fails
+    // If Puter fails, try Gemini
     if (!reply.trim()) {
       const gemini = await fetch(
         "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc",
@@ -55,15 +56,16 @@ async function sendMessage() {
       typingEl.innerText = reply;
     }
 
+    typingEl.className = "message ai";
     document.getElementById("debug").innerText =
-      "Debug Response: " + reply.slice(0, 1000);
+      "🔍 Debug: " + reply.slice(0, 1000);
   } catch (err) {
     typingEl.innerText = "⚠️ Error: " + err.message;
     document.getElementById("debug").innerText =
-      "Debug Error: " + err.stack;
+      "⚠️ Debug Error: " + err.stack;
   }
 
-  typingEl.className = "message ai";
+  document.getElementById("chat").scrollTop = chat.scrollHeight;
 }
 
 function appendMessage(sender, text, className) {
