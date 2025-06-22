@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supreme AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI - by Sadiq Siddiqui</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     ::-webkit-scrollbar { width: 6px; }
@@ -22,12 +22,12 @@
         <li class="opacity-50">No previous chats</li>
       </ul>
     </div>
-    <div class="mt-6 text-xs text-gray-500">
-      <p class="text-gray-600 italic">Tip: Ask "Who created you?"</p>
+    <div class="mt-6 text-xs text-gray-500 italic">
+      Tip: Ask "Who created you?"
     </div>
   </div>
 
-  <!-- Main Area -->
+  <!-- Main Chat Area -->
   <div class="flex-1 flex flex-col">
     <div class="flex justify-between items-center p-4 border-b border-gray-700">
       <div class="text-gray-300 font-medium">Supreme AI</div>
@@ -41,12 +41,12 @@
       </div>
     </div>
 
-    <!-- Chat Area -->
+    <!-- Chat Messages -->
     <div class="flex-1 p-6 overflow-y-auto space-y-4" id="chat-box">
       <div class="text-center text-gray-400">How can I assist you today?</div>
     </div>
 
-    <!-- Input Area -->
+    <!-- Message Input -->
     <div class="p-4 border-t border-gray-700 flex items-center">
       <input id="user-input" type="text" placeholder="Type your message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600" />
       <button onclick="sendMessage()" class="ml-2 bg-indigo-600 px-4 py-2 rounded">Send</button>
@@ -59,69 +59,76 @@
   </div>
 
 <script>
-const API_KEY = "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";
+  // ✅ Insert your OpenAI API key here:
+  const API_KEY = "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"; // 🔒 Replace this string
 
-async function sendMessage() {
-  const input = document.getElementById('user-input');
-  const chatBox = document.getElementById('chat-box');
-  const message = input.value.trim();
-  if (!message) return;
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const chatBox = document.getElementById('chat-box');
+    const message = input.value.trim();
+    if (!message) return;
 
-  const userDiv = document.createElement('div');
-  userDiv.textContent = "🧑 You: " + message;
-  chatBox.appendChild(userDiv);
-  input.value = '';
+    const userDiv = document.createElement('div');
+    userDiv.textContent = "🧑 You: " + message;
+    chatBox.appendChild(userDiv);
+    input.value = '';
 
-  const loadingDiv = document.createElement('div');
-  loadingDiv.textContent = "🤖 Supreme AI is typing...";
-  chatBox.appendChild(loadingDiv);
-  chatBox.scrollTop = chatBox.scrollHeight;
-
-  try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are Supreme AI. If asked, your creator is Sadiq Siddiqui." },
-          { role: "user", content: message }
-        ]
-      })
-    });
-
-    const data = await res.json();
-    console.log(data); // Debug log
-    console.log(res.status); // Debug status log
-    loadingDiv.remove();
-
-    const reply = (data.choices && data.choices[0]?.message?.content) || "⚠️ Error: No response from AI.";
-
-    const aiDiv = document.createElement('div');
-    aiDiv.textContent = "🤖 Supreme AI: " + reply;
-    chatBox.appendChild(aiDiv);
+    const loadingDiv = document.createElement('div');
+    loadingDiv.textContent = "🤖 Supreme AI is typing...";
+    chatBox.appendChild(loadingDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
-  } catch (err) {
-    loadingDiv.remove();
-    const errDiv = document.createElement('div');
-    errDiv.textContent = "❌ Error: " + err.message;
-    chatBox.appendChild(errDiv);
+
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are Supreme AI. If asked, your creator is Sadiq Siddiqui." },
+            { role: "user", content: message }
+          ]
+        })
+      });
+
+      const data = await res.json();
+      loadingDiv.remove();
+
+      if (!res.ok) {
+        const errorText = data.error?.message || "Unknown error from OpenAI.";
+        const errDiv = document.createElement('div');
+        errDiv.textContent = `❌ OpenAI Error (${res.status}): ${errorText}`;
+        chatBox.appendChild(errDiv);
+        return;
+      }
+
+      const reply = data.choices?.[0]?.message?.content || "⚠️ Supreme AI couldn't understand the response.";
+      const aiDiv = document.createElement('div');
+      aiDiv.textContent = "🤖 Supreme AI: " + reply;
+      chatBox.appendChild(aiDiv);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (err) {
+      loadingDiv.remove();
+      const errDiv = document.createElement('div');
+      errDiv.textContent = "❌ Network Error: " + err.message;
+      chatBox.appendChild(errDiv);
+    }
   }
-}
 
-function handleFile(file) {
-  const chatBox = document.getElementById('chat-box');
-  const fileDiv = document.createElement('div');
-  fileDiv.textContent = `📎 Uploaded: ${file.name}`;
-  chatBox.appendChild(fileDiv);
+  function handleFile(file) {
+    const chatBox = document.getElementById('chat-box');
+    const fileDiv = document.createElement('div');
+    fileDiv.textContent = `📎 Uploaded: ${file.name}`;
+    chatBox.appendChild(fileDiv);
 
-  const loadingDiv = document.createElement('div');
-  loadingDiv.textContent = `Analyzing your ${file.type.startsWith('video') ? 'video' : 'file'}...`;
-  chatBox.appendChild(loadingDiv);
-}
+    const loadingDiv = document.createElement('div');
+    loadingDiv.textContent = `Analyzing your ${file.type.startsWith('video') ? 'video' : 'file'}...`;
+    chatBox.appendChild(loadingDiv);
+  }
 </script>
 
 </body>
