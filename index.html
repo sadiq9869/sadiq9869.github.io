@@ -1,105 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI - Debug Mode</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-900 text-white h-screen flex">
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
 
-  <!-- Sidebar -->
-  <div class="w-72 bg-gray-800 p-4 flex flex-col">
-    <h1 class="text-2xl font-bold mb-6">🤖 Supreme AI</h1>
-  </div>
+const app = express();
+app.use(cors());
+app.use(bodyParser.json());
 
-  <!-- Main Chat Area -->
-  <div class="flex-1 flex flex-col">
-    <div class="p-4 border-b border-gray-700">
-      <div class="text-gray-300 font-medium">Debug Console Chat</div>
-    </div>
+// 🔐 Paste your real API key here 👇
+const API_KEY = "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";
 
-    <!-- Chat Messages -->
-    <div class="flex-1 p-6 overflow-y-auto space-y-4" id="chat-box">
-      <div class="text-center text-gray-400">Start chatting with Supreme AI...</div>
-    </div>
+// ✅ Project name used as project ID
+const PROJECT_ID = "AI for development";
 
-    <!-- Message Input -->
-    <div class="p-4 border-t border-gray-700 flex items-center">
-      <input id="user-input" type="text" placeholder="Type your message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600" />
-      <button onclick="sendMessage()" class="ml-2 bg-indigo-600 px-4 py-2 rounded">Send</button>
-    </div>
-  </div>
+app.post('/api/chat', async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'No message provided' });
 
-<script>
-  const API_KEY = "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"; // Insert your key here
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`,
+        'OpenAI-Project': PROJECT_ID
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are Supreme AI. If asked, your creator is Sadiq Siddiqui.'
+          },
+          { role: 'user', content: message }
+        ]
+      })
+    });
 
-  function logToPage(text) {
-    const chatBox = document.getElementById("chat-box");
-    const div = document.createElement("div");
-    div.textContent = "📄 Log: " + text;
-    chatBox.appendChild(div);
+    const data = await response.json();
+    if (!response.ok) return res.status(response.status).json({ error: data });
+
+    res.json({ reply: data.choices[0].message.content });
+  } catch (err) {
+    res.status(500).json({ error: 'Something went wrong', details: err.message });
   }
+});
 
-  async function sendMessage() {
-    const input = document.getElementById('user-input');
-    const chatBox = document.getElementById('chat-box');
-    const message = input.value.trim();
-    if (!message) return;
-
-    const userDiv = document.createElement('div');
-    userDiv.textContent = "🧑 You: " + message;
-    chatBox.appendChild(userDiv);
-    input.value = '';
-
-    const loadingDiv = document.createElement('div');
-    loadingDiv.textContent = "🤖 Supreme AI is typing...";
-    chatBox.appendChild(loadingDiv);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    try {
-      const res = await fetch("https://api.openai.com/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "You are Supreme AI. If asked, your creator is Sadiq Siddiqui." },
-            { role: "user", content: message }
-          ]
-        })
-      });
-
-      const data = await res.json();
-      loadingDiv.remove();
-      logToPage("Status: " + res.status);
-      logToPage("Data: " + JSON.stringify(data));
-
-      if (!res.ok) {
-        const errorText = data.error?.message || "Unknown error from OpenAI.";
-        const errDiv = document.createElement('div');
-        errDiv.textContent = `❌ OpenAI Error (${res.status}): ${errorText}`;
-        chatBox.appendChild(errDiv);
-        return;
-      }
-
-      const reply = data.choices?.[0]?.message?.content || "⚠️ Supreme AI couldn't understand the response.";
-      const aiDiv = document.createElement('div');
-      aiDiv.textContent = "🤖 Supreme AI: " + reply;
-      chatBox.appendChild(aiDiv);
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-    } catch (err) {
-      loadingDiv.remove();
-      const errDiv = document.createElement('div');
-      errDiv.textContent = "❌ Network Error: " + err.message;
-      chatBox.appendChild(errDiv);
-    }
-  }
-</script>
-
-</body>
-</html>
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Supreme AI backend running on port ${PORT}`));
