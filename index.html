@@ -1,102 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Supreme AI</title>
-  <script src="https://js.puter.com/v2/"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f4ff;
-      display: flex;
-      justify-content: center;
-      padding-top: 50px;
-    }
-    #chat-container {
-      width: 90%;
-      max-width: 600px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
-    }
-    #chatbox {
-      height: 400px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 10px;
-      background: #fdfdfd;
-    }
-    #chatbox p {
-      margin: 8px 0;
-    }
-    input, button {
-      padding: 10px;
-      margin-top: 5px;
-    }
-    input {
-      width: 75%;
-    }
-    button {
-      width: 20%;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    footer {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 12px;
-      color: #555;
-    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 10px; }
   </style>
 </head>
-<body>
-  <div id="chat-container">
-    <h2>🤖 Supreme AI</h2>
-    <div id="chatbox"></div>
-    <input type="text" id="userInput" placeholder="Ask me anything..." />
-    <button onclick="handleInput()">Send</button>
-    <footer>⚙️ Created by <strong>Sadiq Siddiqui</strong> | Supreme AI © 2025</footer>
+<body class="bg-gray-900 text-white h-screen flex">
+
+  <!-- Sidebar -->
+  <div class="w-72 bg-gray-800 p-4 flex flex-col">
+    <h1 class="text-2xl font-bold mb-6">🤖 Supreme AI</h1>
+    <button class="bg-indigo-600 py-2 px-4 rounded mb-4 text-sm">➕ New Chat</button>
+    <div class="flex-grow overflow-y-auto">
+      <p class="text-sm text-gray-400 mb-1">Your Chats</p>
+      <ul class="space-y-2 text-sm text-white" id="history-list">
+        <li class="opacity-50">No previous chats</li>
+      </ul>
+    </div>
+    <div class="mt-6 text-xs text-gray-500">
+      <p class="text-gray-600 italic">Tip: Ask "Who created you?"</p>
+    </div>
   </div>
 
-  <script>
-    async function handleInput() {
-      const input = document.getElementById("userInput");
-      const msg = input.value.trim();
-      if (!msg) return;
-      append("You", msg);
-      input.value = "";
+  <!-- Main Area -->
+  <div class="flex-1 flex flex-col">
+    <div class="flex justify-between items-center p-4 border-b border-gray-700">
+      <div class="text-gray-300 font-medium">Supreme AI</div>
+      <div class="space-x-2">
+        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Search Web</button>
+        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Write Code</button>
+        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Create Image</button>
+        <button class="bg-gray-700 text-sm px-3 py-1 rounded" onclick="document.getElementById('fileInput').click()">Upload File</button>
+        <button class="bg-gray-700 text-sm px-3 py-1 rounded">Upload Screen Recording</button>
+        <input type="file" id="fileInput" class="hidden" accept="image/*,video/*" onchange="handleFile(this.files[0])">
+      </div>
+    </div>
 
-      try {
-        const reply = await fetchChat(msg);
-        append("Supreme AI", reply);
-      } catch (e) {
-        append("Supreme AI", "⚠️ AI Error: Unable to fetch response.");
-        console.error(e);
-      }
-    }
+    <!-- Chat Area -->
+    <div class="flex-1 p-6 overflow-y-auto space-y-4" id="chat-box">
+      <div class="text-center text-gray-400">How can I assist you today?</div>
+    </div>
 
-    async function fetchChat(msg) {
-      let prompt = msg;
+    <!-- Input Area -->
+    <div class="p-4 border-t border-gray-700 flex items-center">
+      <input id="user-input" type="text" placeholder="Type your message..." class="flex-1 p-2 rounded bg-gray-700 text-white border border-gray-600" />
+      <button onclick="sendMessage()" class="ml-2 bg-indigo-600 px-4 py-2 rounded">Send</button>
+    </div>
 
-      if (/who.*(created|made)|your (creator|owner)/i.test(msg)) {
-        prompt = `You are Supreme AI. Your creator is Sadiq Siddiqui. Now answer this question: "${msg}"`;
-      }
+    <!-- Footer Notice -->
+    <div class="text-xs text-gray-500 text-center py-2 border-t border-gray-700">
+      Supreme AI can make mistakes. Check important info.
+    </div>
+  </div>
 
-      const response = await puter.ai.chat(prompt, { model: "gpt-4o" });
-      return response;
-    }
+<script>
+const API_KEY = "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";
 
-    function append(sender, text) {
-      const chatbox = document.getElementById("chatbox");
-      const p = document.createElement("p");
-      p.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chatbox.appendChild(p);
-      chatbox.scrollTop = chatbox.scrollHeight;
-    }
-  </script>
+async function sendMessage() {
+  const input = document.getElementById('user-input');
+  const chatBox = document.getElementById('chat-box');
+  const message = input.value.trim();
+  if (!message) return;
+
+  const userDiv = document.createElement('div');
+  userDiv.textContent = "🧑 You: " + message;
+  chatBox.appendChild(userDiv);
+  input.value = '';
+
+  const loadingDiv = document.createElement('div');
+  loadingDiv.textContent = "🤖 Supreme AI is typing...";
+  chatBox.appendChild(loadingDiv);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
+  try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          { role: "system", content: "You are Supreme AI. If asked, your creator is Sadiq Siddiqui." },
+          { role: "user", content: message }
+        ]
+      })
+    });
+
+    const data = await res.json();
+    loadingDiv.remove();
+    const reply = data.choices?.[0]?.message?.content || "No reply";
+
+    const aiDiv = document.createElement('div');
+    aiDiv.textContent = "🤖 Supreme AI: " + reply;
+    chatBox.appendChild(aiDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    loadingDiv.remove();
+    const errDiv = document.createElement('div');
+    errDiv.textContent = "❌ Error: " + err.message;
+    chatBox.appendChild(errDiv);
+  }
+}
+
+function handleFile(file) {
+  const chatBox = document.getElementById('chat-box');
+  const fileDiv = document.createElement('div');
+  fileDiv.textContent = `📎 Uploaded: ${file.name}`;
+  chatBox.appendChild(fileDiv);
+
+  // TODO: send video/image to backend for processing and analysis
+  const loadingDiv = document.createElement('div');
+  loadingDiv.textContent = `Analyzing your ${file.type.startsWith('video') ? 'video' : 'file'}...`;
+  chatBox.appendChild(loadingDiv);
+}
+</script>
+
 </body>
 </html>
