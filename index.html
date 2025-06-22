@@ -4,20 +4,50 @@
   <title>Supreme AI - by Sadiq Siddiqui 👑</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; background: #111; color: #fff; text-align: center; padding: 10px; }
-    input, button, textarea {
-      width: 90%; padding: 10px; margin: 5px auto;
-      font-size: 16px; border-radius: 5px; border: none;
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+    input, button {
+      width: 90%;
+      padding: 10px;
+      margin: 5px auto;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
     }
     #chatBox {
-      border: 1px solid #444; background: #222;
-      padding: 10px; max-height: 250px;
-      overflow-y: auto; margin-bottom: 10px;
+      border: 1px solid #444;
+      background: #222;
+      padding: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      text-align: left;
     }
-    .msg { text-align: left; margin: 5px 0; }
+    .msg {
+      margin: 5px 0;
+    }
     .ai { color: cyan; }
     .you { color: white; }
-    img { width: 100px; margin: 4px; }
+    #typingText::after {
+      content: '|';
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 10px;
+      max-height: 200px;
+      overflow: auto;
+    }
   </style>
 </head>
 <body>
@@ -25,31 +55,13 @@
 <h2>🤖 Supreme AI - by Sadiq Siddiqui 👑</h2>
 
 <div id="chatBox"></div>
-<input id="userInput" placeholder="Type your question..." />
-<button onclick="chat()">💬 Ask</button>
+<input id="userInput" placeholder="Type your message..." />
+<button onclick="chat()">💬 Ask Supreme AI</button>
 
-<details style="text-align:left;margin:10px auto;width:90%;">
-  <summary>🔍 Debug Response</summary>
-  <pre id="debugOutput" style="background:#333;color:#0f0;padding:10px;max-height:200px;overflow:auto;"></pre>
+<details>
+  <summary>⚙️ Debug Info</summary>
+  <pre id="debugOutput"></pre>
 </details>
-
-<h3>🎤 Voice to Text</h3>
-<input id="voiceBox" placeholder="🎙️ Result here..." readonly />
-<button onclick="startListening()">🎙️ Start Listening</button>
-
-<h3>🔊 Speak</h3>
-<input id="speakText" placeholder="Text to speak" />
-<button onclick="speakCustom()">🔊 Speak</button>
-
-<h3>🌦️ Weather</h3>
-<input id="city" placeholder="City name" />
-<button onclick="getWeather()">Get Weather</button>
-<pre id="weatherOutput"></pre>
-
-<h3>🖼️ Image Search</h3>
-<input id="imageQuery" placeholder="Search image" />
-<button onclick="searchImage()">Search</button>
-<div id="imageResults"></div>
 
 <script src="script.js"></script>
 </body>
