@@ -2,62 +2,114 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Supreme AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100%;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      overflow: hidden; /* no scroll */
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+      margin: 10px 0;
+    }
+
+    #response {
+      width: 100%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+      text-align: center;
+    }
+
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+    }
+
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+
+    .input-section {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #chatInput {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      margin-bottom: 8px;
+    }
+
+    #warning {
+      font-size: 12px;
+      color: #ffc107;
+      text-align: center;
+      opacity: 0.8;
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen flex flex-col items-center justify-start text-white font-sans">
+<body>
+  <h1>🚀 Supreme AI</h1>
 
-  <!-- Title -->
-  <div class="mt-6 text-center">
-    <h1 class="text-4xl font-bold text-cyan-400 flex items-center gap-2">
-      🚀 <span class="drop-shadow-md">Supreme AI</span>
-    </h1>
+  <div id="response">AI Response will appear here...</div>
+
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Type your question here..." />
+    <div id="warning">⚠️ Supreme AI can make mistakes. Please verify important info before using.</div>
   </div>
-
-  <!-- Response Box -->
-  <div class="bg-gray-700 text-white w-11/12 max-w-xl mt-8 p-4 rounded-lg min-h-[100px] text-center shadow-lg">
-    <p id="responseBox">AI Response will appear here…</p>
-  </div>
-
-  <!-- Input with Arrow Send Button -->
-  <div class="fixed bottom-20 w-full flex justify-center px-4">
-    <div class="flex items-center w-full max-w-xl bg-white rounded-full px-4 py-2 shadow-md">
-      <input 
-        id="userInput" 
-        type="text" 
-        placeholder="Type your question here..." 
-        class="flex-grow text-black bg-transparent outline-none placeholder-gray-500"
-        onkeydown="if(event.key==='Enter') handleSend()"
-      />
-      <button onclick="handleSend()" class="ml-2 bg-gray-200 hover:bg-gray-300 rounded-full p-2">
-        ⬆️
-      </button>
-    </div>
-  </div>
-
-  <!-- Warning Message -->
-  <p class="text-yellow-400 text-xs mt-4 mb-2 text-center px-4">
-    ⚠️ Supreme AI can make mistakes. Please verify important info before using.
-  </p>
 
   <script>
-    function handleSend() {
-      const input = document.getElementById("userInput").value;
-      const responseBox = document.getElementById("responseBox");
+    function showResponse() {
+      const userInput = document.getElementById("chatInput").value.trim();
+      const responseBox = document.getElementById("response");
 
-      if (input.trim() === "") return;
-
-      // Simulated response
-      responseBox.innerText = "Thinking... 🤖";
-
-      setTimeout(() => {
-        responseBox.innerText = `You asked: "${input}"\n(Sample AI response here.)`;
-      }, 1200);
-
-      document.getElementById("userInput").value = "";
+      if (userInput === "") {
+        responseBox.innerText = "Please type something first.";
+      } else {
+        // Demo static response
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: This is a demo response!`;
+      }
     }
   </script>
-
 </body>
 </html>
