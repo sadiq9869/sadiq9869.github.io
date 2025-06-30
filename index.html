@@ -1,50 +1,75 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const fetch = require('node-fetch');
-
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-
-// 🔐 Paste your real API key here 👇
-const API_KEY = "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";
-
-// ✅ Project name used as project ID
-const PROJECT_ID = "AI for development";
-
-app.post('/api/chat', async (req, res) => {
-  const { message } = req.body;
-  if (!message) return res.status(400).json({ error: 'No message provided' });
-
-  try {
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${API_KEY}`,
-        'OpenAI-Project': PROJECT_ID
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are Supreme AI. If asked, your creator is Sadiq Siddiqui.'
-          },
-          { role: 'user', content: message }
-        ]
-      })
-    });
-
-    const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data });
-
-    res.json({ reply: data.choices[0].message.content });
-  } catch (err) {
-    res.status(500).json({ error: 'Something went wrong', details: err.message });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Supreme AI backend running on port ${PORT}`));
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Supreme AI</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 2rem;
+    }
+    .chat-container {
+      background-color: #111;
+      padding: 1rem;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+    }
+    .chat-box {
+      width: 100%;
+      padding: 1rem;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      resize: none;
+    }
+    .send-button {
+      background-color: #fff;
+      color: #000;
+      border: none;
+      padding: 0.75rem 1rem;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+    }
+    .send-button:hover {
+      background-color: #ddd;
+    }
+    .arrow {
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 12px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <h1>Supreme AI</h1>
+  <div class="chat-container">
+    <textarea class="chat-box" rows="5" placeholder="Type your message here..."></textarea>
+    <button class="send-button">
+      <div class="arrow"></div>
+    </button>
+  </div>
+</body>
+</html>
