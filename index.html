@@ -35,7 +35,6 @@
       border-radius: 4px;
       margin-bottom: 1rem;
       font-size: 1rem;
-      resize: none;
     }
     .send-button {
       background-color: #fff;
@@ -49,10 +48,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.2rem;
-    }
-    .send-button:hover {
-      background-color: #ddd;
     }
     .arrow {
       width: 0;
@@ -66,10 +61,30 @@
 <body>
   <h1>Supreme AI</h1>
   <div class="chat-container">
-    <textarea class="chat-box" rows="5" placeholder="Type your message here..."></textarea>
-    <button class="send-button">
+    <textarea class="chat-box" id="userInput" rows="5" placeholder="Type your message here..."></textarea>
+    <button class="send-button" onclick="sendMessage()">
       <div class="arrow"></div>
     </button>
+    <p id="responseBox" style="margin-top: 1rem; color: #aaa;"></p>
   </div>
+
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput').value;
+      const responseBox = document.getElementById('responseBox');
+      responseBox.innerText = 'Thinking...';
+
+      const res = await fetch('https://supreme-backend.onrender.com/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userInput })
+      });
+
+      const data = await res.json();
+      responseBox.innerText = data.reply || 'No reply';
+    }
+  </script>
 </body>
 </html>
