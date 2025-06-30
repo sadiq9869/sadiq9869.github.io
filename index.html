@@ -2,123 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Supreme AI</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      height: 100vh;
-      background-color: #0c1524;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100vh;
-      padding: 20px 15px;
-      box-sizing: border-box;
-    }
-
-    .logo-title {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .logo-title img {
-      width: 40px;
-    }
-
-    .logo-title h1 {
-      font-size: 28px;
-      color: #00d5ff;
-      text-shadow: 0 0 5px #00d5ff;
-    }
-
-    #responseBox {
-      flex: 1;
-      margin-top: 20px;
-      background-color: #2a2e3d;
-      border-radius: 12px;
-      padding: 15px;
-      font-size: 16px;
-      overflow-y: auto;
-      line-height: 1.5;
-    }
-
-    .input-area {
-      display: flex;
-      align-items: center;
-      margin-top: 15px;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 12px 14px;
-      font-size: 16px;
-      border: none;
-      border-radius: 25px 0 0 25px;
-      outline: none;
-      background-color: #ffffff;
-      color: #333;
-    }
-
-    .input-area button {
-      padding: 12px 16px;
-      font-size: 16px;
-      border: none;
-      background-color: #ffffff;
-      color: #00aaff;
-      border-radius: 0 25px 25px 0;
-      cursor: pointer;
-    }
-
-    .input-area button:hover {
-      background-color: #f0f0f0;
-    }
-
-    .warning {
-      text-align: center;
-      font-size: 13px;
-      color: #ffcc00;
-      margin-top: 6px;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <div class="logo-title">
-      <img src="https://em-content.zobj.net/thumbs/120/google/350/rocket_1f680.png" alt="Rocket" />
+    <div class="header">
+      <img src="https://em-content.zobj.net/thumbs/120/google/350/rocket_1f680.png" />
       <h1>Supreme AI</h1>
     </div>
 
-    <div id="responseBox">AI Response will appear here...</div>
+    <div class="chat-box" id="chatBox">
+      <!-- Chat messages appear here -->
+    </div>
+
+    <div class="note">⚠️ Supreme AI can make mistakes. Please verify important info before using.</div>
 
     <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type your question here..." onkeydown="if(event.key==='Enter') handleSend()" />
+      <input type="text" id="userInput" placeholder="Type your question here..." onkeydown="if(event.key==='Enter') handleSend()">
       <button onclick="handleSend()">⬆️</button>
     </div>
-
-    <div class="warning">
-      ⚠️ Supreme AI can make mistakes. Please verify important info before using.
-    </div>
   </div>
-
-  <script>
-    function handleSend() {
-      const input = document.getElementById("userInput").value.trim();
-      const responseBox = document.getElementById("responseBox");
-      if (input) {
-        responseBox.textContent = `You asked: "${input}"\n[AI Response goes here]`;
-        document.getElementById("userInput").value = "";
-      }
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
