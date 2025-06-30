@@ -13,30 +13,31 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
+      min-height: 100vh;
+      padding: 20px;
     }
 
     h1 {
-      margin-top: 30px;
-      font-size: 42px;
-      text-align: center;
+      margin-top: 20px;
+      font-size: 40px;
       color: #00ffff;
       text-shadow: 0 0 12px #00ffff;
     }
 
-    #chatInput {
+    #response {
+      margin-top: 30px;
       width: 90%;
-      max-width: 500px;
-      padding: 15px;
-      margin-top: 40px;
-      border: none;
-      border-radius: 8px;
-      font-size: 18px;
-      outline: none;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
     }
 
     #askBtn {
-      margin-top: 15px;
+      margin-top: 20px;
       padding: 12px 25px;
       font-size: 16px;
       background-color: #00ffff;
@@ -52,40 +53,45 @@
       transform: scale(1.05);
     }
 
-    #response {
-      margin-top: 30px;
-      width: 90%;
-      max-width: 600px;
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      min-height: 80px;
-      white-space: pre-wrap;
+    .input-section {
+      margin-top: auto;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 30px;
+    }
+
+    #chatInput {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-top: 20px;
+      outline: none;
     }
 
     #warning {
-      margin-top: 40px;
-      font-size: 14px;
-      color: #ffcc00;
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 12px 18px;
-      border-radius: 8px;
-      max-width: 90%;
+      font-size: 12px;
+      color: #ffc107;
       text-align: center;
+      margin-top: 8px;
+      opacity: 0.7;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
 
-  <input type="text" id="chatInput" placeholder="Type your question here..." />
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
-
   <div id="response">AI Response will appear here...</div>
 
-  <div id="warning">
-    ⚠️ Supreme AI can make mistakes.<br>Please verify important information before using.
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Type your question here..." />
+    <div id="warning">⚠ Supreme AI may make mistakes. Double-check important info.</div>
   </div>
 
   <script>
@@ -96,8 +102,8 @@
       if (userInput === "") {
         responseBox.innerText = "Please type something before asking.";
       } else {
-        // Demo Response (real AI connect later)
-        responseBox.innerText = `You asked: "${userInput}"\n\n🔍 Supreme AI is processing your request...`;
+        // Static demo response (replace with real AI later)
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now!`;
       }
     }
   </script>
