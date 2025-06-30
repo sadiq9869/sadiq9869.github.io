@@ -4,134 +4,58 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Supreme AI</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100vh;
-      overflow: hidden;
-      font-family: 'Segoe UI', sans-serif;
-      background: #2e2e45;
-      color: white;
-    }
-
-    .app-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
-
-    .app-header {
-      text-align: center;
-      padding: 12px;
-      font-size: 24px;
-      font-weight: bold;
-      background: #1f1f30;
-      color: cyan;
-      box-shadow: 0 2px 4px #0005;
-    }
-
-    .chat-box {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-      scroll-behavior: smooth;
-    }
-
-    .message {
-      background: #444;
-      padding: 10px;
-      margin: 10px;
-      border-radius: 8px;
-      word-wrap: break-word;
-    }
-
-    .input-area {
-      display: flex;
-      padding: 10px;
-      background: #1f1f30;
-      gap: 10px;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 20px;
-      outline: none;
-      font-size: 16px;
-    }
-
-    .input-area button {
-      padding: 10px 16px;
-      background: #00ffe0;
-      border: none;
-      border-radius: 50%;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    .warning {
-      text-align: center;
-      font-size: 13px;
-      padding: 4px;
-      background: transparent;
-      color: #ffcc00;
-    }
-  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div class="app-container">
-    <header class="app-header">🚀 Supreme AI</header>
+<body class="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen overflow-hidden flex flex-col items-center justify-start text-white font-sans">
 
-    <main id="chatBox" class="chat-box">
-      <div class="message">AI Response will appear here...</div>
-    </main>
+  <!-- Header Logo -->
+  <div class="mt-6 flex items-center space-x-3">
+    <span class="text-4xl">🚀</span>
+    <h1 class="text-4xl font-bold text-cyan-400 drop-shadow-lg">Supreme AI</h1>
+  </div>
 
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Type your question here..." onkeydown="if(event.key==='Enter') handleSend()" />
-      <button onclick="handleSend()">⬆️</button>
-    </div>
+  <!-- AI Response Box -->
+  <div class="mt-6 w-[90%] max-w-xl bg-gray-800 rounded-lg p-4 text-white text-center shadow-lg">
+    <p id="responseBox">AI Response will appear here...</p>
+  </div>
 
-    <div class="warning">
-      ⚠️ Supreme AI can make mistakes. Please verify important info before using.
+  <!-- Ask Button -->
+  <button onclick="askSupremeAI()" class="mt-4 bg-cyan-400 hover:bg-cyan-500 text-black font-bold py-2 px-4 rounded-full shadow-lg transition-all">
+    Ask Supreme AI
+  </button>
+
+  <!-- Input Box (Bottom Fixed) -->
+  <div class="fixed bottom-16 w-full flex justify-center px-4">
+    <div class="relative w-full max-w-xl">
+      <input id="userInput" type="text" placeholder="Type your question here..." 
+        class="w-full py-3 pr-12 pl-4 rounded-full bg-white text-black shadow-inner focus:outline-none" />
+      <button onclick="askSupremeAI()" 
+        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2">
+        ⬆️
+      </button>
     </div>
   </div>
 
+  <!-- Warning Text -->
+  <p class="fixed bottom-2 text-xs text-yellow-400 text-center px-4">
+    ⚠️ Supreme AI can make mistakes. Please verify important info before using.
+  </p>
+
+  <!-- JavaScript (Fake AI response for now) -->
   <script>
-    function handleSend() {
-      const input = document.getElementById('userInput');
-      const message = input.value.trim();
-      if (message === '') return;
+    function askSupremeAI() {
+      const input = document.getElementById('userInput').value.trim();
+      const responseBox = document.getElementById('responseBox');
 
-      const chatBox = document.getElementById('chatBox');
+      if (input === '') {
+        responseBox.innerText = "❗ Please enter a question.";
+        return;
+      }
 
-      const userMsg = document.createElement('div');
-      userMsg.className = 'message';
-      userMsg.style.background = '#0066cc';
-      userMsg.textContent = 'You: ' + message;
-
-      chatBox.appendChild(userMsg);
-
-      // Fake AI reply (replace this with real API)
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'message';
-      aiMsg.textContent = 'Supreme AI: Thinking... 🤖';
-
-      chatBox.appendChild(aiMsg);
-
-      input.value = '';
-      chatBox.scrollTop = chatBox.scrollHeight;
-
-      setTimeout(() => {
-        aiMsg.textContent = 'Supreme AI: This is a sample response to "' + message + '".';
-        chatBox.scrollTop = chatBox.scrollHeight;
-      }, 1000);
+      // Fake response for demo
+      responseBox.innerText = "🧠 Thinking... (Real AI will be added soon)";
     }
   </script>
+
 </body>
 </html>
