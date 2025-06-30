@@ -2,67 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Supreme AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI Chat</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(120deg, #0f0c29, #302b63, #24243e);
-      color: #ffffff;
-      text-align: center;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      height: 100vh;
+      align-items: center;
+      padding: 30px 20px;
     }
+
     h1 {
-      font-size: 48px;
-      margin-bottom: 10px;
+      margin-top: 30px;
+      font-size: 42px;
+      text-align: center;
       color: #00ffff;
-      text-shadow: 0 0 10px #00ffff;
+      text-shadow: 0 0 12px #00ffff;
     }
-    p {
-      font-size: 20px;
-      margin-bottom: 40px;
-      color: #ccc;
+
+    #chatInput {
+      width: 90%;
+      max-width: 500px;
+      padding: 15px;
+      margin-top: 40px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      outline: none;
     }
-    .btn {
+
+    #askBtn {
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 16px;
       background-color: #00ffff;
       color: #000;
       border: none;
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff inset;
-      transition: all 0.3s ease-in-out;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
     }
-    .btn:hover {
-      background-color: #fff;
-      color: #302b63;
+
+    #askBtn:hover {
       transform: scale(1.05);
     }
-    footer {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
+
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+
+    #warning {
+      margin-top: 40px;
       font-size: 14px;
-      color: #aaa;
+      color: #ffcc00;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 12px 18px;
+      border-radius: 8px;
+      max-width: 90%;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-  <p>The Future of Minecraft + AI Begins Here</p>
-  <button class="btn" onclick="comingSoon()">Launch AI</button>
 
-  <footer>© 2025 Supreme AI by Sadiq Siddiqui</footer>
+  <input type="text" id="chatInput" placeholder="Type your question here..." />
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+
+  <div id="response">AI Response will appear here...</div>
+
+  <div id="warning">
+    ⚠️ Supreme AI can make mistakes.<br>Please verify important information before using.
+  </div>
 
   <script>
-    function comingSoon() {
-      alert("AI Interface Coming Soon! 🚀");
+    function showResponse() {
+      const userInput = document.getElementById("chatInput").value.trim();
+      const responseBox = document.getElementById("response");
+
+      if (userInput === "") {
+        responseBox.innerText = "Please type something before asking.";
+      } else {
+        // Demo Response (real AI connect later)
+        responseBox.innerText = `You asked: "${userInput}"\n\n🔍 Supreme AI is processing your request...`;
+      }
     }
   </script>
 </body>
