@@ -2,58 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen overflow-hidden flex flex-col items-center justify-start text-white font-sans">
+<body class="bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen flex flex-col items-center justify-start text-white font-sans">
 
-  <!-- Header Logo -->
-  <div class="mt-6 flex items-center space-x-3">
-    <span class="text-4xl">🚀</span>
-    <h1 class="text-4xl font-bold text-cyan-400 drop-shadow-lg">Supreme AI</h1>
+  <!-- Title -->
+  <div class="mt-6 text-center">
+    <h1 class="text-4xl font-bold text-cyan-400 flex items-center gap-2">
+      🚀 <span class="drop-shadow-md">Supreme AI</span>
+    </h1>
   </div>
 
-  <!-- AI Response Box -->
-  <div class="mt-6 w-[90%] max-w-xl bg-gray-800 rounded-lg p-4 text-white text-center shadow-lg">
-    <p id="responseBox">AI Response will appear here...</p>
+  <!-- Response Box -->
+  <div class="bg-gray-700 text-white w-11/12 max-w-xl mt-8 p-4 rounded-lg min-h-[100px] text-center shadow-lg">
+    <p id="responseBox">AI Response will appear here…</p>
   </div>
 
-  <!-- Ask Button -->
-  <button onclick="askSupremeAI()" class="mt-4 bg-cyan-400 hover:bg-cyan-500 text-black font-bold py-2 px-4 rounded-full shadow-lg transition-all">
-    Ask Supreme AI
-  </button>
-
-  <!-- Input Box (Bottom Fixed) -->
-  <div class="fixed bottom-16 w-full flex justify-center px-4">
-    <div class="relative w-full max-w-xl">
-      <input id="userInput" type="text" placeholder="Type your question here..." 
-        class="w-full py-3 pr-12 pl-4 rounded-full bg-white text-black shadow-inner focus:outline-none" />
-      <button onclick="askSupremeAI()" 
-        class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white rounded-full p-2">
+  <!-- Input with Arrow Send Button -->
+  <div class="fixed bottom-20 w-full flex justify-center px-4">
+    <div class="flex items-center w-full max-w-xl bg-white rounded-full px-4 py-2 shadow-md">
+      <input 
+        id="userInput" 
+        type="text" 
+        placeholder="Type your question here..." 
+        class="flex-grow text-black bg-transparent outline-none placeholder-gray-500"
+        onkeydown="if(event.key==='Enter') handleSend()"
+      />
+      <button onclick="handleSend()" class="ml-2 bg-gray-200 hover:bg-gray-300 rounded-full p-2">
         ⬆️
       </button>
     </div>
   </div>
 
-  <!-- Warning Text -->
-  <p class="fixed bottom-2 text-xs text-yellow-400 text-center px-4">
+  <!-- Warning Message -->
+  <p class="text-yellow-400 text-xs mt-4 mb-2 text-center px-4">
     ⚠️ Supreme AI can make mistakes. Please verify important info before using.
   </p>
 
-  <!-- JavaScript (Fake AI response for now) -->
   <script>
-    function askSupremeAI() {
-      const input = document.getElementById('userInput').value.trim();
-      const responseBox = document.getElementById('responseBox');
+    function handleSend() {
+      const input = document.getElementById("userInput").value;
+      const responseBox = document.getElementById("responseBox");
 
-      if (input === '') {
-        responseBox.innerText = "❗ Please enter a question.";
-        return;
-      }
+      if (input.trim() === "") return;
 
-      // Fake response for demo
-      responseBox.innerText = "🧠 Thinking... (Real AI will be added soon)";
+      // Simulated response
+      responseBox.innerText = "Thinking... 🤖";
+
+      setTimeout(() => {
+        responseBox.innerText = `You asked: "${input}"\n(Sample AI response here.)`;
+      }, 1200);
+
+      document.getElementById("userInput").value = "";
     }
   </script>
 
