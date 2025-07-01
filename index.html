@@ -2,57 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Supreme AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI Chat</title>
   <style>
-    html, body {
+    body {
       margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', sans-serif;
-      height: 100%;
       background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
-    }
-
-    body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      min-height: 100vh;
       padding: 20px;
-      box-sizing: border-box;
-      overflow: hidden; /* page scroll disabled */
     }
 
     h1 {
+      margin-top: 20px;
       font-size: 40px;
       color: #00ffff;
       text-shadow: 0 0 12px #00ffff;
-      margin: 10px 0;
     }
 
     #response {
-      width: 100%;
+      margin-top: 30px;
+      width: 90%;
       max-width: 600px;
       background-color: rgba(0, 0, 0, 0.3);
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 16px;
-      flex-grow: 1;           /* fill available height */
-      overflow-y: auto;       /* vertical scroll inside response */
+      min-height: 80px;
       white-space: pre-wrap;
-      text-align: left;
-      margin-bottom: 20px;
     }
 
     #askBtn {
-      margin-top: 10px;
+      margin-top: 20px;
       padding: 12px 25px;
       font-size: 16px;
       background-color: #00ffff;
       color: #000;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
       box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
       transition: transform 0.2s ease;
@@ -63,29 +54,31 @@
     }
 
     .input-section {
+      margin-top: auto;
       width: 100%;
       max-width: 500px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 10px;
+      padding-bottom: 30px;
     }
 
     #chatInput {
       width: 100%;
       padding: 15px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 18px;
+      margin-top: 20px;
       outline: none;
-      margin-bottom: 8px;
     }
 
     #warning {
       font-size: 12px;
       color: #ffc107;
       text-align: center;
-      opacity: 0.8;
+      margin-top: 8px;
+      opacity: 0.7;
     }
   </style>
 </head>
@@ -98,7 +91,7 @@
 
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Type your question here..." />
-    <div id="warning">⚠️ Supreme AI can make mistakes. Please verify important info before using.</div>
+    <div id="warning">⚠ Supreme AI may make mistakes. Double-check important info.</div>
   </div>
 
   <script>
@@ -107,16 +100,11 @@
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
-        responseBox.innerText += "\n\n⚠️ Please type something first.";
+        responseBox.innerText = "Please type something before asking.";
       } else {
-        responseBox.innerText += `\n\nYou asked: "${userInput}"\n🤖 Supreme AI says: This is a demo response!`;
+        // Static demo response (replace with real AI later)
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now!`;
       }
-
-      // auto scroll to bottom
-      responseBox.scrollTop = responseBox.scrollHeight;
-
-      // optional: clear input
-      document.getElementById("chatInput").value = "";
     }
   </script>
 </body>
