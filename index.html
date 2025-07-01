@@ -16,14 +16,12 @@
       min-height: 100vh;
       padding: 20px;
     }
-
     h1 {
       margin-top: 20px;
       font-size: 40px;
       color: #00ffff;
       text-shadow: 0 0 12px #00ffff;
     }
-
     #response {
       margin-top: 30px;
       width: 90%;
@@ -35,7 +33,6 @@
       min-height: 80px;
       white-space: pre-wrap;
     }
-
     #askBtn {
       margin-top: 20px;
       padding: 12px 25px;
@@ -48,11 +45,9 @@
       box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
       transition: transform 0.2s ease;
     }
-
     #askBtn:hover {
       transform: scale(1.05);
     }
-
     .input-section {
       margin-top: auto;
       width: 100%;
@@ -62,7 +57,6 @@
       align-items: center;
       padding-bottom: 30px;
     }
-
     #chatInput {
       width: 100%;
       padding: 15px;
@@ -72,13 +66,18 @@
       margin-top: 20px;
       outline: none;
     }
-
     #warning {
       font-size: 12px;
       color: #ffc107;
       text-align: center;
       margin-top: 8px;
       opacity: 0.7;
+    }
+    footer {
+      margin-top: 20px;
+      font-size: 14px;
+      opacity: 0.6;
+      text-align: center;
     }
   </style>
 </head>
@@ -91,19 +90,56 @@
 
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Type your question here..." />
-    <div id="warning">⚠ Supreme AI may make mistakes. Double-check important info.</div>
+    <div id="warning">⚠ Supreme AI may make mistakes. Please-check important info.</div>
   </div>
+
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
 
   <script>
     function showResponse() {
-      const userInput = document.getElementById("chatInput").value.trim();
+      const userInput = document.getElementById("chatInput").value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
         responseBox.innerText = "Please type something before asking.";
+        return;
+      }
+
+      // owner/boss/creator keywords
+      const ownerKeywords = [
+        "owner", "boss", "creator", "who made you", 
+        "who created you", "founder", "master"
+      ];
+
+      // spelling difference keywords
+      const spellingKeywords = [
+        "why different", "why siddiqui", "why siddique", 
+        "why changing surname", "different surname", 
+        "different spellings", "spellings different"
+      ];
+
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
+
+      if (isOwnerQuestion) {
+        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+
+        const styles = [
+          `My owner is ${randomName}.`,
+          `My supreme creator is ${randomName}.`,
+          `My master is ${randomName}.`,
+          `My boss is ${randomName}.`
+        ];
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+
+        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
+      } else if (isSpellingQuestion) {
+        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
       } else {
-        // Static demo response (replace with real AI later)
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now!`;
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now new functions will add soon like more message ☺️!`;
       }
     }
   </script>
