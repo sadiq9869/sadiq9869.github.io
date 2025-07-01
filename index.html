@@ -52,31 +52,26 @@
       position: fixed;
       bottom: 60px; /* space for warning/footer */
       width: 100%;
+      max-width: 500px;
       display: flex;
-      justify-content: center;
-      padding: 0 15px;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
     }
     #chatInput {
       width: 100%;
-      max-width: 500px;
-      padding: 12px 20px;
-      border: 2px solid #00ffff;
-      border-radius: 12px;
-      font-size: 14px;
+      padding: 10px;
+      border: none;
+      border-radius: 15px;
+      font-size: 16px;
       outline: none;
-      background-color: rgba(255,255,255,0.1);
-      color: #fff;
+      background-color: #d9d9d9;
+      color: #000;
       box-shadow: 0 0 8px #00ffff;
-      transition: border 0.3s, box-shadow 0.3s;
-    }
-    #chatInput:focus {
-      border-color: #00e0e0;
-      box-shadow: 0 0 15px #00e0e0;
     }
     #chatInput::placeholder {
-      color: #ccc; /* grey */
-      text-shadow: 0 0 5px #ccc; /* subtle glow */
-      opacity: 1;
+      color: #555;
+      text-shadow: 0 0 6px #00ffff;
     }
     #warning {
       position: fixed;
@@ -90,7 +85,7 @@
     }
     footer {
       position: fixed;
-      bottom: 10px;
+      bottom: 5px;
       width: 100%;
       text-align: center;
       font-size: 10px;
@@ -108,7 +103,7 @@
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
 
   <div class="input-section">
-    <input type="text" id="chatInput" placeholder="Type your question here..." />
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
 
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
@@ -119,7 +114,8 @@
 
   <script>
     function showResponse() {
-      const userInput = document.getElementById("chatInput").value.trim().toLowerCase();
+      const inputElement = document.getElementById("chatInput");
+      const userInput = inputElement.value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
@@ -154,12 +150,4 @@
         const randomStyle = styles[Math.floor(Math.random() * styles.length)];
 
         responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
-      } else if (isSpellingQuestion) {
-        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
-      } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
-      }
-    }
-  </script>
-</body>
-</html>
+        
