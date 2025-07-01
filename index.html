@@ -50,28 +50,33 @@
     }
     .input-section {
       position: fixed;
-      bottom: 60px;
+      bottom: 60px; /* space for warning/footer */
       width: 100%;
-      max-width: 500px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 20px;
+      justify-content: center;
+      padding: 0 15px;
     }
     #chatInput {
       width: 100%;
-      padding: 10px;
-      border: none;
+      max-width: 500px;
+      padding: 12px 20px;
+      border: 2px solid #00ffff;
       border-radius: 12px;
-      font-size: 16px;
+      font-size: 14px;
       outline: none;
+      background-color: rgba(255,255,255,0.1);
       color: #fff;
-      background-color: rgba(128, 128, 128, 0.2);
       box-shadow: 0 0 8px #00ffff;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+    #chatInput:focus {
+      border-color: #00e0e0;
+      box-shadow: 0 0 15px #00e0e0;
     }
     #chatInput::placeholder {
-      color: #ccc;
-      text-shadow: 0 0 4px #888;
+      color: #ccc; /* grey */
+      text-shadow: 0 0 5px #ccc; /* subtle glow */
+      opacity: 1;
     }
     #warning {
       position: fixed;
@@ -114,7 +119,7 @@
 
   <script>
     function showResponse() {
-      const userInput = document.getElementById("chatInput").value.trim();
+      const userInput = document.getElementById("chatInput").value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
@@ -133,8 +138,8 @@
         "different spellings", "spellings different"
       ];
 
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
 
       if (isOwnerQuestion) {
         const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
@@ -148,11 +153,11 @@
         ];
         const randomStyle = styles[Math.floor(Math.random() * styles.length)];
 
-        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI Answer: ${randomStyle}`;
+        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
       } else if (isSpellingQuestion) {
-        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!`;
+        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
       } else {
-        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
       }
     }
   </script>
