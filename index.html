@@ -62,16 +62,16 @@
       width: 100%;
       padding: 10px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 16px;
       outline: none;
       color: #fff;
-      background-color: rgba(255,255,255,0.1);
-      box-shadow: 0 0 10px #00ffff;
+      background-color: rgba(128, 128, 128, 0.2);
+      box-shadow: 0 0 8px #00ffff;
     }
     #chatInput::placeholder {
       color: #ccc;
-      text-shadow: 0 0 6px #ccc;
+      text-shadow: 0 0 4px #888;
     }
     #warning {
       position: fixed;
@@ -79,9 +79,9 @@
       width: 100%;
       text-align: center;
       font-size: 10px;
-      color: #ff9800; /* softer orange */
-      opacity: 0.9;
-      text-shadow: 0 0 4px #ffffff; /* subtle white glow */
+      color: #ffc107;
+      opacity: 0.8;
+      text-shadow: 0 0 4px #ffc107;
     }
     footer {
       position: fixed;
@@ -114,7 +114,7 @@
 
   <script>
     function showResponse() {
-      const userInput = document.getElementById("chatInput").value.trim().toLowerCase();
+      const userInput = document.getElementById("chatInput").value.trim();
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
@@ -133,8 +133,8 @@
         "different spellings", "spellings different"
       ];
 
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
 
       if (isOwnerQuestion) {
         const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
@@ -148,11 +148,11 @@
         ];
         const randomStyle = styles[Math.floor(Math.random() * styles.length)];
 
-        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
+        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI Answer: ${randomStyle}`;
       } else if (isSpellingQuestion) {
-        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!`;
       } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+        responseBox.innerText = `You: ${userInput}\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
       }
     }
   </script>
