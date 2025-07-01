@@ -12,16 +12,16 @@
       height: 100%;
       background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
-      overflow: hidden; /* no page scroll */
     }
 
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       padding: 20px;
       box-sizing: border-box;
+      overflow: hidden; /* page scroll disabled */
     }
 
     h1 {
@@ -38,14 +38,15 @@
       padding: 20px;
       border-radius: 12px;
       font-size: 16px;
-      height: 200px; /* fixed height */
-      overflow-y: auto; /* vertical scroll */
+      flex-grow: 1;           /* fill available height */
+      overflow-y: auto;       /* vertical scroll inside response */
       white-space: pre-wrap;
       text-align: left;
+      margin-bottom: 20px;
     }
 
     #askBtn {
-      margin-top: 20px;
+      margin-top: 10px;
       padding: 12px 25px;
       font-size: 16px;
       background-color: #00ffff;
@@ -67,6 +68,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      margin-top: 10px;
     }
 
     #chatInput {
@@ -105,14 +107,16 @@
       const responseBox = document.getElementById("response");
 
       if (userInput === "") {
-        responseBox.innerText = "Please type something first.";
+        responseBox.innerText += "\n\n⚠️ Please type something first.";
       } else {
-        // Add message as new line instead of replacing
         responseBox.innerText += `\n\nYou asked: "${userInput}"\n🤖 Supreme AI says: This is a demo response!`;
-
-        // Auto scroll to latest
-        responseBox.scrollTop = responseBox.scrollHeight;
       }
+
+      // auto scroll to bottom
+      responseBox.scrollTop = responseBox.scrollHeight;
+
+      // optional: clear input
+      document.getElementById("chatInput").value = "";
     }
   </script>
 </body>
