@@ -12,7 +12,7 @@
       height: 100%;
       background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
-      overflow: hidden; /* no scroll */
+      overflow: hidden; /* no page scroll */
     }
 
     body {
@@ -38,9 +38,10 @@
       padding: 20px;
       border-radius: 12px;
       font-size: 16px;
-      min-height: 80px;
+      height: 200px; /* fixed height */
+      overflow-y: auto; /* vertical scroll */
       white-space: pre-wrap;
-      text-align: center;
+      text-align: left;
     }
 
     #askBtn {
@@ -106,8 +107,11 @@
       if (userInput === "") {
         responseBox.innerText = "Please type something first.";
       } else {
-        // Demo static response
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: This is a demo response!`;
+        // Add message as new line instead of replacing
+        responseBox.innerText += `\n\nYou asked: "${userInput}"\n🤖 Supreme AI says: This is a demo response!`;
+
+        // Auto scroll to latest
+        responseBox.scrollTop = responseBox.scrollHeight;
       }
     }
   </script>
