@@ -50,7 +50,7 @@
     }
     .input-section {
       position: fixed;
-      bottom: 60px; /* leaves room for warning/footer */
+      bottom: 60px; /* space for warning/footer */
       width: 100%;
       display: flex;
       justify-content: center;
@@ -72,6 +72,11 @@
     #chatInput:focus {
       border-color: #00e0e0;
       box-shadow: 0 0 15px #00e0e0;
+    }
+    #chatInput::placeholder {
+      color: #ccc; /* grey */
+      text-shadow: 0 0 5px #ccc; /* subtle glow */
+      opacity: 1;
     }
     #warning {
       position: fixed;
@@ -148,13 +153,5 @@
         ];
         const randomStyle = styles[Math.floor(Math.random() * styles.length)];
 
-        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
-      } else if (isSpellingQuestion) {
-        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
-      } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
-      }
-    }
-  </script>
-</body>
-</html>
+        res
+        
