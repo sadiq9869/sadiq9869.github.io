@@ -76,8 +76,9 @@
     footer {
       margin-top: 20px;
       font-size: 14px;
-      opacity: 0.6;
       text-align: center;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff, 0 0 12px #00ffff;
     }
   </style>
 </head>
@@ -107,16 +108,14 @@
         return;
       }
 
-      // owner/boss/creator keywords
       const ownerKeywords = [
-        "owner", "boss", "creator", "who made you", 
+        "owner", "boss", "creator", "who made you",
         "who created you", "founder", "master"
       ];
 
-      // spelling difference keywords
       const spellingKeywords = [
-        "why different", "why siddiqui", "why siddique", 
-        "why changing surname", "different surname", 
+        "why different", "why siddiqui", "why siddique",
+        "why changing surname", "different surname",
         "different spellings", "spellings different"
       ];
 
@@ -139,7 +138,7 @@
       } else if (isSpellingQuestion) {
         responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
       } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now new functions will add soon like more message ☺️!`;
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now, new functions will add soon like more message ☺️!`;
       }
     }
   </script>
