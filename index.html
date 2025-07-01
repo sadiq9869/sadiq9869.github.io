@@ -49,13 +49,14 @@
       transform: scale(1.05);
     }
     .input-section {
-      margin-top: auto;
+      position: fixed;
+      bottom: 60px; /* leave space for warning/copyright */
       width: 100%;
       max-width: 500px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-bottom: 60px; /* yeh line se neeche layenge */
+      padding: 0 20px;
     }
     #chatInput {
       width: 100%;
@@ -63,27 +64,26 @@
       border: none;
       border-radius: 8px;
       font-size: 18px;
-      margin-top: 20px;
       outline: none;
     }
     #warning {
+      position: fixed;
+      bottom: 40px;
+      width: 100%;
+      text-align: center;
       font-size: 12px;
       color: #ffc107;
-      text-align: center;
-      margin-top: 8px;
-      opacity: 0.8;
+      opacity: 0.9;
     }
     footer {
       position: fixed;
-      bottom: 0;
-      left: 0;
+      bottom: 10px;
       width: 100%;
-      font-size: 14px;
       text-align: center;
-      color: #ffffff;
-      text-shadow: 0 0 8px #ffffff, 0 0 12px #ffffff;
-      background: rgba(0, 0, 0, 0.3);
-      padding: 6px 0;
+      font-size: 14px;
+      color: #fff;
+      opacity: 0.8;
+      text-shadow: 0 0 10px #fff;
     }
   </style>
 </head>
@@ -96,8 +96,9 @@
 
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Type your question here..." />
-    <div id="warning">⚠ Supreme AI may make mistakes. Please-check important info.</div>
   </div>
+
+  <div id="warning">⚠ Supreme AI may make mistakes. Please-check important info.</div>
 
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
@@ -143,7 +144,7 @@
       } else if (isSpellingQuestion) {
         responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
       } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now, new functions will add soon like more message ☺️!`;
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
       }
     }
   </script>
