@@ -2,110 +2,159 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Supreme AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI Chat</title>
   <style>
     body {
       margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #2e2e48, #4b4b6a);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
       display: flex;
       flex-direction: column;
+      align-items: center;
       min-height: 100vh;
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 20px 10px;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      color: #00ffff;
-      text-shadow: 0 0 20px #00ffff;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .response-area {
-      background-color: rgba(0,0,0,0.4);
-      border-radius: 15px;
       padding: 20px;
-      margin: 10px 20px;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
     }
-
-    .response-area p {
-      margin: 0;
-      font-size: 1rem;
+    h1 {
+      margin-top: 20px;
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
     }
-
-    button {
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
       background-color: #00ffff;
       color: #000;
       border: none;
-      border-radius: 12px;
-      padding: 15px 30px;
-      margin: 20px auto;
-      font-size: 1rem;
-      box-shadow: 0 0 20px #00ffff;
+      border-radius: 8px;
       cursor: pointer;
-      display: block;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
     }
-
-    .input-container {
-      margin: 0 20px 5px;
+    #askBtn:hover {
+      transform: scale(1.05);
     }
-
-    input[type="text"] {
+    .input-section {
+      position: fixed;
+      bottom: 60px; /* leaves room for warning/footer */
       width: 100%;
-      padding: 10px 15px;
-      margin-bottom: 5px;
+      display: flex;
+      justify-content: center;
+      padding: 0 15px;
+    }
+    #chatInput {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px 20px;
       border: 2px solid #00ffff;
-      border-radius: 15px 5px; /* square+circle style */
+      border-radius: 12px;
+      font-size: 14px;
+      outline: none;
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
       box-shadow: 0 0 8px #00ffff;
-      font-size: 0.9rem;
+      transition: border 0.3s, box-shadow 0.3s;
     }
-
-    footer {
+    #chatInput:focus {
+      border-color: #00e0e0;
+      box-shadow: 0 0 15px #00e0e0;
+    }
+    #warning {
+      position: fixed;
+      bottom: 35px;
+      width: 100%;
       text-align: center;
-      font-size: 0.65rem;
-      color: #f0f0f0;
-      margin: 2px 5px 10px;
+      font-size: 10px;
+      color: #ffc107;
+      opacity: 0.8;
+      text-shadow: 0 0 4px #ffc107;
     }
-
-    .warning {
-      color: gold;
-      margin-bottom: 2px;
-      font-size: 0.7rem;
-    }
-
-    .footer-glow {
-      text-shadow: 0 0 5px #fff;
+    footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: #fff;
+      opacity: 0.7;
+      text-shadow: 0 0 4px #fff;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🚀 Supreme AI</h1>
-  </header>
-  <div class="response-area">
-    <p>AI Response will appear here...</p>
+  <h1>🚀 Supreme AI</h1>
+
+  <div id="response">AI Response will appear here...</div>
+
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Type your question here..." />
   </div>
-  <button>Ask Supreme AI</button>
-  <div class="input-container">
-    <input type="text" placeholder="Type your question here...">
-  </div>
+
+  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+
   <footer>
-    <div class="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-    <div class="footer-glow">Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong></div>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
+
+  <script>
+    function showResponse() {
+      const userInput = document.getElementById("chatInput").value.trim().toLowerCase();
+      const responseBox = document.getElementById("response");
+
+      if (userInput === "") {
+        responseBox.innerText = "Please type something before asking.";
+        return;
+      }
+
+      const ownerKeywords = [
+        "owner", "boss", "creator", "who made you",
+        "who created you", "founder", "master"
+      ];
+
+      const spellingKeywords = [
+        "why different", "why siddiqui", "why siddique",
+        "why changing surname", "different surname",
+        "different spellings", "spellings different"
+      ];
+
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
+
+      if (isOwnerQuestion) {
+        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+
+        const styles = [
+          `My owner is ${randomName}.`,
+          `My supreme creator is ${randomName}.`,
+          `My master is ${randomName}.`,
+          `My boss is ${randomName}.`
+        ];
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+
+        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
+      } else if (isSpellingQuestion) {
+        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+      } else {
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+      }
+    }
+  </script>
 </body>
 </html>
