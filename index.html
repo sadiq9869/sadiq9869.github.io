@@ -1,144 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI Chat</title>
-  <style>
-    body { margin:0; font-family:'Segoe UI',sans-serif;
-      background:linear-gradient(135deg,#1f1c2c,#928dab);
-      color:#fff; display:flex; flex-direction:column;
-      align-items:center; min-height:100vh; padding:20px;
-    }
-    h1 { margin-top:20px; font-size:40px; color:#00ffff;
-      text-shadow:0 0 12px #00ffff;
-    }
-    #response { margin-top:30px; width:90%; max-width:600px;
-      background:rgba(0,0,0,0.3); padding:20px; border-radius:10px;
-      font-size:16px; min-height:80px; white-space:pre-wrap;
-    }
-    #askBtn { margin-top:20px; padding:12px 25px; font-size:16px;
-      background:#00ffff; color:#000; border:none;
-      border-radius:8px; cursor:pointer;
-      box-shadow:0 0 10px #00ffff,0 0 25px #00ffff inset;
-      transition:transform .2s ease;
-    }
-    #askBtn:hover { transform:scale(1.05); }
-    .input-section { position:fixed; bottom:60px; width:80%;
-      max-width:400px; display:flex; flex-direction:column;
-      align-items:center; padding:0 20px;
-    }
-    #chatInput { width:100%; padding:8px 15px; border:2px solid #00ffff;
-      border-radius:20px; font-size:14px; outline:none;
-      background:rgba(0,0,0,0.5); color:#fff;
-      box-shadow:inset 0 0 6px #000,0 0 8px #00ffff;
-    }
-    #chatInput::placeholder { color:#ccc; text-shadow:0 0 6px #00ffff; }
-    #warning { position:fixed; bottom:25px; width:100%; text-align:center;
-      font-size:11px; font-weight:bold; color:#ffcc00; opacity:.9;
-      text-shadow:0 0 6px #ffcc00;
-    }
-    footer { position:fixed; bottom:8px; width:100%; text-align:center;
-      font-size:9px; font-style:italic; color:#dddddd; opacity:.8;
-      text-shadow:0 0 8px #fff;
-    }
-  </style>
-</head>
-<body>
-  <h1>🚀 Supreme AI</h1>
-  <div id="response">AI Response will appear here...</div>
-  <button id="askBtn" onclick="askAI()">Ask Supreme AI</button>
-  <div class="input-section">
-    <input type="text" id="chatInput" placeholder="Ask me anything…" />
-  </div>
-  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-  <footer>
-    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
-  </footer>
+<script>
+  async function showResponse() {
+    const inputField = document.getElementById("chatInput");
+    const userInput = inputField.value.trim();
+    const responseBox = document.getElementById("response");
 
-  <script>
-    // YOUR KEYS — replace placeholders with your actual keys
-    const OPENROUTER_KEY = "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";
-    const SERPAPI_KEY    = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
-    const HUGGINGFACE_KEY= "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";
-
-    async function askAI() {
-      const q = document.getElementById("chatInput").value.trim();
-      const resp = document.getElementById("response");
-      if (!q) {
-        resp.innerText = "Please type something before asking.";
-        return;
-      }
-      resp.innerText = "⏳ Thinking…";
-
-      try {
-        // 1) Fetch a quick snippet from SerpAPI
-        const snippet = await callSerpAPI(q);
-        // 2) Query OpenRouter with snippet context
-        const answer = await callOpenRouter(q, snippet);
-        resp.innerText = answer;
-      } catch (e) {
-        console.error(e);
-        // fallback to HuggingFace if something fails
-        try {
-          const hf = await callHuggingFace(q);
-          resp.innerText = hf;
-        } catch (hfErr) {
-          console.error(hfErr);
-          resp.innerText = "❌ Something went wrong. Please try again.";
-        }
-      }
-      document.getElementById("chatInput").value = "";
+    if (userInput === "") {
+      responseBox.innerText = "Please type something before asking.";
+      return;
     }
 
-    // 1. SERPAPI call — returns first snippet
-    async function callSerpAPI(query) {
-      const url = `https://serpapi.com/search.json?engine=google&q=${encodeURIComponent(query)}&api_key=${SERPAPI_KEY}`;
-      const r = await fetch(url);
-      const j = await r.json();
-      if (j.organic_results?.length) {
-        return j.organic_results[0].snippet;
-      }
-      return "";
-    }
+    responseBox.innerText = "⏳ Thinking... please wait.";
 
-    // 2. OpenRouter call — include snippet in system prompt
-    async function callOpenRouter(question, snippet) {
-      const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
         method: "POST",
         headers: {
-          "Content-Type":"application/json",
-          "Authorization": `Bearer ${OPENROUTER_KEY}`
+          "Content-Type": "application/json",
+          "Authorization": "Bearer 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"
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-7b-instruct:free",
+          model: "mistral-7b-openrouter",
           messages: [
-            { role:"system", content:
-              snippet
-                ? `You are Supreme AI. Use this info: "${snippet}".`
-                : "You are Supreme AI."
-            },
-            { role:"user", content: question }
+            { role: "system", content: "You are a helpful AI assistant." },
+            { role: "user", content: userInput }
           ]
         })
       });
-      const d = await res.json();
-      return d.choices?.[0]?.message?.content || "No answer.";
+
+      const data = await response.json();
+      if (data.choices && data.choices.length > 0) {
+        responseBox.innerText = `🤖 Supreme AI Answer:\n\n${data.choices[0].message.content}`;
+      } else {
+        responseBox.innerText = "🤖 Supreme AI Answer: Sorry, no valid reply.";
+      }
+    } catch (error) {
+      console.error(error);
+      responseBox.innerText = "⚠️ Error: Could not reach OpenRouter API.";
     }
 
-    // 3. HuggingFace fallback
-    async function callHuggingFace(prompt) {
-      const res = await fetch("https://api-inference.huggingface.co/models/gpt2", {
-        method: "POST",
-        headers: {
-          "Content-Type":"application/json",
-          "Authorization": `Bearer ${HUGGINGFACE_KEY}`
-        },
-        body: JSON.stringify({ inputs: prompt })
-      });
-      const d = await res.json();
-      return Array.isArray(d) ? d[0].generated_text : prompt;
-    }
-  </script>
-</body>
-</html>
+    inputField.value = ""; // clear inbox
+  }
+</script>
