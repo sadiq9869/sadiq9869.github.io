@@ -1,43 +1,154 @@
-<script>
-  async function showResponse() {
-    const inputField = document.getElementById("chatInput");
-    const userInput = inputField.value.trim();
-    const responseBox = document.getElementById("response");
-
-    if (userInput === "") {
-      responseBox.innerText = "Please type something before asking.";
-      return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
     }
+    h1 {
+      margin-top: 20px;
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+    }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+    .input-section {
+      position: fixed;
+      bottom: 60px;
+      width: 80%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px 15px;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      font-size: 14px;
+      outline: none;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+    }
+    #chatInput::placeholder {
+      color: #ccc;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    #warning {
+      position: fixed;
+      bottom: 35px;
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: #ffc107;
+      opacity: 0.8;
+      text-shadow: 0 0 4px #ffc107;
+    }
+    footer {
+      position: fixed;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+      font-size: 8px;
+      color: #fff;
+      opacity: 0.7;
+      text-shadow: 0 0 4px #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Supreme AI</h1>
+  <div id="response">AI Response will appear here...</div>
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
+  </div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
 
-    responseBox.innerText = "⏳ Thinking... please wait.";
+  <script>
+    async function showResponse() {
+      const inputField = document.getElementById("chatInput");
+      const userInput = inputField.value.trim();
+      const responseBox = document.getElementById("response");
 
-    try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer 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"
-        },
-        body: JSON.stringify({
-          model: "mistral-7b-openrouter",
-          messages: [
-            { role: "system", content: "You are a helpful AI assistant." },
-            { role: "user", content: userInput }
-          ]
-        })
-      });
-
-      const data = await response.json();
-      if (data.choices && data.choices.length > 0) {
-        responseBox.innerText = `🤖 Supreme AI Answer:\n\n${data.choices[0].message.content}`;
-      } else {
-        responseBox.innerText = "🤖 Supreme AI Answer: Sorry, no valid reply.";
+      if (userInput === "") {
+        responseBox.innerText = "Please type something before asking.";
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      responseBox.innerText = "⚠️ Error: Could not reach OpenRouter API.";
-    }
 
-    inputField.value = ""; // clear inbox
-  }
-</script>
+      responseBox.innerText = "⏳ Thinking... please wait.";
+
+      try {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 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"
+          },
+          body: JSON.stringify({
+            model: "mistral-7b-openrouter",
+            messages: [
+              { role: "system", content: "You are a helpful AI assistant." },
+              { role: "user", content: userInput }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        if (data.choices && data.choices.length > 0) {
+          responseBox.innerText = `🤖 Supreme AI Answer:\n\n${data.choices[0].message.content}`;
+        } else {
+          responseBox.innerText = "🤖 Supreme AI Answer: Sorry, no valid reply.";
+        }
+      } catch (error) {
+        console.error(error);
+        responseBox.innerText = "⚠️ Error: Could not reach OpenRouter API.";
+      }
+
+      inputField.value = ""; // clear the inbox
+    }
+  </script>
+</body>
+</html>
