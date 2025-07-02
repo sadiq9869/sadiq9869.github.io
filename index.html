@@ -32,9 +32,16 @@
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: relative;
+    }
+    .signature {
+      font-family: cursive;
+      font-size: 18px;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
     }
     #askBtn {
       margin-top: 20px;
@@ -53,7 +60,7 @@
     }
     .input-section {
       position: fixed;
-      bottom: 60px;
+      bottom: 65px;
       width: 80%;
       max-width: 400px;
       display: flex;
@@ -71,7 +78,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -79,49 +85,39 @@
     }
     #warning {
       position: fixed;
-      bottom: 20px; /* closer to footer */
+      bottom: 30px;
       width: 100%;
       text-align: center;
       font-size: 12px;
       color: #ffc107;
       opacity: 0.9;
-      text-shadow: 0 0 6px #ffc107, 0 0 12px #ffc107;
+      text-shadow: 0 0 8px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 5px; /* closer to warning */
+      bottom: 8px;
       width: 100%;
       text-align: center;
-      font-size: 10px;
+      font-size: 9px;
       color: #fff;
       opacity: 0.7;
-      text-shadow: 0 0 4px #fff;
+      text-shadow: 0 0 6px #fff;
     }
-    .signature {
-      text-align: center;
-      font-size: 16px;
-      font-weight: bold;
-      color: #00ffff;
-      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
-      border: 2px solid #00ffff;
-      border-radius: 20px;
-      padding: 6px 14px;
-      display: inline-block;
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
-      opacity: 0.9;
-      animation: signatureGlow 3s infinite alternate;
+    .userMessage {
+      text-align: right;
+      margin-top: 8px;
+      color: #0ff;
     }
-    @keyframes signatureGlow {
-      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
-      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+    .aiMessage {
+      text-align: left;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
+    <div class="signature">✪ Supreme AI ✪</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
@@ -131,40 +127,88 @@
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
+
   <script>
+    async function callGemini(promptText) {
+      const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";  // please rotate after public
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+
+      const requestBody = {
+        contents: [
+          {
+            parts: [
+              { text: promptText }
+            ]
+          }
+        ]
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(requestBody)
+        });
+        const data = await response.json();
+
+        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini";
+
+        // dynamic color + glow
+        const colors = ["#00ff00", "#ffff00", "#ff00ff", "#00ffff", "#ff8800"];
+        const glowLevel = Math.floor(Math.random() * 80) + 20;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        // show both messages
+        document.getElementById("response").innerHTML += `
+          <div class="userMessage">${promptText}</div>
+          <div class="aiMessage" style="color:${color}; font-weight:bold; text-shadow:0 0 ${glowLevel}px ${color};">
+            🚀 Supreme AI: ${aiText}
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById("response").innerHTML += `
+          <div class="aiMessage" style="color:#f00;">
+            🚀 Supreme AI Error: ${error.message}
+          </div>
+        `;
+      }
+    }
+
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
-      const responseBox = document.getElementById("response");
-      if (userInput === "") {
-        responseBox.innerHTML = `<div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>`;
+      if (userInput === "") return;
+
+      // handle owner keywords
+      const ownerKeywords = ["owner", "boss", "creator", "who made you", "founder", "master"];
+      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "different surname", "spellings different"];
+      const lower = userInput.toLowerCase();
+
+      if (ownerKeywords.some(k => lower.includes(k))) {
+        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+        const randomOwner = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+        document.getElementById("response").innerHTML += `
+          <div class="userMessage">${userInput}</div>
+          <div class="aiMessage" style="color:#00ff00; font-weight:bold; text-shadow:0 0 12px #00ff00;">
+            🚀 Supreme AI: My supreme owner is ${randomOwner}.
+          </div>
+        `;
+        inputField.value = "";
         return;
       }
 
-      const confidenceLevels = [
-        { label: "normal", color: "#ff00ff" },
-        { label: "web search", color: "#ffa500" },
-        { label: "confident", color: "#00ff00" },
-        { label: "doubt", color: "#ff0000" },
-        { label: "thinking", color: "#00ffff" }
-      ];
+      if (spellingKeywords.some(k => lower.includes(k))) {
+        document.getElementById("response").innerHTML += `
+          <div class="userMessage">${userInput}</div>
+          <div class="aiMessage" style="color:#00ffff; font-weight:bold; text-shadow:0 0 12px #00ffff;">
+            🚀 Supreme AI: Both spellings are correct for my owner, and I love using both!
+          </div>
+        `;
+        inputField.value = "";
+        return;
+      }
 
-      const randomLevel = confidenceLevels[Math.floor(Math.random() * confidenceLevels.length)];
-      const randomOpacity = (Math.random() * 0.8).toFixed(2);
-
-      responseBox.innerHTML = `
-        <div style="
-          color: ${randomLevel.color};
-          text-shadow: 0 0 ${8 + Math.random()*12}px ${randomLevel.color};
-          opacity: ${randomOpacity};
-          font-weight: bold;
-        ">
-          🚀 Supreme AI (${randomLevel.label}):
-        </div>
-        <div style="margin-top: 5px;">
-          I'm just a demo for now. More features coming soon!
-        </div>
-      `;
+      callGemini(userInput);
       inputField.value = "";
     }
   </script>
