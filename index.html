@@ -76,7 +76,7 @@
     }
     #warning {
       position: fixed;
-      bottom: 25px; /* moved up to reduce gap */
+      bottom: 25px; /* spacing above footer */
       width: 100%;
       text-align: center;
       font-size: 11px;
@@ -87,14 +87,14 @@
     }
     footer {
       position: fixed;
-      bottom: 8px; /* moved up closer to warning */
+      bottom: 8px;
       width: 100%;
       text-align: center;
       font-size: 9px;
       font-style: italic;
       color: #dddddd;
       opacity: 0.8;
-      text-shadow: 0 0 8px #ffffff; /* stronger glow */
+      text-shadow: 0 0 10px #ffffff, 0 0 15px #ffffff; /* more glow */
     }
   </style>
 </head>
@@ -138,7 +138,7 @@
       } else {
         responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
       }
-      inputField.value = ""; // Clear the input after sending
+      inputField.value = ""; // clear after send
     }
   </script>
 </body>
