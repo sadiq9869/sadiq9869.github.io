@@ -32,6 +32,8 @@
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
+      overflow-y: auto;
+      max-height: 400px;
     }
     .message {
       margin-bottom: 10px;
@@ -175,7 +177,7 @@
       // AI message block
       const aiMessage = document.createElement("div");
       aiMessage.className = "message ai";
-      aiMessage.innerHTML = `<strong style="color:${randomColor}; text-shadow:0 0 6px ${randomColor};">Supreme AI:</strong> I have received: "${userInput}". I'm just a demo for now!`;
+      aiMessage.innerHTML = `<strong style="color:${randomColor}; text-shadow:0 0 8px ${randomColor};">Supreme AI:</strong> I received: "${userInput}". I'm just a demo for now!`;
       responseBox.appendChild(aiMessage);
 
       inputField.value = "";
