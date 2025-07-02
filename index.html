@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -15,6 +16,7 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      position: relative;
     }
     h1 {
       margin-top: 20px;
@@ -30,25 +32,8 @@
       padding: 20px;
       border-radius: 10px;
       font-size: 16px;
-      min-height: 120px;
-      position: relative;
+      min-height: 80px;
       white-space: pre-wrap;
-      overflow-wrap: break-word;
-    }
-    #watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 28px;
-      font-weight: bold;
-      background: linear-gradient(45deg, #00ffff, #ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 8px #00ffff;
-      opacity: 0.3;
-      pointer-events: none;
-      user-select: none;
     }
     #askBtn {
       margin-top: 20px;
@@ -110,14 +95,28 @@
       opacity: 0.7;
       text-shadow: 0 0 4px #fff;
     }
+    #watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Great Vibes', cursive;
+      font-size: 42px;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 8px #00ffff;
+      opacity: 0.2;
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
 
-  <div id="response">
-    <div id="watermark">✪ Supreme AI 🚀</div>
-  </div>
+  <div id="response">AI Response will appear here...</div>
 
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
 
@@ -126,31 +125,30 @@
   </div>
 
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
+
+  <!-- signature-style watermark -->
+  <div id="watermark">Supreme AI ✍️</div>
 
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
-      const watermark = document.getElementById("watermark");
 
       if (userInput === "") {
         responseBox.innerText = "Please type something before asking.";
-        watermark.style.display = "block";
         return;
       }
 
-      watermark.style.display = "none";
-
       const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
       const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
+
       const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
       const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
-
-      let finalMessage = "";
 
       if (isOwnerQuestion) {
         const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
@@ -161,14 +159,13 @@
           `My master is ${randomName}.`,
           `My boss is ${randomName}.`
         ];
-        finalMessage = `🤖 Supreme AI Answer: ${styles[Math.floor(Math.random() * styles.length)]}`;
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+        responseBox.innerHTML += `<div class="ai-message">🤖 Supreme AI Answer: ${randomStyle}</div>`;
       } else if (isSpellingQuestion) {
-        finalMessage = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+        responseBox.innerHTML += `<div class="ai-message">🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!</div>`;
       } else {
-        finalMessage = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+        responseBox.innerHTML += `<div class="ai-message">You asked: "${userInput}"<br><br>🤖 Supreme AI says: I'm just a demo for now. More features coming soon!</div>`;
       }
-
-      responseBox.innerHTML = `<div style="text-align:right;margin-bottom:5px;">🧑‍💻 You: ${userInput}</div><div style="text-align:left;margin-top:5px;">${finalMessage}</div>`;
       inputField.value = "";
     }
   </script>
