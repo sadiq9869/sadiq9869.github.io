@@ -33,7 +33,28 @@
       min-height: 80px;
       white-space: pre-wrap;
       overflow-y: auto;
-      max-height: 300px; /* scroll if too many messages */
+      max-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 15px;
+      word-wrap: break-word;
+    }
+    .user {
+      align-self: flex-end;
+      background-color: rgba(0, 255, 255, 0.3);
+      border: 1px solid #00ffff;
+      text-align: right;
+    }
+    .ai {
+      align-self: flex-start;
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 1px solid #ffffff55;
+      text-align: left;
     }
     #askBtn {
       margin-top: 20px;
@@ -102,7 +123,7 @@
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-  <div id="response">AI Response will appear here...</div>
+  <div id="response"></div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
@@ -117,17 +138,13 @@
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
       if (userInput === "") {
-        responseBox.innerHTML += `\n⚠ Please type something before asking.<br>`;
-        responseBox.scrollTop = responseBox.scrollHeight;
         return;
       }
       const lowerInput = userInput.toLowerCase();
       const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
       const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
-      const isOwnerQuestion = ownerKeywords.some(keyword => lowerInput.includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => lowerInput.includes(keyword));
       let answer = "";
-      if (isOwnerQuestion) {
+      if (ownerKeywords.some(k => lowerInput.includes(k))) {
         const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
         const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
         const styles = [
@@ -137,13 +154,22 @@
           `My boss is ${randomName}.`
         ];
         answer = styles[Math.floor(Math.random() * styles.length)];
-      } else if (isSpellingQuestion) {
+      } else if (spellingKeywords.some(k => lowerInput.includes(k))) {
         answer = "Both spellings are correct for my owner's name, and I love using both!";
       } else {
         answer = "I'm just a demo for now. More features coming soon!";
       }
-      responseBox.innerHTML += `<br><strong>You:</strong> ${userInput}<br>🤖 <strong>Supreme AI:</strong> ${answer}<br>`;
-      responseBox.scrollTop = responseBox.scrollHeight; // always scroll to bottom
+      // Add user message (right side)
+      const userMessage = document.createElement("div");
+      userMessage.className = "message user";
+      userMessage.innerText = userInput;
+      responseBox.appendChild(userMessage);
+      // Add AI message (left side)
+      const aiMessage = document.createElement("div");
+      aiMessage.className = "message ai";
+      aiMessage.innerText = answer;
+      responseBox.appendChild(aiMessage);
+      responseBox.scrollTop = responseBox.scrollHeight;
       inputField.value = "";
     }
   </script>
