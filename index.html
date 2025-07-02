@@ -56,6 +56,13 @@
       border: 1px solid #ffffff55;
       text-align: left;
     }
+    .ai .label {
+      color: #00ffff;
+      font-weight: bold;
+      text-shadow: 0 0 6px #00ffff, 0 0 10px #00ffff;
+      display: block;
+      margin-bottom: 5px;
+    }
     #askBtn {
       margin-top: 20px;
       padding: 12px 25px;
@@ -164,10 +171,10 @@
       userMessage.className = "message user";
       userMessage.innerText = userInput;
       responseBox.appendChild(userMessage);
-      // Add AI message (left side)
+      // Add AI message (left side) with Supreme AI label
       const aiMessage = document.createElement("div");
       aiMessage.className = "message ai";
-      aiMessage.innerText = answer;
+      aiMessage.innerHTML = `<span class="label">Supreme AI:</span> ${answer}`;
       responseBox.appendChild(aiMessage);
       responseBox.scrollTop = responseBox.scrollHeight;
       inputField.value = "";
