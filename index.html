@@ -33,14 +33,22 @@
       min-height: 120px;
       position: relative;
       white-space: pre-wrap;
+      overflow-wrap: break-word;
     }
     #watermark {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      opacity: 0.4;
+      font-size: 28px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #00ffff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 8px #00ffff;
+      opacity: 0.3;
       pointer-events: none;
+      user-select: none;
     }
     #askBtn {
       margin-top: 20px;
@@ -108,19 +116,7 @@
   <h1>🚀 Supreme AI</h1>
 
   <div id="response">
-    <div id="watermark">
-      <svg width="200" height="60">
-        <defs>
-          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-            <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
-          </linearGradient>
-        </defs>
-        <text x="0" y="40" font-family="Verdana" font-size="28" fill="url(#grad)" stroke="#00ffff" stroke-width="1.5">
-          Supreme AI 🚀
-        </text>
-      </svg>
-    </div>
+    <div id="watermark">✪ Supreme AI 🚀</div>
   </div>
 
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
