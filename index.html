@@ -51,7 +51,7 @@
     .input-section {
       position: fixed;
       bottom: 60px;
-      width: 80%; /* reduced width from 100% to 80% */
+      width: 80%;
       max-width: 400px;
       display: flex;
       flex-direction: column;
@@ -79,57 +79,49 @@
       bottom: 35px;
       width: 100%;
       text-align: center;
-      font-size: 10px;
-      color: #ffc107;
-      opacity: 0.8;
-      text-shadow: 0 0 4px #ffc107;
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffcc00;
+      opacity: 0.9;
+      text-shadow: 0 0 6px #ffcc00;
     }
     footer {
       position: fixed;
       bottom: 10px;
       width: 100%;
       text-align: center;
-      font-size: 10px;
-      color: #fff;
-      opacity: 0.7;
-      text-shadow: 0 0 4px #fff;
+      font-size: 11px;
+      font-style: italic;
+      color: #dddddd;
+      opacity: 0.8;
+      text-shadow: 0 0 5px #ffffff;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-
   <div id="response">AI Response will appear here...</div>
-
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
-
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
-
       if (userInput === "") {
         responseBox.innerText = "Please type something before asking.";
         return;
       }
-
       const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
       const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
-
       const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
       const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
-
       if (isOwnerQuestion) {
         const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
         const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
@@ -146,7 +138,6 @@
       } else {
         responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
       }
-
       inputField.value = ""; // Clear the input after sending
     }
   </script>
