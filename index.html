@@ -29,27 +29,27 @@
       background-color: rgba(0, 0, 0, 0.3);
       padding: 20px;
       border-radius: 10px;
-      font-size: 16px;
-      min-height: 80px;
-      white-space: pre-wrap;
-      overflow-y: auto;
-      max-height: 400px;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
     }
-    .message {
-      margin-bottom: 10px;
-      padding: 10px 15px;
+    .user-message {
+      align-self: flex-end;
+      background-color: rgba(0, 255, 255, 0.2);
+      padding: 8px 12px;
+      margin: 4px;
       border-radius: 12px;
       max-width: 80%;
-      word-break: break-word;
     }
-    .user {
-      background-color: rgba(0, 255, 255, 0.3);
-      align-self: flex-end;
-      text-align: right;
-    }
-    .ai {
-      background-color: rgba(0, 0, 0, 0.5);
+    .ai-message {
       align-self: flex-start;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding: 8px 12px;
+      margin: 4px;
+      border-radius: 12px;
+      max-width: 80%;
     }
     #askBtn {
       margin-top: 20px;
@@ -72,8 +72,7 @@
       width: 80%;
       max-width: 400px;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
       padding: 0 20px;
     }
     #chatInput {
@@ -108,79 +107,80 @@
       text-align: center;
       font-size: 9px;
       color: #fff;
-      opacity: 0.7;
-      text-shadow: 0 0 6px #fff;
+      opacity: 0.8;
+      text-shadow: 0 0 4px #fff;
+    }
+    #watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      font-size: 24px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #0ff, #f0f, #0ff);
+      -webkit-background-clip: text;
+      color: transparent;
+      text-shadow:
+        0 0 8px #0ff,
+        0 0 12px #f0f,
+        0 0 16px #0ff;
+      letter-spacing: 2px;
+      filter: drop-shadow(0 0 6px #0ff);
+      opacity: 0.9;
+      user-select: none;
+      pointer-events: none;
+      font-family: 'Segoe UI Black', sans-serif;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-
-  <div id="response"></div>
-
+  <div id="response">
+    <div id="watermark">🚀 ✪ Supreme ⚡ AI ✪ 🚀</div>
+  </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
-
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
   <footer>
-    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+    Supreme AI made in © <span style="text-shadow:0 0 4px #0ff;">2025</span> • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
+      const watermark = document.getElementById("watermark");
+
       if (userInput === "") return;
 
-      // user message block
-      const userMessage = document.createElement("div");
-      userMessage.className = "message user";
-      userMessage.textContent = userInput;
-      responseBox.appendChild(userMessage);
+      watermark.style.display = "none";
 
-      // lower-cased input for detection
-      const lowerInput = userInput.toLowerCase();
+      const userMsg = document.createElement("div");
+      userMsg.className = "user-message";
+      userMsg.innerText = userInput;
+      responseBox.appendChild(userMsg);
 
-      // define palettes
-      const palettes = {
-        websearch: ["#007bff","#3399ff","#66ccff","#99ccff","#66b2ff"],
-        confident: ["#00ff00","#33ff66","#66ff99","#66ff66","#33cc33"],
-        unsure: ["#ffcc00","#ffdd33","#ffee66","#ffeb3b","#ffd700"],
-        error: ["#ff0000","#ff3333","#ff6666","#ff4d4d","#e60000"],
-        thinking: ["#800080","#9933cc","#cc66ff","#b266ff","#a64ca6"],
-        learning: ["#ff8000","#ff9933","#ffb366","#ff9900","#ff6600"],
-        default: ["#ffffff","#f0f0f0","#e0e0e0","#dddddd","#cccccc"]
-      };
+      // Simulate AI confidence with random % and corresponding color
+      const confidence = Math.floor(Math.random() * 101);
+      let aiColor;
+      if (confidence <= 30) aiColor = "red";
+      else if (confidence <= 60) aiColor = "yellow";
+      else if (confidence <= 80) aiColor = "blue";
+      else aiColor = ["green", "lime", "cyan", "aqua", "springgreen"][Math.floor(Math.random() * 5)];
 
-      let palette = palettes.default;
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "ai-message";
+      aiMsg.style.borderLeft = `4px solid ${aiColor}`;
+      aiMsg.style.boxShadow = `0 0 10px ${aiColor}`;
+      aiMsg.innerHTML = `<strong>Supreme AI:</strong> I'm a demo answer. Confidence: ${confidence}%`;
 
-      if (lowerInput.includes("search") || lowerInput.includes("google")) {
-        palette = palettes.websearch;
-      } else if (["sure","guaranteed","definitely"].some(k=>lowerInput.includes(k))) {
-        palette = palettes.confident;
-      } else if (["maybe","possible","might"].some(k=>lowerInput.includes(k))) {
-        palette = palettes.unsure;
-      } else if (["error","fail","cannot","mistake"].some(k=>lowerInput.includes(k))) {
-        palette = palettes.error;
-      } else if (["wait","thinking","hold on"].some(k=>lowerInput.includes(k))) {
-        palette = palettes.thinking;
-      } else if (["learn","training","study"].some(k=>lowerInput.includes(k))) {
-        palette = palettes.learning;
-      }
-
-      const randomColor = palette[Math.floor(Math.random() * palette.length)];
-
-      // AI message block
-      const aiMessage = document.createElement("div");
-      aiMessage.className = "message ai";
-      aiMessage.innerHTML = `<strong style="color:${randomColor}; text-shadow:0 0 8px ${randomColor};">Supreme AI:</strong> I received: "${userInput}". I'm just a demo for now!`;
-      responseBox.appendChild(aiMessage);
+      responseBox.appendChild(aiMsg);
 
       inputField.value = "";
+
       responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
