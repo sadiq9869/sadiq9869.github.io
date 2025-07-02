@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI Chat</title>
+  <title>Supreme AI Chat with Gemini</title>
   <style>
     body {
       margin: 0;
@@ -88,7 +88,7 @@
       bottom: 10px;
       width: 100%;
       text-align: center;
-      font-size: 9px;
+      font-size: 10px;
       color: #fff;
       opacity: 0.7;
       text-shadow: 0 0 4px #fff;
@@ -98,50 +98,42 @@
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">AI Response will appear here...</div>
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <button id="askBtn" onclick="askGemini()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-  <footer>Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong></footer>
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
   <script>
-    async function showResponse() {
-      const inputField = document.getElementById("chatInput");
-      const userInput = inputField.value.trim();
+    async function askGemini() {
+      const prompt = document.getElementById("chatInput").value.trim();
       const responseBox = document.getElementById("response");
-
-      if (userInput === "") {
+      if (!prompt) {
         responseBox.innerText = "Please type something before asking.";
         return;
       }
-
       responseBox.innerText = "🤖 Supreme AI is thinking...";
-
       try {
-        const edenResponse = await fetch("https://api.edenai.run/v2/text/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiODRjM2JjOGItN2Q4Yi00ZGJjLTg0N2QtYTA4Y2YzYjAxMGUwIiwidHlwZSI6ImFwaV90b2tlbiIsIm5hbWUiOiJTaWRkaXF1aSIsImlzX2N1c3RvbSI6dHJ1ZX0.vH2yE0kdg6DMCKS233UXRjRh6jxBRKIr0mcYN8YkZEk"
-          },
-          body: JSON.stringify({
-            providers: ["openai"],
-            text: userInput,
-            temperature: 0.5,
-            max_tokens: 200,
-            fallback_providers: []
-          })
-        });
-
-        const data = await edenResponse.json();
-        const answer = data.openai?.generated_text || "No answer received.";
-        responseBox.innerText = `🤖 Supreme AI says:\n${answer}`;
-      } catch (error) {
-        console.error(error);
-        responseBox.innerText = "Error contacting Supreme AI.";
+        const res = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          }
+        );
+        const data = await res.json();
+        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
+        responseBox.innerText = `🤖 Supreme AI says: ${aiText}`;
+      } catch (err) {
+        console.error(err);
+        responseBox.innerText = "⚠️ Error communicating with Gemini.";
       }
-
-      inputField.value = "";
+      document.getElementById("chatInput").value = "";
     }
   </script>
 </body>
