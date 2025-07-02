@@ -34,15 +34,21 @@
       white-space: pre-wrap;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
-    .userMsg {
-      text-align: right;
-      color: #00ffff;
+    .user-msg {
+      align-self: flex-end;
+      background-color: #007b7b;
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
     }
-    .aiMsg {
-      text-align: left;
-      font-weight: bold;
+    .ai-msg {
+      align-self: flex-start;
+      background-color: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
     }
     #askBtn {
       margin-top: 20px;
@@ -100,7 +106,7 @@
       bottom: 10px;
       width: 100%;
       text-align: center;
-      font-size: 8px;
+      font-size: 10px;
       color: #fff;
       opacity: 0.7;
       text-shadow: 0 0 6px #fff;
@@ -116,82 +122,36 @@
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
   <footer>
-    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+    Supreme AI made in © <span style="text-shadow: 0 0 10px #fff;">2025</span> • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
-
       if (userInput === "") {
-        const msg = document.createElement("div");
-        msg.className = "aiMsg";
-        msg.textContent = "🤖 Supreme AI says: Please type something before asking.";
-        responseBox.appendChild(msg);
         return;
       }
 
-      // user message
+      // User message block
       const userDiv = document.createElement("div");
-      userDiv.className = "userMsg";
+      userDiv.className = "user-msg";
       userDiv.textContent = userInput;
       responseBox.appendChild(userDiv);
 
-      // owner/boss/creator keywords
-      const ownerKeywords = [
-        "owner", "boss", "creator", "who made you",
-        "who created you", "founder", "master"
-      ];
+      // Random color + glow + random glow level
+      const colors = ["#00ffff", "#ff00ff", "#ff4500", "#00ff00", "#ffcc00"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const randomGlow = Math.floor(Math.random() * 20) + 5;
 
-      const spellingKeywords = [
-        "why different", "why siddiqui", "why siddique",
-        "why changing surname", "different surname",
-        "different spellings", "spellings different"
-      ];
-
-      // random glow
-      const randomGlow = Math.floor(Math.random() * 16); // 0 to 15 px
-
-      // color based on meaning
-      const colors = [
-        { color: "green", meaning: "confident" },
-        { color: "orange", meaning: "warning" },
-        { color: "red", meaning: "error" },
-        { color: "blue", meaning: "web search" },
-        { color: "purple", meaning: "general" }
-      ];
-      const picked = colors[Math.floor(Math.random() * colors.length)];
-      const color = picked.color;
-
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-
-      let aiResponse = "";
-
-      if (isOwnerQuestion) {
-        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
-        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
-        const styles = [
-          `My owner is ${randomName}.`,
-          `My supreme creator is ${randomName}.`,
-          `My master is ${randomName}.`,
-          `My boss is ${randomName}.`
-        ];
-        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-        aiResponse = randomStyle;
-      } else if (isSpellingQuestion) {
-        aiResponse = "Both spellings are correct for my owner's name, and I love using both!";
-      } else {
-        aiResponse = "I'm just a demo for now. More features coming soon!";
-      }
-
+      // AI message block
       const aiDiv = document.createElement("div");
-      aiDiv.className = "aiMsg";
+      aiDiv.className = "ai-msg";
+      const aiResponse = `I'm just a demo for now. More features coming soon!`;
       aiDiv.innerHTML = `⭐ <span style="color:${color}; text-shadow:0 0 ${randomGlow}px ${color};">Supreme AI</span>: ${aiResponse}`;
       responseBox.appendChild(aiDiv);
 
-      inputField.value = ""; // clear inbox
+      inputField.value = "";
     }
   </script>
 </body>
