@@ -29,27 +29,18 @@
       background-color: rgba(0, 0, 0, 0.3);
       padding: 20px;
       border-radius: 10px;
-      min-height: 100px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+      font-size: 16px;
+      min-height: 120px;
       position: relative;
+      white-space: pre-wrap;
     }
-    .user-message {
-      align-self: flex-end;
-      background-color: rgba(0, 255, 255, 0.2);
-      padding: 8px 12px;
-      margin: 4px;
-      border-radius: 12px;
-      max-width: 80%;
-    }
-    .ai-message {
-      align-self: flex-start;
-      background-color: rgba(0, 0, 0, 0.4);
-      padding: 8px 12px;
-      margin: 4px;
-      border-radius: 12px;
-      max-width: 80%;
+    #watermark {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.4;
+      pointer-events: none;
     }
     #askBtn {
       margin-top: 20px;
@@ -72,7 +63,8 @@
       width: 80%;
       max-width: 400px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       padding: 0 20px;
     }
     #chatInput {
@@ -105,83 +97,83 @@
       bottom: 10px;
       width: 100%;
       text-align: center;
-      font-size: 9px;
+      font-size: 10px;
       color: #fff;
-      opacity: 0.8;
+      opacity: 0.7;
       text-shadow: 0 0 4px #fff;
-    }
-    #watermark {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      font-size: 24px;
-      font-weight: 900;
-      background: linear-gradient(90deg, #0ff, #f0f, #0ff);
-      -webkit-background-clip: text;
-      color: transparent;
-      text-shadow:
-        0 0 8px #0ff,
-        0 0 12px #f0f,
-        0 0 16px #0ff;
-      letter-spacing: 2px;
-      filter: drop-shadow(0 0 6px #0ff);
-      opacity: 0.9;
-      user-select: none;
-      pointer-events: none;
-      font-family: 'Segoe UI Black', sans-serif;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
+
   <div id="response">
-    <div id="watermark">🚀 ✪ Supreme ⚡ AI ✪ 🚀</div>
+    <div id="watermark">
+      <svg width="200" height="60">
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+        <text x="0" y="40" font-family="Verdana" font-size="28" fill="url(#grad)" stroke="#00ffff" stroke-width="1.5">
+          Supreme AI 🚀
+        </text>
+      </svg>
+    </div>
   </div>
+
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
+
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
   <footer>
-    Supreme AI made in © <span style="text-shadow:0 0 4px #0ff;">2025</span> • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
+
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
-      const userInput = inputField.value.trim();
+      const userInput = inputField.value.trim().toLowerCase();
       const responseBox = document.getElementById("response");
       const watermark = document.getElementById("watermark");
 
-      if (userInput === "") return;
+      if (userInput === "") {
+        responseBox.innerText = "Please type something before asking.";
+        watermark.style.display = "block";
+        return;
+      }
 
       watermark.style.display = "none";
 
-      const userMsg = document.createElement("div");
-      userMsg.className = "user-message";
-      userMsg.innerText = userInput;
-      responseBox.appendChild(userMsg);
+      const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
+      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
 
-      // Simulate AI confidence with random % and corresponding color
-      const confidence = Math.floor(Math.random() * 101);
-      let aiColor;
-      if (confidence <= 30) aiColor = "red";
-      else if (confidence <= 60) aiColor = "yellow";
-      else if (confidence <= 80) aiColor = "blue";
-      else aiColor = ["green", "lime", "cyan", "aqua", "springgreen"][Math.floor(Math.random() * 5)];
+      let finalMessage = "";
 
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-message";
-      aiMsg.style.borderLeft = `4px solid ${aiColor}`;
-      aiMsg.style.boxShadow = `0 0 10px ${aiColor}`;
-      aiMsg.innerHTML = `<strong>Supreme AI:</strong> I'm a demo answer. Confidence: ${confidence}%`;
+      if (isOwnerQuestion) {
+        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+        const styles = [
+          `My owner is ${randomName}.`,
+          `My supreme creator is ${randomName}.`,
+          `My master is ${randomName}.`,
+          `My boss is ${randomName}.`
+        ];
+        finalMessage = `🤖 Supreme AI Answer: ${styles[Math.floor(Math.random() * styles.length)]}`;
+      } else if (isSpellingQuestion) {
+        finalMessage = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+      } else {
+        finalMessage = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+      }
 
-      responseBox.appendChild(aiMsg);
-
+      responseBox.innerHTML = `<div style="text-align:right;margin-bottom:5px;">🧑‍💻 You: ${userInput}</div><div style="text-align:left;margin-top:5px;">${finalMessage}</div>`;
       inputField.value = "";
-
-      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
