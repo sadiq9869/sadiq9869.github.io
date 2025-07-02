@@ -33,22 +33,8 @@
       min-height: 80px;
       white-space: pre-wrap;
       display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: flex-start;
-    }
-    .signature {
-      text-align: center;
-      font-family: 'Courier New', monospace;
-      font-size: 20px;
-      color: #00ffff;
-      text-shadow: 0 0 12px #00ffff;
-      margin-top: 20px;
-      animation: pulse 2s infinite alternate;
-    }
-    @keyframes pulse {
-      0% { text-shadow: 0 0 5px #00ffff; }
-      100% { text-shadow: 0 0 20px #00ffff; }
+      align-items: center;
+      justify-content: center;
     }
     #askBtn {
       margin-top: 20px;
@@ -85,6 +71,7 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -92,97 +79,94 @@
     }
     #warning {
       position: fixed;
-      bottom: 30px;
+      bottom: 35px;
       width: 100%;
       text-align: center;
       font-size: 12px;
       color: #ffc107;
       opacity: 0.9;
-      text-shadow: 0 0 6px #ffc107;
+      text-shadow: 0 0 6px #ffc107, 0 0 12px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 12px; /* reduced gap */
+      bottom: 8px;
       width: 100%;
       text-align: center;
-      font-size: 9px; /* smaller footer text */
+      font-size: 10px;
       color: #fff;
       opacity: 0.7;
-      text-shadow: 0 0 6px #fff;
+      text-shadow: 0 0 4px #fff;
     }
-    .user-message {
-      align-self: flex-end;
-      background: rgba(0, 255, 255, 0.2);
-      padding: 8px 12px;
-      margin-top: 5px;
-      border-radius: 15px 15px 0 15px;
-      max-width: 80%;
+    .signature {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
+      opacity: 0.9;
+      animation: signatureGlow 3s infinite alternate;
     }
-    .ai-message {
-      align-self: flex-start;
-      padding: 8px 12px;
-      margin-top: 5px;
-      border-radius: 15px 15px 15px 0;
-      max-width: 80%;
-      background-color: rgba(0, 0, 0, 0.4);
-      transition: color 0.5s ease, text-shadow 0.5s ease;
+    @keyframes signatureGlow {
+      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div class="signature">✨ Supreme AI ✨</div>
+    <div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-  <div id="warning">⚠ Supreme AI may make mistakes. Please double-check important info.</div>
-  <footer>Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong></footer>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
+      if (userInput === "") {
+        responseBox.innerHTML = `<div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>`;
+        return;
+      }
 
-      if (userInput === "") return;
-
-      // remove initial signature
-      const signature = document.querySelector(".signature");
-      if (signature) signature.remove();
-
-      // append user message
-      const userMsg = document.createElement("div");
-      userMsg.className = "user-message";
-      userMsg.textContent = userInput;
-      responseBox.appendChild(userMsg);
-
-      // simulate AI message
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-message";
-
-      // confidence color system
+      // simulate a random styled response
       const confidenceLevels = [
-        { color: "green", meaning: "confident" },
-        { color: "red", meaning: "doubt" },
-        { color: "yellow", meaning: "thinking" },
-        { color: "blue", meaning: "web search" },
-        { color: "white", meaning: "normal" }
+        { label: "normal", color: "#ff00ff" },
+        { label: "web search", color: "#ffa500" },
+        { label: "confident", color: "#00ff00" },
+        { label: "doubt", color: "#ff0000" },
+        { label: "thinking", color: "#00ffff" }
       ];
-      const random = Math.floor(Math.random() * confidenceLevels.length);
-      const conf = confidenceLevels[random];
-      const glowStrength = Math.floor(Math.random() * 80);
 
-      aiMsg.style.color = conf.color;
-      aiMsg.style.textShadow = `0 0 ${glowStrength}px ${conf.color}`;
+      const randomLevel = confidenceLevels[Math.floor(Math.random() * confidenceLevels.length)];
+      const randomOpacity = (Math.random() * 0.8).toFixed(2);
 
-      aiMsg.textContent = `Supreme AI (${conf.meaning}): This is a demo response.`;
-
-      responseBox.appendChild(aiMsg);
-
+      responseBox.innerHTML = `
+        <div style="
+          color: ${randomLevel.color};
+          text-shadow: 0 0 ${8 + Math.random()*12}px ${randomLevel.color};
+          opacity: ${randomOpacity};
+          font-weight: bold;
+        ">
+          🚀 Supreme AI (${randomLevel.label}):
+        </div>
+        <div style="margin-top: 5px;">
+          I'm just a demo for now. More features coming soon!
+        </div>
+      `;
       inputField.value = "";
-      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
