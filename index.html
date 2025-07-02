@@ -33,22 +33,22 @@
       min-height: 80px;
       white-space: pre-wrap;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
     }
-    #signature {
-      background: linear-gradient(90deg, #4facfe, #f093fb);
-      padding: 12px 20px;
-      border-radius: 15px;
-      font-weight: bold;
-      font-size: 16px;
-      box-shadow: 0 0 12px #f093fb, 0 0 20px #4facfe inset;
-      color: #fff;
-      animation: glow-signature 2s infinite alternate;
+    .signature {
+      text-align: center;
+      font-family: 'Courier New', monospace;
+      font-size: 20px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+      margin-top: 20px;
+      animation: pulse 2s infinite alternate;
     }
-    @keyframes glow-signature {
-      0% { text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
-      100% { text-shadow: 0 0 15px #fff, 0 0 30px #fff; }
+    @keyframes pulse {
+      0% { text-shadow: 0 0 5px #00ffff; }
+      100% { text-shadow: 0 0 20px #00ffff; }
     }
     #askBtn {
       margin-top: 20px;
@@ -85,7 +85,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -93,93 +92,97 @@
     }
     #warning {
       position: fixed;
-      bottom: 20px;
+      bottom: 30px;
       width: 100%;
       text-align: center;
       font-size: 12px;
       color: #ffc107;
       opacity: 0.9;
-      text-shadow: 0 0 6px #ffc107, 0 0 12px #ffc107;
+      text-shadow: 0 0 6px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 5px;
+      bottom: 12px; /* reduced gap */
       width: 100%;
       text-align: center;
-      font-size: 10px;
+      font-size: 9px; /* smaller footer text */
       color: #fff;
       opacity: 0.7;
-      text-shadow: 0 0 4px #fff;
+      text-shadow: 0 0 6px #fff;
     }
     .user-message {
-      text-align: right;
-      margin-top: 10px;
-      color: #00ffff;
-      text-shadow: 0 0 4px #00ffff;
+      align-self: flex-end;
+      background: rgba(0, 255, 255, 0.2);
+      padding: 8px 12px;
+      margin-top: 5px;
+      border-radius: 15px 15px 0 15px;
+      max-width: 80%;
     }
     .ai-message {
-      text-align: left;
-      margin-top: 10px;
-      color: #ffffff;
-      text-shadow: 0 0 4px #ffffff;
+      align-self: flex-start;
+      padding: 8px 12px;
+      margin-top: 5px;
+      border-radius: 15px 15px 15px 0;
+      max-width: 80%;
+      background-color: rgba(0, 0, 0, 0.4);
+      transition: color 0.5s ease, text-shadow 0.5s ease;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div id="signature">🚀 Supreme AI • The Future of Technology 🚀</div>
+    <div class="signature">✨ Supreme AI ✨</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-  <footer>
-    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
-  </footer>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please double-check important info.</div>
+  <footer>Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong></footer>
   <script>
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
 
-      if (userInput === "") {
-        return;
-      }
+      if (userInput === "") return;
 
-      const colors = ["#00ffff", "#ff00ff", "#00ff00", "#ffff00", "#ff0000"];
-      const confidenceLevels = ["normal", "high", "web-search", "low"];
-      const chosenColor = colors[Math.floor(Math.random() * colors.length)];
-      const confidence = confidenceLevels[Math.floor(Math.random() * confidenceLevels.length)];
-      const glowIntensity = Math.floor(Math.random() * 80) + 20; // 20% to 100%
+      // remove initial signature
+      const signature = document.querySelector(".signature");
+      if (signature) signature.remove();
 
-      let prefix = "Supreme AI";
-      switch (confidence) {
-        case "high":
-          prefix += " (confident)";
-          break;
-        case "web-search":
-          prefix += " (search)";
-          break;
-        case "low":
-          prefix += " (unsure)";
-          break;
-        default:
-          prefix += " (normal)";
-      }
+      // append user message
+      const userMsg = document.createElement("div");
+      userMsg.className = "user-message";
+      userMsg.textContent = userInput;
+      responseBox.appendChild(userMsg);
 
-      responseBox.innerHTML = `
-        <div class="user-message">You: "${userInput}"</div>
-        <div class="ai-message" style="
-          color:${chosenColor};
-          text-shadow: 0 0 ${glowIntensity}px ${chosenColor};
-        ">
-          ${prefix}: I'm just a demo for now. More features coming soon!
-        </div>
-      `;
+      // simulate AI message
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "ai-message";
+
+      // confidence color system
+      const confidenceLevels = [
+        { color: "green", meaning: "confident" },
+        { color: "red", meaning: "doubt" },
+        { color: "yellow", meaning: "thinking" },
+        { color: "blue", meaning: "web search" },
+        { color: "white", meaning: "normal" }
+      ];
+      const random = Math.floor(Math.random() * confidenceLevels.length);
+      const conf = confidenceLevels[random];
+      const glowStrength = Math.floor(Math.random() * 80);
+
+      aiMsg.style.color = conf.color;
+      aiMsg.style.textShadow = `0 0 ${glowStrength}px ${conf.color}`;
+
+      aiMsg.textContent = `Supreme AI (${conf.meaning}): This is a demo response.`;
+
+      responseBox.appendChild(aiMsg);
 
       inputField.value = "";
+      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
