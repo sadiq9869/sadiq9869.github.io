@@ -3,75 +3,143 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI</title>
+  <title>Supreme AI Chat</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #1f1c2c, #928dab);
       color: #fff;
-      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
       padding: 20px;
     }
-    h1 { color: #00ffff; text-shadow: 0 0 12px #00ffff; }
-    #response { margin-top:20px; padding:15px; background:#0005; border-radius:8px; min-height:80px; }
-    #chatInput { margin-top:20px; padding:8px; border-radius:8px; border:none; width:80%; }
-    #askBtn { margin-top:10px; padding:10px 20px; border:none; border-radius:8px; background:#00ffff; cursor:pointer; }
+    h1 {
+      margin-top: 20px;
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+    }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+    .input-section {
+      position: fixed;
+      bottom: 60px;
+      width: 80%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px 15px;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      font-size: 14px;
+      outline: none;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    #chatInput::placeholder {
+      color: #ccc;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    #warning {
+      position: fixed;
+      bottom: 25px; /* moved up to reduce gap */
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffcc00;
+      opacity: 0.9;
+      text-shadow: 0 0 6px #ffcc00;
+    }
+    footer {
+      position: fixed;
+      bottom: 8px; /* moved up closer to warning */
+      width: 100%;
+      text-align: center;
+      font-size: 9px;
+      font-style: italic;
+      color: #dddddd;
+      opacity: 0.8;
+      text-shadow: 0 0 8px #ffffff; /* stronger glow */
+    }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-  <div id="response">Ask anything...</div>
-  <input id="chatInput" placeholder="Ask me anything...">
-  <button id="askBtn">Ask</button>
+  <div id="response">AI Response will appear here...</div>
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
+  </div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
   <script>
-    const openrouter_api = "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";
-    const serpapi_api = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
-    const wolfram_api = "YKU5X6-T2J4JEG2JU";
-
-    document.getElementById("askBtn").addEventListener("click", async () => {
-      const q = document.getElementById("chatInput").value.trim();
-      if (!q) return;
-
-      document.getElementById("response").innerText = "🤖 thinking...";
-
-      try {
-        let answer = "";
-        // check for math pattern
-        if (/\d+[\+\-\*\/]\d+/.test(q)) {
-          let wurl = `https://api.wolframalpha.com/v1/result?appid=${wolfram_api}&i=${encodeURIComponent(q)}`;
-          let res = await fetch(wurl);
-          answer = await res.text();
-        }
-        // if question looks like search
-        else if (q.includes("search") || q.includes("who") || q.includes("what") || q.includes("when")) {
-          let surl = `https://serpapi.com/search.json?q=${encodeURIComponent(q)}&api_key=${serpapi_api}`;
-          let res = await fetch(surl);
-          let data = await res.json();
-          answer = data.organic_results?.[0]?.snippet || "No result found.";
-        }
-        else {
-          // fallback to OpenRouter
-          let res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${openrouter_api}`
-            },
-            body: JSON.stringify({
-              model: "mistral/mistral-7b-instruct",
-              messages: [{ role: "user", content: q }]
-            })
-          });
-          let data = await res.json();
-          answer = data.choices?.[0]?.message?.content || "No reply.";
-        }
-
-        document.getElementById("response").innerText = `🤖 ${answer}`;
-      } catch (err) {
-        document.getElementById("response").innerText = "Error: " + err.message;
+    function showResponse() {
+      const inputField = document.getElementById("chatInput");
+      const userInput = inputField.value.trim().toLowerCase();
+      const responseBox = document.getElementById("response");
+      if (userInput === "") {
+        responseBox.innerText = "Please type something before asking.";
+        return;
       }
-    });
+      const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
+      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
+      if (isOwnerQuestion) {
+        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+        const styles = [
+          `My owner is ${randomName}.`,
+          `My supreme creator is ${randomName}.`,
+          `My master is ${randomName}.`,
+          `My boss is ${randomName}.`
+        ];
+        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
+        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
+      } else if (isSpellingQuestion) {
+        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+      } else {
+        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+      }
+      inputField.value = ""; // Clear the input after sending
+    }
   </script>
 </body>
 </html>
