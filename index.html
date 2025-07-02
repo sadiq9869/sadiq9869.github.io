@@ -28,51 +28,13 @@
       max-width: 600px;
       background-color: rgba(0, 0, 0, 0.3);
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 10px;
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      overflow-y: auto;
-    }
-    .signature {
-      text-align: center;
-      font-size: 18px;
-      font-weight: bold;
-      background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
-      background-size: 200% auto;
-      color: #fff;
-      text-shadow: 0 0 12px #00ffff, 0 0 20px #ff00ff;
-      border: 2px solid #00ffff;
-      border-radius: 12px;
-      padding: 8px 15px;
-      display: inline-block;
-      animation: glowMove 4s infinite alternate;
-    }
-    @keyframes glowMove {
-      0% { background-position: 0% center; }
-      100% { background-position: 100% center; }
-    }
-    .user-message {
-      align-self: flex-end;
-      background-color: #007b7f;
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 15px;
-      max-width: 70%;
-    }
-    .ai-message {
-      align-self: flex-start;
-      background-color: rgba(0,0,0,0.5);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 15px;
-      max-width: 70%;
-      border: 2px solid;
-      border-image: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff) 1;
-      text-shadow: 0 0 5px;
+      align-items: center;
+      justify-content: center;
     }
     #askBtn {
       margin-top: 20px;
@@ -123,24 +85,43 @@
       font-size: 12px;
       color: #ffc107;
       opacity: 0.9;
-      text-shadow: 0 0 6px #ffc107;
+      text-shadow: 0 0 6px #ffc107, 0 0 12px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 12px;
+      bottom: 10px;
       width: 100%;
       text-align: center;
       font-size: 10px;
       color: #fff;
-      opacity: 0.6;
+      opacity: 0.7;
       text-shadow: 0 0 4px #fff;
+    }
+    .signature {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
+      opacity: 0.9;
+      animation: signatureGlow 3s infinite alternate;
+    }
+    @keyframes signatureGlow {
+      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div class="signature">🚀 ✪ Supreme AI • The Future of Technology ✪ 🚀</div>
+    <div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
@@ -156,24 +137,35 @@
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
       if (userInput === "") {
+        responseBox.innerHTML = `<div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>`;
         return;
       }
 
-      // remove signature if present
-      const signature = document.querySelector(".signature");
-      if (signature) signature.remove();
+      // simulate a random styled response
+      const confidenceLevels = [
+        { label: "normal", color: "#ff00ff" },
+        { label: "web search", color: "#ffa500" },
+        { label: "confident", color: "#00ff00" },
+        { label: "doubt", color: "#ff0000" },
+        { label: "thinking", color: "#00ffff" }
+      ];
 
-      const userDiv = document.createElement("div");
-      userDiv.className = "user-message";
-      userDiv.textContent = userInput;
-      responseBox.appendChild(userDiv);
+      const randomLevel = confidenceLevels[Math.floor(Math.random() * confidenceLevels.length)];
+      const randomOpacity = (Math.random() * 0.8).toFixed(2);
 
-      const aiDiv = document.createElement("div");
-      aiDiv.className = "ai-message";
-      aiDiv.textContent = "I'm just a demo for now. More features coming soon!";
-      responseBox.appendChild(aiDiv);
-
-      responseBox.scrollTop = responseBox.scrollHeight;
+      responseBox.innerHTML = `
+        <div style="
+          color: ${randomLevel.color};
+          text-shadow: 0 0 ${8 + Math.random()*12}px ${randomLevel.color};
+          opacity: ${randomOpacity};
+          font-weight: bold;
+        ">
+          🚀 Supreme AI (${randomLevel.label}):
+        </div>
+        <div style="margin-top: 5px;">
+          I'm just a demo for now. More features coming soon!
+        </div>
+      `;
       inputField.value = "";
     }
   </script>
