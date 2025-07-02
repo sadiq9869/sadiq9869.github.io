@@ -79,7 +79,7 @@
     }
     #warning {
       position: fixed;
-      bottom: 35px;
+      bottom: 20px; /* closer to footer */
       width: 100%;
       text-align: center;
       font-size: 12px;
@@ -89,7 +89,7 @@
     }
     footer {
       position: fixed;
-      bottom: 10px;
+      bottom: 5px; /* closer to warning */
       width: 100%;
       text-align: center;
       font-size: 10px;
@@ -141,7 +141,6 @@
         return;
       }
 
-      // simulate a random styled response
       const confidenceLevels = [
         { label: "normal", color: "#ff00ff" },
         { label: "web search", color: "#ffa500" },
