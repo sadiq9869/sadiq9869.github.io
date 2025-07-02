@@ -32,16 +32,9 @@
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
-      position: relative;
-    }
-    .signature {
-      font-family: cursive;
-      font-size: 18px;
-      color: #00ffff;
-      text-shadow: 0 0 8px #00ffff;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     #askBtn {
       margin-top: 20px;
@@ -60,7 +53,7 @@
     }
     .input-section {
       position: fixed;
-      bottom: 65px;
+      bottom: 80px;
       width: 80%;
       max-width: 400px;
       display: flex;
@@ -78,6 +71,7 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -85,41 +79,51 @@
     }
     #warning {
       position: fixed;
-      bottom: 30px;
+      bottom: 28px;
       width: 100%;
       text-align: center;
       font-size: 12px;
       color: #ffc107;
       opacity: 0.9;
-      text-shadow: 0 0 8px #ffc107;
+      text-shadow: 0 0 6px #ffc107, 0 0 12px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 8px;
+      bottom: 10px;
       width: 100%;
       text-align: center;
-      font-size: 9px;
+      font-size: 10px;
       color: #fff;
       opacity: 0.7;
-      text-shadow: 0 0 6px #fff;
+      text-shadow: 0 0 4px #fff;
     }
-    .userMessage {
-      text-align: right;
-      margin-top: 8px;
-      color: #0ff;
+    .signature {
+      text-align: center;
+      font-size: 16px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      display: inline-block;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
+      opacity: 0.9;
+      animation: signatureGlow 3s infinite alternate;
     }
-    .aiMessage {
-      text-align: left;
-      margin-top: 8px;
+    @keyframes signatureGlow {
+      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div class="signature">✪ Supreme AI ✪</div>
+    <div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <button id="askBtn" onclick="askGemini()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
@@ -127,89 +131,55 @@
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-
   <script>
-    async function callGemini(promptText) {
-      const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";  // please rotate after public
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    async function askGemini() {
+      const userInput = document.getElementById("chatInput").value.trim();
+      const responseBox = document.getElementById("response");
 
-      const requestBody = {
-        contents: [
-          {
-            parts: [
-              { text: promptText }
-            ]
-          }
-        ]
-      };
+      if (userInput === "") {
+        responseBox.innerHTML = `<div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>`;
+        return;
+      }
+
+      responseBox.innerHTML = `<div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>`;
 
       try {
-        const response = await fetch(url, {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(requestBody)
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: userInput }
+                ]
+              }
+            ]
+          })
         });
-        const data = await response.json();
 
-        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response from Gemini";
+        const data = await res.json();
+        console.log(data);
 
-        // dynamic color + glow
-        const colors = ["#00ff00", "#ffff00", "#ff00ff", "#00ffff", "#ff8800"];
-        const glowLevel = Math.floor(Math.random() * 80) + 20;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-
-        // show both messages
-        document.getElementById("response").innerHTML += `
-          <div class="userMessage">${promptText}</div>
-          <div class="aiMessage" style="color:${color}; font-weight:bold; text-shadow:0 0 ${glowLevel}px ${color};">
-            🚀 Supreme AI: ${aiText}
+        const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I could not get a reply.";
+        responseBox.innerHTML = `
+          <div style="
+            color: #00ffff;
+            font-weight: bold;
+            text-shadow: 0 0 8px #00ffff;
+          ">
+            🚀 Supreme AI:
           </div>
+          <div style="margin-top:5px;">${aiText}</div>
         `;
-      } catch (error) {
-        document.getElementById("response").innerHTML += `
-          <div class="aiMessage" style="color:#f00;">
-            🚀 Supreme AI Error: ${error.message}
-          </div>
-        `;
-      }
-    }
-
-    function showResponse() {
-      const inputField = document.getElementById("chatInput");
-      const userInput = inputField.value.trim();
-      if (userInput === "") return;
-
-      // handle owner keywords
-      const ownerKeywords = ["owner", "boss", "creator", "who made you", "founder", "master"];
-      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "different surname", "spellings different"];
-      const lower = userInput.toLowerCase();
-
-      if (ownerKeywords.some(k => lower.includes(k))) {
-        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
-        const randomOwner = ownerNames[Math.floor(Math.random() * ownerNames.length)];
-        document.getElementById("response").innerHTML += `
-          <div class="userMessage">${userInput}</div>
-          <div class="aiMessage" style="color:#00ff00; font-weight:bold; text-shadow:0 0 12px #00ff00;">
-            🚀 Supreme AI: My supreme owner is ${randomOwner}.
-          </div>
-        `;
-        inputField.value = "";
-        return;
+      } catch (err) {
+        console.error(err);
+        responseBox.innerHTML = `<div style="color:red">Error: ${err.message}</div>`;
       }
 
-      if (spellingKeywords.some(k => lower.includes(k))) {
-        document.getElementById("response").innerHTML += `
-          <div class="userMessage">${userInput}</div>
-          <div class="aiMessage" style="color:#00ffff; font-weight:bold; text-shadow:0 0 12px #00ffff;">
-            🚀 Supreme AI: Both spellings are correct for my owner, and I love using both!
-          </div>
-        `;
-        inputField.value = "";
-        return;
-      }
-
-      callGemini(userInput);
-      inputField.value = "";
+      document.getElementById("chatInput").value = "";
     }
   </script>
 </body>
