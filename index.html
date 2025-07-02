@@ -76,7 +76,7 @@
     }
     #warning {
       position: fixed;
-      bottom: 25px; /* moved up to reduce gap */
+      bottom: 25px;
       width: 100%;
       text-align: center;
       font-size: 11px;
@@ -87,14 +87,14 @@
     }
     footer {
       position: fixed;
-      bottom: 8px; /* moved up closer to warning */
+      bottom: 8px;
       width: 100%;
       text-align: center;
       font-size: 9px;
       font-style: italic;
       color: #dddddd;
       opacity: 0.8;
-      text-shadow: 0 0 8px #ffffff; /* stronger glow */
+      text-shadow: 0 0 8px #ffffff;
     }
   </style>
 </head>
@@ -109,37 +109,199 @@
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-  <script>
-    function showResponse() {
-      const inputField = document.getElementById("chatInput");
-      const userInput = inputField.value.trim().toLowerCase();
-      const responseBox = document.getElementById("response");
+  <script type="module">
+    // Import the Google Generative AI SDK
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    // Initialize the Gemini API with your API key
+    const genAI = new GoogleGenerativeAI("AIzaSyDAm_zAas5YQdQTC……
+
+System: Yo bhai, dekha maine tera code aur Gemini API ko integrate kar diya hai. JavaScript wala approach liya kyunki yeh browser ke sath direct kaam karega aur teri web app ke liye perfect hai. Maine tera HTML file update kiya with the Google Generative AI SDK, aur API key bhi daal di. Niche updated code hai with proper error handling aur loading state, taki user experience smooth rahe. 
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI Chat</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+    }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+    #askBtn:disabled {
+      background-color: #666;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    .input-section {
+      position: fixed;
+      bottom: 60px;
+      width: 80%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px 15px;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      font-size: 14px;
+      outline: none;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    #chatInput::placeholder {
+      color: #ccc;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    #warning {
+      position: fixed;
+      bottom: 25px;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      font-weight: bold;
+      color: #ffcc00;
+      opacity: 0.9;
+      text-shadow: 0 0 6px #ffcc00;
+    }
+    footer {
+      position: fixed;
+      bottom: 8px;
+      width: 100%;
+      text-align: center;
+      font-size: 9px;
+      font-style: italic;
+      color: #dddddd;
+      opacity: 0.8;
+      text-shadow: 0 0 8px #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚀 Supreme AI</h1>
+  <div id="response">AI Response will appear here...</div>
+  <button id="askBtn">Ask Supreme AI</button>
+  <div class="input-section">
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
+  </div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
+  <script type="module">
+    // Import the Google Generative AI SDK
+    import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+
+    // Initialize the Gemini API with your API key
+    const API_KEY = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const askBtn = document.getElementById("askBtn");
+    const inputField = document.getElementById("chatInput");
+    const responseBox = document.getElementById("response");
+
+    async function showResponse() {
+      const userInput = inputField.value.trim();
       if (userInput === "") {
         responseBox.innerText = "Please type something before asking.";
         return;
       }
+
+      // Disable button and show loading state
+      askBtn.disabled = true;
+      askBtn.innerText = "Loading...";
+      responseBox.innerText = "Processing your request...";
+
       const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
       const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.includes(keyword));
-      if (isOwnerQuestion) {
-        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
-        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
-        const styles = [
-          `My owner is ${randomName}.`,
-          `My supreme creator is ${randomName}.`,
-          `My master is ${randomName}.`,
-          `My boss is ${randomName}.`
-        ];
-        const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-        responseBox.innerText = `🤖 Supreme AI Answer: ${randomStyle}`;
-      } else if (isSpellingQuestion) {
-        responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
-      } else {
-        responseBox.innerText = `You asked: "${userInput}"\n\n🤖 Supreme AI says: I'm just a demo for now. More features coming soon!`;
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+
+      try {
+        if (isOwnerQuestion) {
+          const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
+          const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
+          const styles = [
+            `My owner is ${randomName}.`,
+            `My supreme creator is ${randomName}.`,
+            `My master is ${randomName}.`,
+            `My boss is ${randomName}.`
+          ];
+          responseBox.innerText = `🤖 Supreme AI Answer: ${styles[Math.floor(Math.random() * styles.length)]}`;
+        } else if (isSpellingQuestion) {
+          responseBox.innerText = "🤖 Supreme AI Answer: Both spellings are correct for my owner's name, and I love using both!";
+        } else {
+          // Call Gemini API for general queries
+          const result = await model.generateContent(userInput);
+          const responseText = await result.response.text();
+          responseBox.innerText = `🤖 Supreme AI Answer: ${responseText}`;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        responseBox.innerText = "🤖 Supreme AI Error: Something went wrong. Please try again!";
+      } finally {
+        // Re-enable button and reset text
+        askBtn.disabled = false;
+        askBtn.innerText = "Ask Supreme AI";
+        inputField.value = ""; // Clear input
       }
-      inputField.value = ""; // Clear the input after sending
     }
+
+    // Add event listeners for button click and Enter key
+    askBtn.addEventListener("click", showResponse);
+    inputField.addEventListener("keypress", (event) => {
+      if (event.key === "Enter") {
+        showResponse();
+      }
+    });
   </script>
 </body>
 </html>
