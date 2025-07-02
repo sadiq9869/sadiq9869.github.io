@@ -28,28 +28,51 @@
       max-width: 600px;
       background-color: rgba(0, 0, 0, 0.3);
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
       display: flex;
       flex-direction: column;
       gap: 10px;
+      overflow-y: auto;
     }
-    .user-msg {
-      align-self: flex-end;
-      background-color: #007b7b;
+    .signature {
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff);
+      background-size: 200% auto;
+      color: #fff;
+      text-shadow: 0 0 12px #00ffff, 0 0 20px #ff00ff;
+      border: 2px solid #00ffff;
+      border-radius: 12px;
       padding: 8px 15px;
-      border-radius: 15px;
-      max-width: 80%;
+      display: inline-block;
+      animation: glowMove 4s infinite alternate;
     }
-    .ai-msg {
+    @keyframes glowMove {
+      0% { background-position: 0% center; }
+      100% { background-position: 100% center; }
+    }
+    .user-message {
+      align-self: flex-end;
+      background-color: #007b7f;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 15px;
+      max-width: 70%;
+    }
+    .ai-message {
       align-self: flex-start;
       background-color: rgba(0,0,0,0.5);
-      padding: 8px 15px;
+      color: #fff;
+      padding: 8px 12px;
       border-radius: 15px;
-      max-width: 80%;
-      font-weight: bold;
+      max-width: 70%;
+      border: 2px solid;
+      border-image: linear-gradient(90deg, #00ffff, #ff00ff, #00ffff) 1;
+      text-shadow: 0 0 5px;
     }
     #askBtn {
       margin-top: 20px;
@@ -94,29 +117,31 @@
     }
     #warning {
       position: fixed;
-      bottom: 28px;
+      bottom: 35px;
       width: 100%;
       text-align: center;
-      font-size: 11px;
+      font-size: 12px;
       color: #ffc107;
-      opacity: 0.95;
-      text-shadow: 0 0 10px #ffc107, 0 0 20px #ffc107;
+      opacity: 0.9;
+      text-shadow: 0 0 6px #ffc107;
     }
     footer {
       position: fixed;
-      bottom: 10px;
+      bottom: 12px;
       width: 100%;
       text-align: center;
-      font-size: 8px;
+      font-size: 10px;
       color: #fff;
-      opacity: 0.85;
-      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+      opacity: 0.6;
+      text-shadow: 0 0 4px #fff;
     }
   </style>
 </head>
 <body>
   <h1>🚀 Supreme AI</h1>
-  <div id="response"></div>
+  <div id="response">
+    <div class="signature">🚀 ✪ Supreme AI • The Future of Technology ✪ 🚀</div>
+  </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
@@ -130,44 +155,26 @@
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
-      if (userInput === "") return;
-
-      // show user message
-      const userMsg = document.createElement("div");
-      userMsg.className = "user-msg";
-      userMsg.textContent = userInput;
-      responseBox.appendChild(userMsg);
-
-      // AI message
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-msg";
-
-      // random color + random glow
-      const colors = ["green", "orange", "red", "cyan", "yellow"];
-      const randomIndex = Math.floor(Math.random() * colors.length);
-      const color = colors[randomIndex];
-      const randomGlow = Math.floor(Math.random() * 9);
-
-      // owner question detection
-      const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
-      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-
-      let answerText = "I'm just a demo for now. More features coming soon!";
-      if (isOwnerQuestion) {
-        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
-        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
-        answerText = `My owner is ${randomName}.`;
-      } else if (isSpellingQuestion) {
-        answerText = "Both spellings are correct for my owner's name, and I love using both!";
+      if (userInput === "") {
+        return;
       }
 
-      aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${randomGlow}px ${color};">Supreme AI:</span> ${answerText}`;
+      // remove signature if present
+      const signature = document.querySelector(".signature");
+      if (signature) signature.remove();
 
-      responseBox.appendChild(aiMsg);
-      inputField.value = "";
+      const userDiv = document.createElement("div");
+      userDiv.className = "user-message";
+      userDiv.textContent = userInput;
+      responseBox.appendChild(userDiv);
+
+      const aiDiv = document.createElement("div");
+      aiDiv.className = "ai-message";
+      aiDiv.textContent = "I'm just a demo for now. More features coming soon!";
+      responseBox.appendChild(aiDiv);
+
       responseBox.scrollTop = responseBox.scrollHeight;
+      inputField.value = "";
     }
   </script>
 </body>
