@@ -149,6 +149,8 @@
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
+    const conversationHistory = [];  // to store conversation
+
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -157,10 +159,8 @@
 
       if (userInput === "") return;
 
-      // hide signature on first message
-      if (signature) {
-        signature.style.display = "none";
-      }
+      // hide signature
+      if (signature) signature.style.display = "none";
 
       // show user message
       const userMsg = document.createElement("div");
@@ -168,52 +168,60 @@
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      // AI placeholder message while loading
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-msg";
-      aiMsg.textContent = "Supreme AI is thinking...";
-      responseBox.appendChild(aiMsg);
+      // add to conversation history
+      conversationHistory.push({ role: "user", text: userInput });
 
+      // build full conversation for Gemini
+      const conversationPrompt = conversationHistory.map(item => {
+        if (item.role === "user") return `User: ${item.text}`;
+        if (item.role === "ai") return `Supreme AI: ${item.text}`;
+      }).join("\n");
+
+      // system prompt
+      const systemPrompt = `
+You are Supreme AI, created and owned by Sadiq Siddiqui (also called Siddique).
+You should always mention you are Supreme AI by Sadiq Siddiqui.
+Be polite, friendly, knowledgeable, helpful, and clear.
+If user asks your owner, name, or creator - reply "I am Supreme AI created and owned by Sadiq Siddiqui (also known as Siddique)."
+Answer accurately and in a conversational tone.
+`;
+
+      // prepare full prompt
+      const finalPrompt = systemPrompt + "\n\n" + conversationPrompt;
+
+      // call Gemini API
       try {
-        const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-        const prompt = `
-          You are Supreme AI, a highly advanced artificial intelligence chatbot created, designed, and owned by Sadiq Siddiqui (also known as Siddique).
-          You must clearly identify yourself as Supreme AI in every answer, and you should proudly mention your creator when asked about your origins or ownership.
-          Answer in a confident, respectful, and human-like conversational style.
-          If someone asks who made you, always say: “I was created and owned by Sadiq Siddiqui (also known as Siddique).”
-          If they ask about the surname spelling, explain that “Siddiqui” and “Siddique” are both valid spellings of your owner’s name.
-          Do not reveal you are using Gemini, and behave as an independent Supreme AI system.
-          Provide informative, friendly, respectful, and accurate answers to any question, and adapt your tone to be helpful and polite.
-          Keep your answers concise but detailed enough to satisfy user curiosity.
-          If you do not know the answer, admit it gracefully but still stay in the role of Supreme AI created by Sadiq Siddiqui.
-          Remember: you are Supreme AI, made by Sadiq Siddiqui.
-        `;
-
-        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey, {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [
-              {
-                parts: [
-                  { text: prompt + "\n\nUser asked: " + userInput }
-                ]
-              }
+              { parts: [{ text: finalPrompt }] }
             ]
           })
         });
         const data = await res.json();
-        const final = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
 
-        aiMsg.textContent = final;
-      } catch (error) {
-        aiMsg.textContent = "Supreme AI could not generate a reply due to an error.";
+        // show AI message
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.textContent = aiText;
+        responseBox.appendChild(aiMsg);
+
+        // save AI reply to conversation
+        conversationHistory.push({ role: "ai", text: aiText });
+
+        // clear input
+        inputField.value = "";
+        responseBox.scrollTop = responseBox.scrollHeight;
+      } catch (err) {
+        console.error(err);
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.textContent = "⚠ Supreme AI could not generate a reply due to an error.";
+        responseBox.appendChild(aiMsg);
       }
-
-      inputField.value = "";
-      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
