@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
@@ -37,6 +37,8 @@
       align-items: center;
       justify-content: center;
       position: relative;
+      overflow-y: auto;
+      max-height: 70vh;
     }
     .signature {
       font-size: 18px;
@@ -52,8 +54,8 @@
       animation: signatureGlow 3s infinite alternate;
     }
     @keyframes signatureGlow {
-      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
-      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+      0% { text-shadow: 0 0 4px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff; }
     }
     .user-msg {
       align-self: flex-end;
@@ -107,7 +109,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -140,18 +141,24 @@
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <button id="askBtn" onclick="sendMessage()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
-    let conversationHistory = [];
+    const GEMINI_API_KEY = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; 
+    let memory = JSON.parse(localStorage.getItem("supremeMemory")) || [];
+    let firstMessage = true;
 
-    async function showResponse() {
+    function saveMemory() {
+      localStorage.setItem("supremeMemory", JSON.stringify(memory.slice(-20)));
+    }
+
+    async function sendMessage() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
@@ -159,47 +166,79 @@
 
       if (userInput === "") return;
 
-      inputField.value = ""; // clear immediately
+      // hide signature on first message
       if (signature) signature.style.display = "none";
 
+      // show user message
       const userMsg = document.createElement("div");
       userMsg.className = "user-msg";
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      conversationHistory.push({ role: "user", text: userInput });
-      if (conversationHistory.length > 10) conversationHistory.shift();
+      // store to memory
+      memory.push({ role: "user", text: userInput });
+      saveMemory();
 
-      const contextSummary = conversationHistory.map(item => `${item.role}: ${item.text}`).join("\n");
-      const systemPrompt = `You are Supreme AI created and owned by Sadiq Siddiqui (also known as Siddique). Only mention these details if user specifically asks. Keep answers clear and smart. Here is conversation so far:\n${contextSummary}`;
+      // summarization if too big
+      if (memory.length > 20) {
+        memory = memory.slice(-20);
+      }
+
+      // advanced repeat detection
+      let repeatCheck = memory.filter(m => m.text.toLowerCase() === userInput.toLowerCase());
+      if (repeatCheck.length > 1) {
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.innerHTML = `<span style="color:red;">Supreme AI:</span> You asked this already! Please try a new question.`;
+        responseBox.appendChild(aiMsg);
+        inputField.value = "";
+        responseBox.scrollTop = responseBox.scrollHeight;
+        return;
+      }
+
+      // AI message
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "ai-msg";
+
+      const promptMessages = memory.map(m => `${m.role}: ${m.text}`).join("\n");
+
+      const finalPrompt = `
+      You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). 
+      Always reply politely, advanced, professional, and human-like. 
+      Avoid repeating. If user says "who are you", politely introduce yourself. 
+      If user asks about your name, explain why Supreme AI, and your owner info.
+      Here is your conversation so far:
+      ${promptMessages}
+      `;
 
       try {
-        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc", {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({
             contents: [
-              { parts: [ { text: systemPrompt } ] },
-              { parts: [ { text: userInput } ] }
+              { parts: [{ text: finalPrompt }] }
             ]
           })
         });
-
         const data = await res.json();
-        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-
-        const aiMsg = document.createElement("div");
-        aiMsg.className = "ai-msg";
-        aiMsg.textContent = aiText;
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        aiMsg.innerHTML = `<span style="color:cyan;">Supreme AI:</span> ${text}`;
         responseBox.appendChild(aiMsg);
-        conversationHistory.push({ role: "ai", text: aiText });
-        responseBox.scrollTop = responseBox.scrollHeight;
-      } catch (e) {
-        const errorMsg = document.createElement("div");
-        errorMsg.className = "ai-msg";
-        errorMsg.textContent = "Supreme AI could not generate a reply (network error).";
-        responseBox.appendChild(errorMsg);
+
+        // store answer to memory
+        memory.push({ role: "ai", text });
+        saveMemory();
+
+      } catch (err) {
+        aiMsg.innerHTML = `<span style="color:red;">Supreme AI:</span> Sorry, there was an error contacting Gemini API.`;
+        responseBox.appendChild(aiMsg);
       }
+
+      inputField.value = "";
+      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
