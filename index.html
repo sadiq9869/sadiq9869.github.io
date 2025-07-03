@@ -160,7 +160,9 @@
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
       const signature = document.getElementById("signature");
+
       if (userInput === "") return;
+
       if (signature) signature.style.display = "none";
 
       // show user message
@@ -169,9 +171,10 @@
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      // instantly clear input
+      // instantly clear the input
       inputField.value = "";
 
+      // store to memory
       memory.push({ role: "user", text: userInput });
       saveMemory();
 
@@ -194,16 +197,17 @@
 
       const finalPrompt = `
       You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). 
-      Always reply politely, advanced, professional, human-like, and never repeat. 
-      If user asks who you are, explain Supreme AI + owner info. 
-      Conversation so far:
+      Always reply politely, advanced, professional, and human-like. 
+      Avoid repeating. If user says "who are you", politely introduce yourself. 
+      If user asks about your name, explain why Supreme AI, and your owner info.
+      Here is your conversation so far:
       ${promptMessages}
       `;
 
       try {
         const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
           method: "POST",
-          headers: {"Content-Type":"application/json"},
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [
               { parts: [{ text: finalPrompt }] }
@@ -220,6 +224,7 @@
         aiMsg.innerHTML = `<span style="color:red;">Supreme AI:</span> Sorry, there was an error contacting Gemini API.`;
         responseBox.appendChild(aiMsg);
       }
+
       responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
