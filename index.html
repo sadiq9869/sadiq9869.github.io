@@ -34,33 +34,18 @@
       white-space: pre-wrap;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-    .user-msg {
-      align-self: flex-end;
-      background-color: #007b7b;
-      padding: 8px 15px;
-      border-radius: 15px;
-      max-width: 80%;
-    }
-    .ai-msg {
-      align-self: flex-start;
-      background-color: rgba(0,0,0,0.5);
-      padding: 8px 15px;
-      border-radius: 15px;
-      max-width: 80%;
-      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
     .signature {
-      text-align: center;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: bold;
       color: #00ffff;
       text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
       border: 2px solid #00ffff;
       border-radius: 20px;
       padding: 6px 14px;
-      display: inline-block;
       background: rgba(0, 0, 0, 0.3);
       box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
       opacity: 0.9;
@@ -69,6 +54,23 @@
     @keyframes signatureGlow {
       0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
       100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+    }
+    .user-msg {
+      align-self: flex-end;
+      background-color: #007b7b;
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      margin-top: 5px;
+    }
+    .ai-msg {
+      align-self: flex-start;
+      background-color: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      font-weight: bold;
+      margin-top: 5px;
     }
     #askBtn {
       margin-top: 20px;
@@ -136,7 +138,7 @@
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
+    <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
@@ -151,7 +153,14 @@
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
+      const signature = document.getElementById("signature");
+
       if (userInput === "") return;
+
+      // hide signature on first message
+      if (signature) {
+        signature.style.display = "none";
+      }
 
       // show user message
       const userMsg = document.createElement("div");
