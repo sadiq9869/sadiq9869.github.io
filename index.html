@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
       margin: 0;
@@ -33,10 +32,7 @@
       font-size: 16px;
       min-height: 80px;
       white-space: pre-wrap;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      overflow-y: auto;
       position: relative;
     }
     .signature {
@@ -51,6 +47,10 @@
       box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
       opacity: 0.9;
       animation: signatureGlow 3s infinite alternate;
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
     }
     @keyframes signatureGlow {
       0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
@@ -108,7 +108,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -126,7 +125,7 @@
     }
     footer {
       position: fixed;
-      bottom: 15px;
+      bottom: 5px;
       width: 100%;
       text-align: center;
       font-size: 8px;
@@ -141,7 +140,7 @@
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <button id="askBtn">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
@@ -149,64 +148,74 @@
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-  <script>
-    const supabase = supabase.createClient(
-      'https://lmwncyfyaymcinlispit.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxtd25jeWZ5YXltY2lubGlzcGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NTYzMjUsImV4cCI6MjA2NzEzMjMyNX0.lPj1Gp3k044_IYmI1WSbbZsX3jRcURiWq3DK2TSkSmE'
-    );
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    const supabaseUrl = "https://lmwncyfyaymcinlispit.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxtd25jeWZ5YXltY2lubGlzcGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NTYzMjUsImV4cCI6MjA2NzEzMjMyNX0.lPj1Gp3k044_IYmI1WSbbZsX3jRcURiWq3DK2TSkSmE";
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    async function loadHistory() {
-      const { data } = await supabase.from('chat').select('*').order('id', { ascending: true });
-      const responseBox = document.getElementById('response');
-      data.forEach(item => {
-        const div = document.createElement('div');
-        div.className = item.sender === 'user' ? 'user-msg' : 'ai-msg';
-        div.textContent = item.message;
-        responseBox.appendChild(div);
-      });
-      if (data.length) document.getElementById('signature').style.display = 'none';
+    const askBtn = document.getElementById("askBtn");
+    const inputField = document.getElementById("chatInput");
+    const responseBox = document.getElementById("response");
+    const signature = document.getElementById("signature");
+
+    async function loadChat() {
+      const { data, error } = await supabase.from("messages").select("*" ).order("id");
+      if (data) {
+        data.forEach(row => {
+          const msgDiv = document.createElement("div");
+          msgDiv.className = row.role === "user" ? "user-msg" : "ai-msg";
+          msgDiv.textContent = row.text;
+          responseBox.appendChild(msgDiv);
+        });
+      }
     }
 
-    async function showResponse() {
-      const inputField = document.getElementById("chatInput");
+    askBtn.addEventListener("click", async () => {
       const userInput = inputField.value.trim();
-      const responseBox = document.getElementById("response");
-      const signature = document.getElementById("signature");
       if (!userInput) return;
-
-      if (signature) signature.style.display = "none";
-
+      signature.style.display = "none";
       const userMsg = document.createElement("div");
       userMsg.className = "user-msg";
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
-
-      await supabase.from('chat').insert([{ sender: 'user', message: userInput }]);
-
-      let reply = generateAIResponse(userInput);
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-msg";
-      aiMsg.textContent = reply;
-      responseBox.appendChild(aiMsg);
-
-      await supabase.from('chat').insert([{ sender: 'ai', message: reply }]);
-
+      await supabase.from("messages").insert({ role: "user", text: userInput });
       inputField.value = "";
       responseBox.scrollTop = responseBox.scrollHeight;
-    }
 
-    function generateAIResponse(userInput) {
-      const lower = userInput.toLowerCase();
-      if (lower.includes("who created you")) {
-        return "I was created and owned by Sadiq Siddiqui (also known as Siddique).";
+      try {
+        const apiResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). Always be respectful, confident, and mention ownership only if specifically asked. Reply in a human-friendly style.\nUser: ${userInput}`
+                  }
+                ]
+              }
+            ]
+          })
+        });
+        const data = await apiResponse.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.textContent = text;
+        responseBox.appendChild(aiMsg);
+        await supabase.from("messages").insert({ role: "ai", text });
+        responseBox.scrollTop = responseBox.scrollHeight;
+      } catch (e) {
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.textContent = "Supreme AI is experiencing an error.";
+        responseBox.appendChild(aiMsg);
       }
-      if (lower.includes("why supreme ai")) {
-        return "The name 'Supreme AI' was chosen to reflect excellence and power in assisting you.";
-      }
-      return "I'm Supreme AI, ready to help! Please ask your question.";
-    }
+    });
 
-    loadHistory();
+    loadChat();
   </script>
 </body>
 </html>
