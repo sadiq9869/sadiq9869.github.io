@@ -41,6 +41,10 @@
       max-height: 400px;
     }
     .signature {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 18px;
       font-weight: bold;
       color: #00ffff;
@@ -52,6 +56,7 @@
       box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
       opacity: 0.9;
       animation: signatureGlow 3s infinite alternate;
+      z-index: 1;
     }
     @keyframes signatureGlow {
       0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
@@ -64,6 +69,7 @@
       border-radius: 15px;
       max-width: 80%;
       margin-top: 5px;
+      z-index: 2;
     }
     .ai-msg {
       align-self: flex-start;
@@ -73,6 +79,7 @@
       max-width: 80%;
       font-weight: bold;
       margin-top: 5px;
+      z-index: 2;
     }
     #askBtn {
       margin-top: 20px;
@@ -137,7 +144,7 @@
 <body>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
-    <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
+    <div id="signature" class="signature">🚀 Supreme AI ⭐</div>
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
@@ -151,15 +158,22 @@
   const memory = JSON.parse(localStorage.getItem("supremeMemory") || "[]");
   const maxMemory = 20;
 
+  function updateSignatureVisibility() {
+    const signature = document.getElementById("signature");
+    const responseBox = document.getElementById("response");
+    if (responseBox.querySelectorAll(".user-msg, .ai-msg").length === 0) {
+      signature.style.display = "block";
+    } else {
+      signature.style.display = "none";
+    }
+  }
+
   function showResponse() {
     const inputField = document.getElementById("chatInput");
     const userInput = inputField.value.trim();
     const responseBox = document.getElementById("response");
-    const signature = document.getElementById("signature");
 
     if (userInput === "") return;
-
-    if (signature) signature.style.display = "none";
 
     // show user message
     const userMsg = document.createElement("div");
@@ -169,27 +183,22 @@
 
     // clear input instantly
     inputField.value = "";
+    updateSignatureVisibility();
 
-    // save to session
     memory.push({role: "user", text: userInput});
     if (memory.length > maxMemory) memory.shift();
     localStorage.setItem("supremeMemory", JSON.stringify(memory));
 
-    // Gemini API
     const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
     const conversation = memory.map(m => (m.role === "user" ? `User: ${m.text}` : `Supreme AI: ${m.text}`)).join("\n");
 
     const finalPrompt = `You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). 
-Behave respectfully, speak politely, in a helpful tone. Remember:
-- no repeated answers
-- if user repeats question, say you answered already
-- mention you are Supreme AI and your owner if asked
-- keep context of this conversation
-
-Here is the conversation so far:
+Behave respectfully, answer politely, never repeat too much, and store the conversation properly.
+Keep this conversation memory:
 ${conversation}
 
-Now answer the user input: ${userInput}`;
+New question:
+${userInput}`;
 
     fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey, {
       method: "POST",
@@ -209,12 +218,12 @@ Now answer the user input: ${userInput}`;
       aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
       responseBox.appendChild(aiMsg);
 
-      // store to memory
       memory.push({role: "ai", text});
       if (memory.length > maxMemory) memory.shift();
       localStorage.setItem("supremeMemory", JSON.stringify(memory));
 
       responseBox.scrollTop = responseBox.scrollHeight;
+      updateSignatureVisibility();
     })
     .catch(err => {
       console.error(err);
@@ -222,8 +231,11 @@ Now answer the user input: ${userInput}`;
       fallback.className = "ai-msg";
       fallback.textContent = "Supreme AI could not generate a reply.";
       responseBox.appendChild(fallback);
+      updateSignatureVisibility();
     });
   }
+
+  updateSignatureVisibility();
 </script>
 </body>
 </html>
