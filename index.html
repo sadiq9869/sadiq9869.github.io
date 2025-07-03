@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
@@ -35,16 +35,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
       position: relative;
-      overflow-y: auto;
-      max-height: 400px;
     }
     .signature {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       font-size: 18px;
       font-weight: bold;
       color: #00ffff;
@@ -56,7 +50,6 @@
       box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
       opacity: 0.9;
       animation: signatureGlow 3s infinite alternate;
-      z-index: 1;
     }
     @keyframes signatureGlow {
       0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
@@ -69,7 +62,6 @@
       border-radius: 15px;
       max-width: 80%;
       margin-top: 5px;
-      z-index: 2;
     }
     .ai-msg {
       align-self: flex-start;
@@ -79,7 +71,6 @@
       max-width: 80%;
       font-weight: bold;
       margin-top: 5px;
-      z-index: 2;
     }
     #askBtn {
       margin-top: 20px;
@@ -93,7 +84,9 @@
       box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
       transition: transform 0.2s ease;
     }
-    #askBtn:hover { transform: scale(1.05); }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
     .input-section {
       position: fixed;
       bottom: 60px;
@@ -114,6 +107,7 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -148,94 +142,46 @@
   </div>
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
-    <input type="text" id="chatInput" placeholder="Ask me anything..."/>
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-<script>
-  const memory = JSON.parse(localStorage.getItem("supremeMemory") || "[]");
-  const maxMemory = 20;
+  <script>
+    function showResponse() {
+      const inputField = document.getElementById("chatInput");
+      const userInput = inputField.value.trim();
+      const responseBox = document.getElementById("response");
+      const signature = document.getElementById("signature");
 
-  function updateSignatureVisibility() {
-    const signature = document.getElementById("signature");
-    const responseBox = document.getElementById("response");
-    if (responseBox.querySelectorAll(".user-msg, .ai-msg").length === 0) {
-      signature.style.display = "block";
-    } else {
-      signature.style.display = "none";
-    }
-  }
+      if (userInput === "") return;
 
-  function showResponse() {
-    const inputField = document.getElementById("chatInput");
-    const userInput = inputField.value.trim();
-    const responseBox = document.getElementById("response");
+      // instantly clear the inbox after sending
+      inputField.value = "";
 
-    if (userInput === "") return;
+      // hide signature on first message
+      if (signature) {
+        signature.style.display = "none";
+      }
 
-    // show user message
-    const userMsg = document.createElement("div");
-    userMsg.className = "user-msg";
-    userMsg.textContent = userInput;
-    responseBox.appendChild(userMsg);
+      // show user message
+      const userMsg = document.createElement("div");
+      userMsg.className = "user-msg";
+      userMsg.textContent = userInput;
+      responseBox.appendChild(userMsg);
 
-    // clear input instantly
-    inputField.value = "";
-    updateSignatureVisibility();
-
-    memory.push({role: "user", text: userInput});
-    if (memory.length > maxMemory) memory.shift();
-    localStorage.setItem("supremeMemory", JSON.stringify(memory));
-
-    const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-    const conversation = memory.map(m => (m.role === "user" ? `User: ${m.text}` : `Supreme AI: ${m.text}`)).join("\n");
-
-    const finalPrompt = `You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). 
-Behave respectfully, answer politely, never repeat too much, and store the conversation properly.
-Keep this conversation memory:
-${conversation}
-
-New question:
-${userInput}`;
-
-    fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey, {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: finalPrompt }] }]
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+      // placeholder AI message
       const aiMsg = document.createElement("div");
-      const colors = ["green", "orange", "red", "cyan", "yellow"];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      const glow = Math.floor(Math.random() * 9);
       aiMsg.className = "ai-msg";
-      aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+
+      // simple simulated reply
+      let answerText = "I'm Supreme AI, owned by Sadiq Siddiqui (also known as Siddique). How can I help you further?";
+
+      aiMsg.innerHTML = `<span style="color:cyan;text-shadow:0 0 8px cyan;">Supreme AI:</span> ${answerText}`;
       responseBox.appendChild(aiMsg);
-
-      memory.push({role: "ai", text});
-      if (memory.length > maxMemory) memory.shift();
-      localStorage.setItem("supremeMemory", JSON.stringify(memory));
-
       responseBox.scrollTop = responseBox.scrollHeight;
-      updateSignatureVisibility();
-    })
-    .catch(err => {
-      console.error(err);
-      const fallback = document.createElement("div");
-      fallback.className = "ai-msg";
-      fallback.textContent = "Supreme AI could not generate a reply.";
-      responseBox.appendChild(fallback);
-      updateSignatureVisibility();
-    });
-  }
-
-  updateSignatureVisibility();
-</script>
+    }
+  </script>
 </body>
 </html>
