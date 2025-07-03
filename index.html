@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
@@ -35,8 +35,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       position: relative;
+      overflow-y: auto;
+      max-height: 70vh;
     }
     .signature {
       font-size: 18px;
@@ -52,8 +54,8 @@
       animation: signatureGlow 3s infinite alternate;
     }
     @keyframes signatureGlow {
-      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
-      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+      0% { text-shadow: 0 0 4px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff; }
     }
     .user-msg {
       align-self: flex-end;
@@ -107,7 +109,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -140,29 +141,27 @@
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
-  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
+  <button id="askBtn" onclick="sendMessage()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
-  <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
   <footer>
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
-    function showResponse() {
+    const GEMINI_API_KEY = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+    let memory = JSON.parse(localStorage.getItem("supremeMemory")) || [];
+    function saveMemory() {
+      localStorage.setItem("supremeMemory", JSON.stringify(memory.slice(-20)));
+    }
+    async function sendMessage() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
-      inputField.value = ""; // clear instantly after sending
-
       const responseBox = document.getElementById("response");
       const signature = document.getElementById("signature");
-
       if (userInput === "") return;
-
-      // hide signature on first message
-      if (signature) {
-        signature.style.display = "none";
-      }
+      if (signature) signature.style.display = "none";
 
       // show user message
       const userMsg = document.createElement("div");
@@ -170,34 +169,57 @@
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      // AI message
+      // instantly clear input
+      inputField.value = "";
+
+      memory.push({ role: "user", text: userInput });
+      saveMemory();
+
+      if (memory.length > 20) memory = memory.slice(-20);
+
+      let repeatCheck = memory.filter(m => m.text.toLowerCase() === userInput.toLowerCase());
+      if (repeatCheck.length > 1) {
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-msg";
+        aiMsg.innerHTML = `<span style="color:red;">Supreme AI:</span> You asked this already! Please try a new question.`;
+        responseBox.appendChild(aiMsg);
+        responseBox.scrollTop = responseBox.scrollHeight;
+        return;
+      }
+
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
 
-      // random color + random glow
-      const colors = ["green", "orange", "red", "cyan", "yellow"];
-      const randomIndex = Math.floor(Math.random() * colors.length);
-      const color = colors[randomIndex];
-      const randomGlow = Math.floor(Math.random() * 9);
+      const promptMessages = memory.map(m => `${m.role}: ${m.text}`).join("\n");
 
-      // owner question detection
-      const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master"];
-      const spellingKeywords = ["why different", "why siddiqui", "why siddique", "why changing surname", "different surname", "different spellings", "spellings different"];
-      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
-      const isSpellingQuestion = spellingKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+      const finalPrompt = `
+      You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique). 
+      Always reply politely, advanced, professional, human-like, and never repeat. 
+      If user asks who you are, explain Supreme AI + owner info. 
+      Conversation so far:
+      ${promptMessages}
+      `;
 
-      let answerText = "I'm just a demo for now. More features coming soon!";
-      if (isOwnerQuestion) {
-        const ownerNames = ["✪ Sadiq Siddiqui 👑", "✪ Sadiq Siddique 👑"];
-        const randomName = ownerNames[Math.floor(Math.random() * ownerNames.length)];
-        answerText = `My owner is ${randomName}.`;
-      } else if (isSpellingQuestion) {
-        answerText = "Both spellings are correct for my owner's name, and I love using both!";
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({
+            contents: [
+              { parts: [{ text: finalPrompt }] }
+            ]
+          })
+        });
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        aiMsg.innerHTML = `<span style="color:cyan;">Supreme AI:</span> ${text}`;
+        responseBox.appendChild(aiMsg);
+        memory.push({ role: "ai", text });
+        saveMemory();
+      } catch (err) {
+        aiMsg.innerHTML = `<span style="color:red;">Supreme AI:</span> Sorry, there was an error contacting Gemini API.`;
+        responseBox.appendChild(aiMsg);
       }
-
-      aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${randomGlow}px ${color};">Supreme AI:</span> ${answerText}`;
-
-      responseBox.appendChild(aiMsg);
       responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
