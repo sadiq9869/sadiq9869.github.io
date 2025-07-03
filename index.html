@@ -1,4 +1,71 @@
-<!DOCTYPE html>
+async function showResponse() {
+  const inputField = document.getElementById("chatInput");
+  const userInput = inputField.value.trim();
+  inputField.value = ""; // clear inbox immediately
+
+  const responseBox = document.getElementById("response");
+  const signature = document.getElementById("signature");
+
+  if (userInput === "") return;
+
+  if (signature) {
+    signature.style.display = "none";
+  }
+
+  const userMsg = document.createElement("div");
+  userMsg.className = "user-msg";
+  userMsg.textContent = userInput;
+  responseBox.appendChild(userMsg);
+
+  const aiMsg = document.createElement("div");
+  aiMsg.className = "ai-msg";
+  aiMsg.textContent = "Supreme AI is typing...";
+  responseBox.appendChild(aiMsg);
+
+  try {
+    const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+    const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+
+    const res = await fetch(apiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: `You are Supreme AI created and owned by Sadiq Siddiqui (also known as Siddique). Always introduce yourself this way. Answer naturally, professionally, and with humility. User message: ${userInput}`
+              }
+            ]
+          }
+        ]
+      }),
+    });
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+
+    const colors = ["green", "orange", "red", "cyan", "yellow"];
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const glow = Math.floor(Math.random() * 10);
+
+    aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+
+  } catch (e) {
+    aiMsg.textContent = "Supreme AI could not connect to the server.";
+  }
+
+  responseBox.scrollTop = responseBox.scrollHeight;
+
+  setTimeout(() => {
+    if (responseBox.children.length <= 1) {
+      if (signature) {
+        signature.style.display = "block";
+      }
+    }
+  }, 500);
+}
+ html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
