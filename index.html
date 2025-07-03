@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
@@ -37,8 +37,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow-y: auto;
-      max-height: 70vh;
     }
     .signature {
       font-size: 18px;
@@ -71,6 +69,7 @@
       padding: 8px 15px;
       border-radius: 15px;
       max-width: 80%;
+      font-weight: bold;
       margin-top: 5px;
     }
     #askBtn {
@@ -108,6 +107,7 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
     }
     #chatInput::placeholder {
       color: #ccc;
@@ -125,11 +125,13 @@
     }
     footer {
       position: fixed;
-      bottom: 10px;
+      bottom: 15px;
       width: 100%;
       text-align: center;
-      font-size: 9px;
+      font-size: 8px;
+      color: #fff;
       opacity: 0.85;
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
     }
   </style>
 </head>
@@ -138,69 +140,51 @@
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
+  <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
     <input type="text" id="chatInput" placeholder="Ask me anything..." />
-    <button id="askBtn">Ask Supreme AI</button>
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please check important info.</div>
-  <footer>Supreme AI © 2025 • Owner: Sadiq Siddiqui (Siddique)</footer>
-<script>
-const askBtn = document.getElementById("askBtn");
-const inputField = document.getElementById("chatInput");
-const responseBox = document.getElementById("response");
-const signature = document.getElementById("signature");
+  <footer>
+    Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
+  <script>
+    let conversationHistory = [];
 
-askBtn.addEventListener("click", async () => {
-    const userInput = inputField.value.trim();
-    if (!userInput) return;
+    async function showResponse() {
+      const inputField = document.getElementById("chatInput");
+      const userInput = inputField.value.trim();
+      const responseBox = document.getElementById("response");
+      const signature = document.getElementById("signature");
 
-    // instantly clear input
-    inputField.value = "";
+      if (userInput === "") return;
 
-    // hide signature
-    if (signature) {
-      signature.style.display = "none";
-    }
+      inputField.value = ""; // clear immediately
+      if (signature) signature.style.display = "none";
 
-    // show user message
-    const userMsg = document.createElement("div");
-    userMsg.className = "user-msg";
-    userMsg.textContent = userInput;
-    responseBox.appendChild(userMsg);
-    responseBox.scrollTop = responseBox.scrollHeight;
+      const userMsg = document.createElement("div");
+      userMsg.className = "user-msg";
+      userMsg.textContent = userInput;
+      responseBox.appendChild(userMsg);
 
-    // prepare Gemini request
-    const prompt = `
-You are Supreme AI. Supreme AI is created and owned by Sadiq Siddiqui (also known as Siddique).
-Only mention these details if the user specifically asks about your name, creator, owner, or who made you.
-In all other situations, never mention them.
-You should behave as a smart, helpful, polite, and humble AI assistant.
-Answer questions calmly, clearly, and with a friendly tone.
-If a user repeats themselves, respond patiently.
-Do not share your introduction unless directly asked.
+      conversationHistory.push({ role: "user", text: userInput });
+      if (conversationHistory.length > 10) conversationHistory.shift();
 
-User: ${userInput}
-`;
+      const contextSummary = conversationHistory.map(item => `${item.role}: ${item.text}`).join("\n");
+      const systemPrompt = `You are Supreme AI created and owned by Sadiq Siddiqui (also known as Siddique). Only mention these details if user specifically asks. Keep answers clear and smart. Here is conversation so far:\n${contextSummary}`;
 
-    const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-
-    try {
-        const res = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [
-                            { text: prompt }
-                        ]
-                    }
-                ]
-            })
+      try {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              { parts: [ { text: systemPrompt } ] },
+              { parts: [ { text: userInput } ] }
+            ]
+          })
         });
+
         const data = await res.json();
         const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
 
@@ -208,15 +192,15 @@ User: ${userInput}
         aiMsg.className = "ai-msg";
         aiMsg.textContent = aiText;
         responseBox.appendChild(aiMsg);
+        conversationHistory.push({ role: "ai", text: aiText });
         responseBox.scrollTop = responseBox.scrollHeight;
-    } catch (error) {
+      } catch (e) {
         const errorMsg = document.createElement("div");
         errorMsg.className = "ai-msg";
         errorMsg.textContent = "Supreme AI could not generate a reply (network error).";
         responseBox.appendChild(errorMsg);
-        responseBox.scrollTop = responseBox.scrollHeight;
+      }
     }
-});
-</script>
+  </script>
 </body>
 </html>
