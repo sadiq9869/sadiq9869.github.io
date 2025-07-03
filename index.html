@@ -149,6 +149,13 @@
     Supreme AI made in © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
+    // advanced memory system placeholder
+    let supremeMemory = {
+      name: "Supreme AI",
+      owner: "Sadiq Siddiqui (Siddique)",
+      conversationHistory: []
+    };
+
     function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -157,29 +164,49 @@
 
       if (userInput === "") return;
 
-      // instantly clear the inbox after sending
+      // instant clear
       inputField.value = "";
 
-      // hide signature on first message
-      if (signature) {
-        signature.style.display = "none";
-      }
+      // hide signature after first
+      if (signature) signature.style.display = "none";
 
-      // show user message
+      // save to memory
+      supremeMemory.conversationHistory.push({
+        role: "user",
+        message: userInput
+      });
+
+      // show user
       const userMsg = document.createElement("div");
       userMsg.className = "user-msg";
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      // placeholder AI message
+      // simulate AI
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
 
-      // simple simulated reply
-      let answerText = "I'm Supreme AI, owned by Sadiq Siddiqui (also known as Siddique). How can I help you further?";
+      // detect ownership questions
+      const lower = userInput.toLowerCase();
+      let answer = "I'm Supreme AI, owned by Sadiq Siddiqui (also known as Siddique). How can I help you?";
 
-      aiMsg.innerHTML = `<span style="color:cyan;text-shadow:0 0 8px cyan;">Supreme AI:</span> ${answerText}`;
+      if (lower.includes("who created you") || lower.includes("who is your owner")) {
+        answer = "My creator and owner is Sadiq Siddiqui (also known as Siddique).";
+      } else if (lower.includes("what is your name")) {
+        answer = "My name is 🚀 Supreme AI ⭐, proudly developed and managed by Sadiq Siddiqui.";
+      } else if (lower.includes("minecraft")) {
+        answer = "Minecraft is a popular 3D sandbox game made by Mojang, encouraging creativity and exploration.";
+      }
+
+      // save AI reply
+      supremeMemory.conversationHistory.push({
+        role: "ai",
+        message: answer
+      });
+
+      aiMsg.innerHTML = `<span style="color:cyan;text-shadow:0 0 8px cyan;">🚀 Supreme AI ⭐:</span> ${answer}`;
       responseBox.appendChild(aiMsg);
+
       responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
