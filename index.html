@@ -37,7 +37,6 @@
       align-items: center;
       justify-content: center;
       position: relative;
-      overflow-y: auto;
     }
     .signature {
       font-size: 18px;
@@ -162,54 +161,56 @@
         signature.style.display = "none";
       }
 
-      // Show user message
+      // show user message
       const userMsg = document.createElement("div");
       userMsg.className = "user-msg";
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
 
-      // Gemini API
-      const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
-      
-      const prompt = `
-        You are Supreme AI, created and owned by Sadiq Siddiqui (also known as Siddique).
-        Always mention respectfully if asked about owner, creator, or name. 
-        Now answer this user: "${userInput}"
-      `;
-      
-      const payload = {
-        contents: [
-          {
-            parts: [
-              { text: prompt }
-            ]
-          }
-        ]
-      };
+      // clear input immediately
+      inputField.value = "";
 
-      try {
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I could not understand.";
-        
-        const aiMsg = document.createElement("div");
-        aiMsg.className = "ai-msg";
-        aiMsg.innerHTML = `<span style="color:cyan; text-shadow:0 0 8px cyan;">Supreme AI:</span> ${aiText}`;
-        responseBox.appendChild(aiMsg);
-        responseBox.scrollTop = responseBox.scrollHeight;
-        inputField.value = "";
-      } catch (err) {
-        console.error(err);
-        const aiMsg = document.createElement("div");
-        aiMsg.className = "ai-msg";
-        aiMsg.textContent = "Error talking to Gemini API.";
-        responseBox.appendChild(aiMsg);
+      let answerText = "";
+
+      // owner question detection
+      const ownerKeywords = ["owner", "boss", "creator", "who made you", "who created you", "founder", "master", "siddique"];
+      const isOwnerQuestion = ownerKeywords.some(keyword => userInput.toLowerCase().includes(keyword));
+
+      if (isOwnerQuestion) {
+        answerText = "I was created and am proudly owned by Sadiq Siddiqui, also known as Siddique.";
+      } else {
+        try {
+          const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+          const payload = {
+            contents: [
+              {
+                parts: [
+                  { text: userInput }
+                ]
+              }
+            ]
+          };
+
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+          answerText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't get an answer.";
+        } catch (error) {
+          answerText = "Error connecting to Supreme AI server.";
+        }
       }
+
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "ai-msg";
+      aiMsg.innerHTML = `<span style="color:cyan; text-shadow:0 0 6px cyan">Supreme AI:</span> ${answerText}`;
+      responseBox.appendChild(aiMsg);
+      responseBox.scrollTop = responseBox.scrollHeight;
     }
   </script>
 </body>
