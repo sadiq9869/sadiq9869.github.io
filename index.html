@@ -182,7 +182,7 @@ function getBestMatch(userMessage) {
 
   const result = fuse.search(userMessage);
   return result.length > 0 ? result[0].item.ai : null;
-}
+  }
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -216,7 +216,6 @@ function getBestMatch(userMessage) {
     // If match found, use saved response
     aiResponse = `Supreme AI: ${aiResponse}`;
   } else {
-    // No match, so call the API
 
       try {
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
@@ -290,12 +289,9 @@ User message: ${userInput}
             ]
           }),
         });
-        
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-
-      
 
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
@@ -306,23 +302,16 @@ User message: ${userInput}
 
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
-      } 
-      
-      const aiMsgResponse = document.createElement("div");
-  aiMsgResponse.className = "ai-msg";
-  aiMsgResponse.innerHTML = aiResponse;
-  responseBox.appendChild(aiMsgResponse);
+      }
 
-  // Save to local storage
-  chatHistory.push({ user: userInput, ai: aiResponse });
-  localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+      
 
       responseBox.scrollTop = responseBox.scrollHeight;
-         
-         displayChatHistory();
-             
-       // restore signature if empty later
-       setTimeout(() => {
+      
+      displayChatHistory();
+
+      // restore signature if empty later
+      setTimeout(() => {
         if (responseBox.children.length <= 1) {
           if (signature) {
             signature.style.display = "block";
