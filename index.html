@@ -141,21 +141,62 @@
   </style>
 </head>
 <body>
+  <div id="auth"></div>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
   </div>
+  <div id="chatArea" style="display:none;">
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
-
-<input type="text" id="chatInput" placeholder="Ask me anything..." />
+    <input type="text" id="chatInput" placeholder="Ask me anything..." />
   </div>
+</div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
   <footer>
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-  <script>
+  <script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { createClient as createUIClient } from "https://cdn.jsdelivr.net/npm/@supabase/auth-ui/+esm";
+  const supabaseUrl = "https://lmwncyfyaymcinlispit.supabase.co";
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxtd25jeWZ5YXltY2lubGlzcGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NTYzMjUsImV4cCI6MjA2NzEzMjMyNX0.lPj1Gp3k044_IYmI1WSbbZsX3jRcURiWq3DK2TSkSmE";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// mount the UI with both Google + Facebook
+    const ui = createUIClient({
+      supabaseClient: supabase,
+      providers: ["google", "facebook"],
+      theme: "dark"
+    });
+
+    ui.mount("#auth");
+
+    let userId = null;
+
+    // listen for login
+    supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+        console.log("User logged in", session.user);
+        userId = session.user.id;
+        document.getElementById("auth").style.display = "none";
+        document.getElementById("chatArea").style.display = "block";  // show chat area
+    } else {
+        console.log("User logged out");
+        userId = null;
+        document.getElementById("auth").style.display = "block";
+        document.getElementById("chatArea").style.display = "none";   // hide chat area
+    }
+});
+
+
     async function showResponse() {
+       
+         if (!userId) {
+    alert("Please log in first.");
+    return;
+  }
+  
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
@@ -175,6 +216,15 @@
       responseBox.appendChild(userMsg);
       
       inputField.value = "";
+      
+      // retrieve previous messages
+const { data: previousMessages } = await supabase
+  .from("memory")
+  .select("*")
+  .eq("user_id", userId)
+  .order("timestamp", { ascending: true });
+
+console.log(previousMessages);
 
       // call Gemini
       const aiMsg = document.createElement("div");
@@ -235,8 +285,14 @@ const data = await res.json();
         const color = colors[Math.floor(Math.random() * colors.length)];
         const glow = Math.floor(Math.random() * 10);
 
-        aiMsg.innerHTML = <span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text};
-
+         aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+        
+      // store to Supabase
+await supabase
+  .from("memory")
+  .insert([
+    { user_id: userId, user_message: userInput, ai_response: text }
+  ]);
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
       }
