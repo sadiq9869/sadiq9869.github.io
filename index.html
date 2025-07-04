@@ -163,6 +163,8 @@
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxtd25jeWZ5YXltY2lubGlzcGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE1NTYzMjUsImV4cCI6MjA2NzEzMjMyNX0.lPj1Gp3k044_IYmI1WSbbZsX3jRcURiWq3DK2TSkSmE";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+  console.log("Trying to load Supabase...");
+
 // mount the UI with both Google + Facebook
     const ui = createUIClient({
       supabaseClient: supabase,
