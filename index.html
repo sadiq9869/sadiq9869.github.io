@@ -5,6 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
+  .menu-icon {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 30px;
+  color: white;
+  cursor: pointer;
+  z-index: 9999;
+}
+.side-menu {
+  position: fixed;
+  top: 0;
+  left: -75%;
+  width: 75%;
+  height: 100%;
+  background-color: #121212;
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 10000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+   .side-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+    .side-menu-options {
+  margin-top: 20px;
+}
+    .overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 25%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 9998;
+}
+    .popup {
+  position: fixed;
+  bottom: -200px;
+  left: 10%;
+  width: 80%;
+  background: #121212;
+  color: white;
+  border-radius: 12px;
+  padding: 20px;
+  transition: bottom 0.4s ease;
+  z-index: 10001;
+}
+    .popup-content button {
+  margin-top: 10px;
+  background: white;
+  color: black;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+    }
+    .close-btn {
+   background: none;
+  border: none;
+  color: white;
+  font-size: 25px;
+   cursor: pointer;
+    }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -141,6 +208,31 @@
   </style>
 </head>
 <body>
+  <!-- Hamburger menu -->
+<div class="menu-icon" onclick="openMenu()">☰</div>
+
+<!-- Sidebar -->
+<div class="side-menu" id="sideMenu">
+  <div class="side-menu-header">
+    <span class="user-email" onclick="openProfilePopup()">sadiqsiddiqui12312@gmail.com</span>
+    <button class="close-btn" onclick="closeMenu()">✖</button>
+  </div>
+  <div class="side-menu-options">
+    <button onclick="logout()">Log Out</button>
+  </div>
+</div>
+
+<!-- Sidebar background overlay -->
+<div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+<!-- Account popup -->
+<div class="popup" id="profilePopup">
+  <div class="popup-content">
+    <span class="popup-email">sadiqsiddiqui12312@gmail.com</span>
+    <button onclick="logout()">Log Out</button>
+    <button onclick="closeProfilePopup()">Close</button>
+  </div>
+</div>
   <h1>🚀 Supreme AI</h1>
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
@@ -282,6 +374,27 @@ User message: ${userInput}
       }, 500);
     }
   </script>
+  <script>
+function openMenu() {
+  document.getElementById("sideMenu").style.left = "0";
+  document.getElementById("overlay").style.display = "block";
+}
+function closeMenu() {
+  document.getElementById("sideMenu").style.left = "-75%";
+  document.getElementById("overlay").style.display = "none";
+}
+function openProfilePopup() {
+  document.getElementById("profilePopup").style.bottom = "20px";
+}
+function closeProfilePopup() {
+  document.getElementById("profilePopup").style.bottom = "-200px";
+}
+function logout() {
+  alert("You are logged out (connect real logic later)");
+  closeMenu();
+  closeProfilePopup();
+}
+</script>
 </body>
 </html>
 
