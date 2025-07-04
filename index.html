@@ -155,34 +155,6 @@
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
-  // Memory System with Local Storage
-if (!localStorage.getItem('chatHistory')) {
-  localStorage.setItem('chatHistory', JSON.stringify([]));
-}
-
-const chatHistory = JSON.parse(localStorage.getItem('chatHistory'));
-const responseBox = document.getElementById("response");
-const signature = document.getElementById("signature");
-
-function displayChatHistory() {
-  responseBox.innerHTML = '';
-  chatHistory.forEach((chat) => {
-    responseBox.innerHTML += `<div><strong>User:</strong> ${chat.user}</div>`;
-    responseBox.innerHTML += `<div><strong>AI:</strong> ${chat.ai}</div><hr>`;
-  });
-  responseBox.scrollTop = responseBox.scrollHeight;
-}
-
-function getBestMatch(userMessage) {
-  const fuse = new Fuse(chatHistory, {
-    keys: ['user'],
-    includeScore: true,
-    threshold: 0.3,
-  });
-
-  const result = fuse.search(userMessage);
-  return result.length > 0 ? result[0].item.ai : null;
-  }
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -209,13 +181,6 @@ function getBestMatch(userMessage) {
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
       responseBox.appendChild(aiMsg);
-      
-      let aiResponse = getBestMatch(userInput);
-
-  if (aiResponse) {
-    // If match found, use saved response
-    aiResponse = `Supreme AI: ${aiResponse}`;
-  } else {
 
       try {
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
@@ -307,8 +272,6 @@ User message: ${userInput}
       
 
       responseBox.scrollTop = responseBox.scrollHeight;
-      
-      displayChatHistory();
 
       // restore signature if empty later
       setTimeout(() => {
