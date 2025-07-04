@@ -302,7 +302,7 @@ User message: ${userInput}
         const color = colors[Math.floor(Math.random() * colors.length)];
         const glow = Math.floor(Math.random() * 10);
 
-        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+        aiMsg.innerHTML = <span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text};
 
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
