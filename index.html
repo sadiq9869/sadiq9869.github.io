@@ -155,6 +155,59 @@
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
+  
+  // Save question and AI response to localStorage
+    async function saveQuestionResponse(userInput, aiResponse) {
+      const questionEmbedding = await fetchEmbedding(userInput);
+      const responseEmbedding = await fetchEmbedding(aiResponse);
+
+      let data = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+      data.push({ question: userInput, response: aiResponse, questionEmbedding, responseEmbedding });
+      localStorage.setItem("qa_pairs", JSON.stringify(data));
+    }
+
+    // Cosine Similarity for comparing vector embeddings
+    function cosineSimilarity(vec1, vec2) {
+      const dotProduct = vec1.reduce((sum, val, idx) => sum + (val * vec2[idx]), 0);
+      const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val ** 2), 0));
+      const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val ** 2), 0));
+      return dotProduct / (magnitude1 * magnitude2);
+    }
+
+    // Fuzzy matching for minor spelling variations using Levenshtein or similar methods
+    function fuzzyMatch(str1, str2) {
+      let matchScore = 0;
+      const words1 = str1.split(" ");
+      const words2 = str2.split(" ");
+
+      words1.forEach(word1 => {
+        if (words2.includes(word1)) matchScore++;
+      });
+
+      return matchScore / Math.max(words1.length, words2.length); // Jaccard similarity
+    }
+
+    // Find the most similar question from memory based on fuzzy matching and vector similarity
+    async function findMostSimilarQuestion(userQuestion) {
+      const storedData = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+      const userQuestionEmbedding = await fetchEmbedding(userQuestion);
+
+      let bestMatch = { question: "", response: "", score: 0, responseEmbedding: null };
+
+      storedData.forEach(pair => {
+        const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
+        const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
+
+        const totalScore = vectorScore + fuzzyScore;
+
+        if (totalScore > bestMatch.score) {
+          bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
+        }
+      });
+
+      return bestMatch.response || "Sorry, I couldn't find a matching response.";
+    }
+    
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -259,6 +312,8 @@ User message: ${userInput}
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        
+        
 
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
@@ -266,6 +321,8 @@ User message: ${userInput}
         const glow = Math.floor(Math.random() * 10);
 
         aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+        
+        saveQuestionResponse(userInput, text);
 
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
