@@ -154,6 +154,26 @@
   <footer>
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
+  // Load chat history from localStorage if available
+function loadChatHistory() {
+  const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
+  const responseBox = document.getElementById("response");
+
+  history.forEach(entry => {
+    const messageDiv = document.createElement("div");
+    messageDiv.className = entry.type === 'user' ? 'user-msg' : 'ai-msg';
+    messageDiv.textContent = entry.message;
+    responseBox.appendChild(messageDiv);
+  });
+}
+
+   // Save chat history to localStorage
+  function saveChatHistory(userInput, aiResponse) {
+  const history = JSON.parse(localStorage.getItem('chatHistory')) || [];
+  history.push({ type: 'user', message: userInput });
+  history.push({ type: 'ai', message: aiResponse });
+  localStorage.setItem('chatHistory', JSON.stringify(history));
+  }
   <script>
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
@@ -264,6 +284,8 @@ User message: ${userInput}
         const glow = Math.floor(Math.random() * 10);
 
         aiMsg.innerHTML = <span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text};
+        
+      saveChatHistory(userInput, text);
 
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
