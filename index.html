@@ -5,7 +5,139 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
-    /* Your existing styles here */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-top: 20px;
+      font-size: 40px;
+      color: #00ffff;
+      text-shadow: 0 0 12px #00ffff;
+    }
+    #response {
+      margin-top: 30px;
+      width: 90%;
+      max-width: 600px;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 80px;
+      white-space: pre-wrap;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      position: relative;
+      overflow-y: auto;
+      max-height: 60vh;
+    }
+    .signature {
+      font-size: 18px;
+      font-weight: bold;
+      color: #00ffff;
+      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      padding: 6px 14px;
+      background: rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
+      opacity: 0.9;
+      animation: signatureGlow 3s infinite alternate;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    @keyframes signatureGlow {
+      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+    }
+    .user-msg {
+      align-self: flex-end;
+      background-color: #007b7b;
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      margin-top: 5px;
+    }
+    .ai-msg {
+      align-self: flex-start;
+      background-color: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+    }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+    .input-section {
+      position: fixed;
+      bottom: 60px;
+      width: 80%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+    }
+    #chatInput {
+      width: 100%;
+      padding: 8px 15px;
+      border: 2px solid #00ffff;
+      border-radius: 20px;
+      font-size: 14px;
+      outline: none;
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    #chatInput::placeholder {
+      color: #ccc;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    #warning {
+      position: fixed;
+      bottom: 28px;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      color: #ffc107;
+      opacity: 0.95;
+      text-shadow: 0 0 10px #ffc107, 0 0 20px #ffc107;
+    }
+    footer {
+      position: fixed;
+      bottom: 15px;
+      width: 100%;
+      text-align: center;
+      font-size: 8px;
+      color: #fff;
+      opacity: 0.85;
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+    }
   </style>
 </head>
 <body>
@@ -48,7 +180,7 @@
       userMsg.className = "user-msg";
       userMsg.textContent = userInput;
       responseBox.appendChild(userMsg);
-      
+
       inputField.value = "";
 
       // call SerpAPI for web search if the input seems like a query requiring external info
@@ -60,9 +192,13 @@
       try {
         let responseText = "Supreme AI could not generate a reply.";
 
-        // Call SerpAPI if the question seems to be about the latest news or needs web search
-        const res = await fetch(`${SERPAPI_URL}?q=${encodeURIComponent(userInput)}&api_key=${SERPAPI_KEY}`);
+        // Correct API URL
+        const query = encodeURIComponent(userInput); // Encoding the input for the URL
+        const url = `${SERPAPI_URL}?q=${query}&api_key=${SERPAPI_KEY}`;
+
+        const res = await fetch(url);
         const data = await res.json();
+        console.log("SerpAPI Response: ", data); // Log the response to check
 
         if (!data) {
           throw new Error('No data returned from SerpAPI.');
