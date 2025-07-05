@@ -1,137 +1,77 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supreme AI Chat</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
-    #chatContainer {
-      width: 100%;
-      max-width: 600px;
-      margin: 50px auto;
-      background: #222;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
-    #responseBox {
-      min-height: 200px;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-    .message {
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      max-width: 70%;
-    }
-    .aiMessage {
-      background-color: #3b3f52;
-      text-align: left;
-    }
-    .userMessage {
-      background-color: #4d9dff;
-      text-align: right;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border-radius: 5px;
-      border: none;
-      outline: none;
-      font-size: 16px;
-      background: #333;
-      color: #fff;
-    }
-  </style>
-</head>
-<body>
+const SARAPI_KEY = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";  // SerpAPI key
+const SARAPI_URL = "https://serpapi.com/search";  // SerpAPI search URL
 
-  <div id="chatContainer">
-    <div id="responseBox"></div>
-    <input type="text" id="userInput" placeholder="Ask me anything..." />
-  </div>
+// Add a message to the chat window
+function addMessage(content, sender) {
+  const messageDiv = document.createElement("div");
+  messageDiv.classList.add("message", sender === "user" ? "userMessage" : "aiMessage");
+  messageDiv.textContent = content;
+  document.getElementById("responseBox").appendChild(messageDiv);
+  document.getElementById("responseBox").scrollTop = document.getElementById("responseBox").scrollHeight;
+}
 
-  <script>
-    const SARAPI_KEY = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";  // SerpAPI key
-    const SARAPI_URL = "https://serpapi.com/search";  // SerpAPI search URL
+// Function to fetch data from SerpAPI
+async function fetchSerpApiData(query) {
+  const url = `${SARAPI_URL}?q=${encodeURIComponent(query)}&api_key=${SARAPI_KEY}&engine=google&num=10&start=0&gl=us&hl=en&tbm=nws`;
+  
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-    // Add a message to the chat window
-    function addMessage(content, sender) {
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message", sender === "user" ? "userMessage" : "aiMessage");
-      messageDiv.textContent = content;
-      document.getElementById("responseBox").appendChild(messageDiv);
-      document.getElementById("responseBox").scrollTop = document.getElementById("responseBox").scrollHeight;
+    // Check if SerpAPI returns an error
+    if (data.error) {
+      throw new Error('SerpAPI error: ' + data.error);
     }
 
-    // Function to fetch data from SerpAPI
-    async function fetchSerpApiData(query) {
-      const url = `${SARAPI_URL}?q=${encodeURIComponent(query)}&api_key=${SARAPI_KEY}&engine=google&num=10&start=0&gl=us&hl=en&tbm=nws`;
-      
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data.error) {
-          throw new Error('Error fetching data from SerpAPI: ' + data.error);
-        }
-
-        return data;  // Return data for further processing
-      } catch (error) {
-        console.error("Failed to fetch SerpAPI data:", error);
-        return null;
-      }
+    // Check if there are no results in the response
+    if (!data.organic_results || data.organic_results.length === 0) {
+      throw new Error('No results found for this query.');
     }
 
-    // Handle the user's query
-    async function handleUserQuery(query) {
-      addMessage(query, "user");
+    return data;  // Return data for further processing
+  } catch (error) {
+    console.error("Error fetching data from SerpAPI:", error);
+    addMessage(`Error: ${error.message}. Please check your query or try again later.`, "ai");
+    return null;
+  }
+}
 
-      const aiMsg = "Supreme AI is searching...";  // Loading message
-      addMessage(aiMsg, "ai");
+// Handle the user's query
+async function handleUserQuery(query) {
+  addMessage(query, "user");
 
-      // Fetch SerpAPI data
-      const results = await fetchSerpApiData(query);
+  const aiMsg = "Supreme AI is searching...";  // Loading message
+  addMessage(aiMsg, "ai");
 
-      // Remove loading message and display results
-      if (results) {
-        const responseBox = document.getElementById("responseBox");
-        responseBox.lastChild.textContent = "Here are the search results: ";  // Change the loading message
-        
-        results.organic_results.forEach((result) => {
-          const resultElem = document.createElement("div");
-          resultElem.innerHTML = `
-            <h3><a href="${result.link}" target="_blank">${result.title}</a></h3>
-            <p>${result.snippet}</p>
-          `;
-          responseBox.appendChild(resultElem);
-        });
-      } else {
-        // Display fallback error message
-        const fallbackMessage = "Sorry, I couldn't fetch any results. Please try again later.";
-        addMessage(fallbackMessage, "ai");
-      }
-    }
+  // Fetch SerpAPI data
+  const results = await fetchSerpApiData(query);
 
-    // Handle input when the user presses "Enter"
-    document.getElementById("userInput").addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
-        const userInput = document.getElementById("userInput").value;
-        if (userInput.trim() !== "") {
-          document.getElementById("userInput").value = "";  // Clear input field
-          handleUserQuery(userInput);
-        }
-      }
+  // Remove loading message and display results
+  if (results) {
+    const responseBox = document.getElementById("responseBox");
+    responseBox.lastChild.textContent = "Here are the search results: ";  // Change the loading message
+
+    results.organic_results.forEach((result) => {
+      const resultElem = document.createElement("div");
+      resultElem.innerHTML = `
+        <h3><a href="${result.link}" target="_blank">${result.title}</a></h3>
+        <p>${result.snippet}</p>
+      `;
+      responseBox.appendChild(resultElem);
     });
-  </script>
-</body>
-</html>
+  } else {
+    // Display fallback error message if no results are found
+    addMessage("Sorry, I couldn't fetch any results. Please try again later.", "ai");
+  }
+}
+
+// Handle input when the user presses "Enter"
+document.getElementById("userInput").addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    const userInput = document.getElementById("userInput").value;
+    if (userInput.trim() !== "") {
+      document.getElementById("userInput").value = "";  // Clear input field
+      handleUserQuery(userInput);
+    }
+  }
+});
