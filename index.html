@@ -1,155 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supreme AI Search</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 600px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .results {
-      margin-top: 20px;
-    }
-    .search-result {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-    }
-    .search-result h3 {
-      margin: 0;
-      font-size: 18px;
-    }
-    .search-result p {
-      color: #555;
-    }
-    .loading {
-      text-align: center;
-      font-size: 18px;
-      color: #4CAF50;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sarapi Coffee Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+        }
+        header {
+            background-color: #6f4e37; /* Coffee brown */
+            color: white;
+            padding: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .search-bar {
+            margin: 20px 0;
+        }
+        .search-bar input {
+            padding: 10px;
+            width: 60%;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #6f4e37;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .search-bar button:hover {
+            background-color: #5a3d2b;
+        }
+        .results {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .hash {
+            font-family: monospace;
+            font-size: 1.1em;
+            background-color: #e9ecef;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #6f4e37;
+            color: white;
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>Sarapi Coffee Search</h1>
+    </header>
+    <div class="container">
+        <h2>Search for Coffee</h2>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Enter 'coffee' to search">
+            <button onclick="search()">Search</button>
+        </div>
+        <div class="results" id="results">
+            <!-- Search results will appear here -->
+        </div>
+        <div class="hash">
+            Unique Identifier: cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 Sarapi Coffee Search. All rights reserved.</p>
+    </footer>
 
-  <div class="container">
-    <h1>Supreme AI Search</h1>
-    <input type="text" id="search-input" placeholder="Enter search query" />
-    <button onclick="initiateSearch()">Search</button>
+    <script>
+        function search() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
 
-    <!-- Display Loading Message -->
-    <div id="loading" class="loading" style="display: none;">Searching...</div>
-
-    <!-- Display Results -->
-    <div id="results-container" class="results"></div>
-  </div>
-
-  <script>
-    const apiKey = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";  // Your SerpAPI Key
-
-    // Function to test SerpAPI and fetch results
-    function testSerpAPI(query) {
-      const proxyUrl = 'https://cors-anywhere.herokuapp.com/';  // Add CORS proxy
-      const apiUrl = `https://serpapi.com/search?q=${encodeURIComponent(query)}&api_key=${apiKey}&num=5&gl=in&hl=en`;
-
-      const url = proxyUrl + apiUrl;  // Adding the CORS proxy URL before the API URL
-
-      // Show loading indicator
-      document.getElementById('loading').style.display = 'block';
-
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Failed to fetch");
-          }
-          return response.json();
-        })
-        .then(data => {
-          // Hide loading indicator
-          document.getElementById('loading').style.display = 'none';
-
-          // Check for valid response
-          if (data.search_metadata.status === "Success") {
-            displayResults(data);
-          } else {
-            console.error("Error: ", data);
-            alert("API Test failed! Check console for details.");
-          }
-        })
-        .catch(error => {
-          // Hide loading indicator
-          document.getElementById('loading').style.display = 'none';
-          console.error("Error fetching data from SerpAPI:", error);
-          alert("Error in API test. Check the console for details.");
-        });
-    }
-
-    // Function to display search results
-    function displayResults(data) {
-      const resultsContainer = document.getElementById("results-container");
-      resultsContainer.innerHTML = "";  // Clear previous results
-
-      const searchResults = data.organic_results;  // Get the organic results
-
-      searchResults.forEach(result => {
-        const resultElement = document.createElement("div");
-        resultElement.classList.add("search-result");
-        resultElement.innerHTML = `
-          <h3><a href="${result.link}" target="_blank">${result.title}</a></h3>
-          <p>${result.snippet}</p>
-        `;
-        resultsContainer.appendChild(resultElement);
-      });
-    }
-
-    // Function to initiate the search when the user clicks the "Search" button
-    function initiateSearch() {
-      const query = document.getElementById("search-input").value;
-      if (query) {
-        testSerpAPI(query);  // Call SerpAPI to fetch search results
-      } else {
-        alert("Please enter a search query.");
-      }
-    }
-  </script>
-
+            if (input === 'coffee') {
+                resultsDiv.innerHTML = `
+                    <div class="result-item">
+                        <h3>Specialty Coffee</h3>
+                        <p>Discover over 450+ unique whole bean or ground coffees from top roasters across the USA. Specialty coffee, coined by Erna Knutsen in 1974, scores 80+ in quality grading. Try pour-over, French press, or espresso for a premium experience.</p>[](https://www.drinktrade.com/collections/all)
+                    </div>
+                    <div class="result-item">
+                        <h3>Coffee Shop SEO</h3>
+                        <p>Over 7,400,000 monthly U.S. searches for coffee shops highlight the importance of SEO. Optimize your site with keywords like 'coffee near me' to capture 33% of clicks from the top 3 Google results.</p>[](https://marketkeep.com/seo-keywords-for-coffee-shops/)
+                    </div>
+                    <div class="result-item">
+                        <h3>Unique Coffee Hash</h3>
+                        <p>Your search is associated with this unique identifier: <span class="hash">cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45</span></p>
+                    </div>
+                `;
+            } else {
+                resultsDiv.innerHTML = '<p>No results found. Try searching for "coffee".</p>';
+            }
+        }
+    </script>
 </body>
 </html>
