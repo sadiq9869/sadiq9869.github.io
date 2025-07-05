@@ -156,57 +156,63 @@
   </footer>
   <script>
   
-  // Save question and AI response to localStorage
-    async function saveQuestionResponse(userInput, aiResponse) {
-      const questionEmbedding = await fetchEmbedding(userInput);
-      const responseEmbedding = await fetchEmbedding(aiResponse);
+    // Save question and AI response to localStorage
+  async function saveQuestionResponse(userInput, aiResponse) {
+    const questionEmbedding = await fetchEmbedding(userInput);
+    const responseEmbedding = await fetchEmbedding(aiResponse);
 
-      let data = JSON.parse(localStorage.getItem("qa_pairs")) || [];
-      data.push({ question: userInput, response: aiResponse, questionEmbedding, responseEmbedding });
-      localStorage.setItem("qa_pairs", JSON.stringify(data));
-    }
+    let data = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+    data.push({ question: userInput, response: aiResponse, questionEmbedding, responseEmbedding });
+    localStorage.setItem("qa_pairs", JSON.stringify(data));
+  }
 
-    // Cosine Similarity for comparing vector embeddings
-    function cosineSimilarity(vec1, vec2) {
-      const dotProduct = vec1.reduce((sum, val, idx) => sum + (val * vec2[idx]), 0);
-      const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val ** 2), 0));
-      const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val ** 2), 0));
-      return dotProduct / (magnitude1 * magnitude2);
-    }
+  // Fetch embeddings (this should ideally be an actual API call or your own embedding model)
+  async function fetchEmbedding(text) {
+    // Dummy implementation: Replace this with actual embedding fetching logic
+    return text.split(" ").map(word => word.length); // Simple vectorization by word length
+  }
 
-    // Fuzzy matching for minor spelling variations using Levenshtein or similar methods
-    function fuzzyMatch(str1, str2) {
-      let matchScore = 0;
-      const words1 = str1.split(" ");
-      const words2 = str2.split(" ");
+  // Cosine Similarity for comparing vector embeddings
+  function cosineSimilarity(vec1, vec2) {
+    const dotProduct = vec1.reduce((sum, val, idx) => sum + (val * vec2[idx]), 0);
+    const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val ** 2), 0));
+    const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val ** 2), 0));
+    return dotProduct / (magnitude1 * magnitude2);
+  }
 
-      words1.forEach(word1 => {
-        if (words2.includes(word1)) matchScore++;
-      });
+  // Fuzzy matching for minor spelling variations using Jaccard similarity
+  function fuzzyMatch(str1, str2) {
+    let matchScore = 0;
+    const words1 = str1.split(" ");
+    const words2 = str2.split(" ");
 
-      return matchScore / Math.max(words1.length, words2.length); // Jaccard similarity
-    }
+    words1.forEach(word1 => {
+      if (words2.includes(word1)) matchScore++;
+    });
 
-    // Find the most similar question from memory based on fuzzy matching and vector similarity
-    async function findMostSimilarQuestion(userQuestion) {
-      const storedData = JSON.parse(localStorage.getItem("qa_pairs")) || [];
-      const userQuestionEmbedding = await fetchEmbedding(userQuestion);
+    return matchScore / Math.max(words1.length, words2.length); // Jaccard similarity
+  }
 
-      let bestMatch = { question: "", response: "", score: 0, responseEmbedding: null };
+  // Find the most similar question from memory based on fuzzy matching and vector similarity
+  async function findMostSimilarQuestion(userQuestion) {
+    const storedData = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+    const userQuestionEmbedding = await fetchEmbedding(userQuestion);
 
-      storedData.forEach(pair => {
-        const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
-        const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
+    let bestMatch = { question: "", response: "", score: 0, responseEmbedding: null };
 
-        const totalScore = vectorScore + fuzzyScore;
+    storedData.forEach(pair => {
+      const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
+      const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
 
-        if (totalScore > bestMatch.score) {
-          bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
-        }
-      });
+      const totalScore = vectorScore + fuzzyScore;
 
-      return bestMatch.response || "Sorry, I couldn't find a matching response.";
-    }
+      if (totalScore > bestMatch.score) {
+        bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
+      }
+    });
+
+    return bestMatch.response || "Sorry, I couldn't find a matching response.";
+  }
     
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
