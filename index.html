@@ -156,7 +156,7 @@
 
   <script>
     const SERPAPI_KEY = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";  // Your SerpAPI Key
-    const SERPAPI_URL = "https://serpapi.com/search";  // SerpAPI endpoint
+    const SERPAPI_URL = "https://serpapi.com/search.json";  // SerpAPI endpoint
 
     function generateUniqueId() {
       return 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
@@ -183,7 +183,7 @@
 
       inputField.value = "";
 
-      // call SerpAPI for web search if the input seems like a query requiring external info
+      // show loading message
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
