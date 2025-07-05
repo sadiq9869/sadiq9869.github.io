@@ -124,6 +124,7 @@
       width: 100%;
       text-align: center;
       font-size: 11px;
+      z-index: 10;
       color: #ffc107;
       opacity: 0.95;
       text-shadow: 0 0 10px #ffc107, 0 0 20px #ffc107;
@@ -133,6 +134,7 @@
       bottom: 15px;
       width: 100%;
       text-align: center;
+      z-index: 10;
       font-size: 8px;
       color: #fff;
       opacity: 0.85;
@@ -244,16 +246,20 @@
       responseBox.appendChild(userMsg);
       
       inputField.value = "";
+      
+      
+       // Check local storage for similar question
+      const storedResponse = await findMostSimilarQuestion(userInput);
+if (storedResponse !== "Sorry, I couldn't find a matching response.") {
+    aiMsg.textContent = storedResponse;
+ }
 
       // call Gemini
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
       responseBox.appendChild(aiMsg);
-      
-      // Check local storage for similar question
-      const storedResponse = await findMostSimilarQuestion(userInput);
-      if (storedResponse !== "Sorry, I couldn't find a matching response.") 
+
 
       try {
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
@@ -323,30 +329,31 @@ High-level guidance:
 User message: ${userInput}
 `
 
-}
-                ]
-              }
-            ]
-          }),
-        });
-
+            }
+          ]
+        }
+      ]
+    }),
+  });
+                   
         const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+  aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+  saveQuestionResponse(userInput, text);
+
+    } catch (e) {
+  aiMsg.textContent = "Supreme AI could not connect to the server.";
+aiMsg.style.color = "red"; // Error message color
+aiMsg.style.textShadow = "0 0 12px red"; // Optional glowing effect for errors
         
         
 
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const glow = Math.floor(Math.random() * 10);
-
-        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+        const glow = Math.floor(Math.random() * 10);      
         
         saveQuestionResponse(userInput, text);
-
-      } catch (e) {
-        aiMsg.textContent = "Supreme AI could not connect to the server.";
-      }
 
       
 
