@@ -154,69 +154,74 @@
   <footer>
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
-  <script>
-  
+  <script type="module">
+    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+
+    // Initialize embedding model
+    let embedder;
+    async function initEmbedder() {
+      embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+    }
+    initEmbedder();
+
     // Save question and AI response to localStorage
-  async function saveQuestionResponse(userInput, aiResponse) {
-    const questionEmbedding = await fetchEmbedding(userInput);
-    const responseEmbedding = await fetchEmbedding(aiResponse);
+    async function saveQuestionResponse(userInput, aiResponse) {
+      const questionEmbedding = await fetchEmbedding(userInput);
+      const responseEmbedding = await fetchEmbedding(aiResponse);
+      let data = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+      data.push({ question: userInput, response: aiResponse, questionEmbedding, responseEmbedding });
+      if (data.length > 100) data.shift(); // Keep last 100 pairs
+      localStorage.setItem("qa_pairs", JSON.stringify(data));
+    }
 
-    let data = JSON.parse(localStorage.getItem("qa_pairs")) || [];
-    data.push({ question: userInput, response: aiResponse, questionEmbedding, responseEmbedding });
-    localStorage.setItem("qa_pairs", JSON.stringify(data));
-  }
+    // Fetch embeddings using Transformers.js
+    async function fetchEmbedding(text) {
+      if (!embedder) await initEmbedder();
+      const output = await embedder(text, { pooling: 'mean', normalize: true });
+      return Array.from(output.data);
+    }
 
-  // Fetch embeddings (this should ideally be an actual API call or your own embedding model)
-  async function fetchEmbedding(text) {
-    // Dummy implementation: Replace this with actual embedding fetching logic
-    return text.split(" ").map(word => word.length); // Simple vectorization by word length
-  }
+    // Cosine Similarity for comparing vector embeddings
+    function cosineSimilarity(vec1, vec2) {
+      if (!vec1 || !vec2 || vec1.length !== vec2.length) return 0;
+      const dotProduct = vec1.reduce((sum, val, idx) => sum + (val * vec2[idx]), 0);
+      const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val ** 2), 0));
+      const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val ** 2), 0));
+      return (magnitude1 * magnitude2 === 0) ? 0 : dotProduct / (magnitude1 * magnitude2);
+    }
 
-  // Cosine Similarity for comparing vector embeddings
-  function cosineSimilarity(vec1, vec2) {
-    const dotProduct = vec1.reduce((sum, val, idx) => sum + (val * vec2[idx]), 0);
-    const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + (val ** 2), 0));
-    const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + (val ** 2), 0));
-    return dotProduct / (magnitude1 * magnitude2);
-  }
+    // Fuzzy matching for minor spelling variations
+    function fuzzyMatch(str1, str2) {
+      if (str1.toLowerCase() === str2.toLowerCase()) return 1;
+      const words1 = str1.toLowerCase().split(" ");
+      const words2 = str2.toLowerCase().split(" ");
+      let matchScore = 0;
+      words1.forEach(word1 => {
+        if (words2.includes(word1)) matchScore++;
+      });
+      return matchScore / Math.max(words1.length, words2.length);
+    }
 
-  // Fuzzy matching for minor spelling variations using Jaccard similarity
-  function fuzzyMatch(str1, str2) {
-    let matchScore = 0;
-    const words1 = str1.split(" ");
-    const words2 = str2.split(" ");
-
-    words1.forEach(word1 => {
-      if (words2.includes(word1)) matchScore++;
-    });
-
-    return matchScore / Math.max(words1.length, words2.length); // Jaccard similarity
-  }
-
-  // Find the most similar question from memory based on fuzzy matching and vector similarity
-  async function findMostSimilarQuestion(userQuestion) {
-    const storedData = JSON.parse(localStorage.getItem("qa_pairs")) || [];
-    const userQuestionEmbedding = await fetchEmbedding(userQuestion);
-
-    let bestMatch = { question: "", response: "", score: 0, responseEmbedding: null };
-
-    storedData.forEach(pair => {
+    // Find the most similar question from memory
+    async function findMostSimilarQuestion(userQuestion) {
+      const storedData = JSON.parse(localStorage.getItem("qa_pairs")) || [];
+      for (let pair of storedData) {
+        if (pair.question.toLowerCase() === userQuestion.toLowerCase()) {
+          return pair.response;
+        }
+      }
+      const userQuestionEmbedding = await fetchEmbedding(userQuestion);
+      let bestMatch = { response: "", score: 0 };
+      storedData.forEach(pair => {
         const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
         const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
-
         const totalScore = vectorScore + fuzzyScore;
-
-        console.log(`Comparing: "${userQuestion}" with "${pair.question}"`);
-        console.log(`Scores: vectorScore: ${vectorScore}, fuzzyScore: ${fuzzyScore}, totalScore: ${totalScore}`);
-
         if (totalScore > bestMatch.score) {
-            bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
+          bestMatch = { response: pair.response, score: totalScore };
         }
-    });
-
-    console.log(`Best match: ${bestMatch.question} => ${bestMatch.response}`);
-    return bestMatch.response || "Sorry, I couldn't find a matching response.";
-  }
+      });
+      return bestMatch.response || "Sorry, I couldn't find a matching response.";
+    }
 
     
     async function showResponse() {
@@ -245,6 +250,10 @@
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
       responseBox.appendChild(aiMsg);
+      
+      // Check local storage for similar question
+      const storedResponse = await findMostSimilarQuestion(userInput);
+      if (storedResponse !== "Sorry, I couldn't find a matching response.") 
 
       try {
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
@@ -352,6 +361,18 @@ User message: ${userInput}
         }
       }, 500);
     }
+    
+    // Clear chat history
+    function clearChat() {
+      const responseBox = document.getElementById("response");
+      responseBox.innerHTML = '<div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>';
+      localStorage.removeItem("qa_pairs");
+    }
+
+    // Enter key support
+    document.getElementById("chatInput").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") showResponse();
+    });
   </script>
 </body>
 </html>
