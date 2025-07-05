@@ -201,18 +201,23 @@
     let bestMatch = { question: "", response: "", score: 0, responseEmbedding: null };
 
     storedData.forEach(pair => {
-      const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
-      const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
+        const vectorScore = cosineSimilarity(userQuestionEmbedding, pair.questionEmbedding);
+        const fuzzyScore = fuzzyMatch(userQuestion, pair.question);
 
-      const totalScore = vectorScore + fuzzyScore;
+        const totalScore = vectorScore + fuzzyScore;
 
-      if (totalScore > bestMatch.score) {
-        bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
-      }
+        console.log(`Comparing: "${userQuestion}" with "${pair.question}"`);
+        console.log(`Scores: vectorScore: ${vectorScore}, fuzzyScore: ${fuzzyScore}, totalScore: ${totalScore}`);
+
+        if (totalScore > bestMatch.score) {
+            bestMatch = { question: pair.question, response: pair.response, score: totalScore, responseEmbedding: pair.responseEmbedding };
+        }
     });
 
+    console.log(`Best match: ${bestMatch.question} => ${bestMatch.response}`);
     return bestMatch.response || "Sorry, I couldn't find a matching response.";
   }
+
     
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
