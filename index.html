@@ -94,7 +94,7 @@
 
     #chatInput {
       width: 100%;
-      padding: 10px 50px 10px 15px;
+      padding: 10px 55px 10px 15px;
       border: 2px solid #00ffff;
       border-radius: 30px;
       font-size: 14px;
@@ -102,7 +102,6 @@
       background-color: rgba(0, 0, 0, 0.5);
       color: #fff;
       box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      transition: 0.3s ease;
     }
 
     #chatInput::placeholder {
@@ -113,19 +112,19 @@
     #sendBtn {
       position: absolute;
       top: 50%;
-      right: 8px;
+      right: 10px;
       transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
-      background-color: #00ffff;
+      background-color: #fff;
       color: #000;
-      font-size: 18px;
       font-weight: bold;
+      font-size: 22px;
       border: none;
       cursor: pointer;
-      box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-      transition: 0.2s ease;
+      box-shadow: 0 0 8px #fff, 0 0 12px #fff;
+      transition: transform 0.2s ease;
     }
 
     #sendBtn:hover {
@@ -164,7 +163,7 @@
   <div class="input-section">
     <div class="input-wrapper">
       <input type="text" id="chatInput" placeholder="Ask me anything..." />
-      <button id="sendBtn" onclick="showResponse()">➤</button>
+      <button id="sendBtn" onclick="showResponse()">↑</button>
     </div>
   </div>
 
