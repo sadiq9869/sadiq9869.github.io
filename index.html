@@ -3,70 +3,73 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI - Web Search Test</title>
+  <title>Supreme AI Search Test</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #111827;
-      color: #fff;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f172a;
+      color: #f1f5f9;
+      padding: 30px;
       text-align: center;
     }
     input, button {
-      padding: 10px;
-      margin: 10px;
+      padding: 12px;
       font-size: 16px;
-      border-radius: 5px;
+      border-radius: 8px;
       border: none;
+      margin: 10px;
     }
     input {
-      width: 300px;
+      width: 280px;
     }
     button {
-      background-color: #6366f1;
+      background: #6366f1;
       color: white;
       cursor: pointer;
     }
     #result {
-      margin-top: 20px;
-      font-size: 18px;
-      background: #1f2937;
-      padding: 15px;
+      margin-top: 25px;
+      background: #1e293b;
+      padding: 20px;
       border-radius: 10px;
+      font-size: 18px;
+      min-height: 50px;
     }
   </style>
 </head>
 <body>
   <h1>Supreme AI Search</h1>
-  <input type="text" id="queryInput" placeholder="Enter your question..." />
+  <input type="text" id="queryInput" placeholder="Type your question..." />
   <button onclick="handleSearch()">Search</button>
   <div id="result">Result will appear here...</div>
 
   <script>
+    const proxy = "https://corsproxy.io/?";
+
     async function performDirectSearch(query) {
       const apiKey = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
       const apiUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&engine=google&api_key=${apiKey}`;
       const resultDiv = document.getElementById("result");
 
-      resultDiv.textContent = "Supreme AI is searching...";
+      resultDiv.textContent = "🔍 Supreme AI is searching...";
 
       try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(proxy + encodeURIComponent(apiUrl));
         const data = await response.json();
 
-        let resultText = "Sorry, Supreme AI couldn't find anything relevant.";
+        let resultText = "❌ Supreme AI couldn't find anything relevant.";
 
-        if (data.answer_box && data.answer_box.answer) {
+        if (data.answer_box?.answer) {
           resultText = data.answer_box.answer;
-        } else if (data.answer_box && data.answer_box.snippet) {
+        } else if (data.answer_box?.snippet) {
           resultText = data.answer_box.snippet;
-        } else if (data.organic_results && data.organic_results.length > 0) {
+        } else if (data.organic_results?.length > 0) {
           resultText = data.organic_results[0].snippet || data.organic_results[0].title;
         }
 
         resultDiv.textContent = resultText;
       } catch (error) {
-        resultDiv.textContent = "Sorry, Supreme AI is currently offline. Please try again.";
+        resultDiv.textContent = "❌ Supreme AI is currently offline. Please try again.";
         console.error("Error:", error);
       }
     }
