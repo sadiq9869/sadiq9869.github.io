@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI Search Test</title>
+  <title>Supreme AI – Brave Search</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
       background: #0f172a;
-      color: #f1f5f9;
+      color: #f8fafc;
       padding: 30px;
       text-align: center;
     }
@@ -23,7 +23,7 @@
       width: 280px;
     }
     button {
-      background: #6366f1;
+      background: #10b981;
       color: white;
       cursor: pointer;
     }
@@ -38,46 +38,42 @@
   </style>
 </head>
 <body>
-  <h1>Supreme AI Search</h1>
-  <input type="text" id="queryInput" placeholder="Type your question..." />
+  <h1>Supreme AI (Brave Search)</h1>
+  <input type="text" id="queryInput" placeholder="Ask something..." />
   <button onclick="handleSearch()">Search</button>
   <div id="result">Result will appear here...</div>
 
   <script>
-    const proxy = "https://corsproxy.io/?";
+    async function searchWithBrave(query) {
+      const apiKey = "BSAyyTYQ7q0I6u1NWfGvFUgG_iRE7lb";
+      const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}`;
 
-    async function performDirectSearch(query) {
-      const apiKey = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
-      const apiUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&engine=google&api_key=${apiKey}`;
       const resultDiv = document.getElementById("result");
-
-      resultDiv.textContent = "🔍 Supreme AI is searching...";
+      resultDiv.textContent = "🔍 Supreme AI is searching with Brave...";
 
       try {
-        const response = await fetch(proxy + encodeURIComponent(apiUrl));
+        const response = await fetch(url, {
+          headers: {
+            "Accept": "application/json",
+            "X-Subscription-Token": apiKey
+          }
+        });
+
         const data = await response.json();
 
-        let resultText = "❌ Supreme AI couldn't find anything relevant.";
-
-        if (data.answer_box?.answer) {
-          resultText = data.answer_box.answer;
-        } else if (data.answer_box?.snippet) {
-          resultText = data.answer_box.snippet;
-        } else if (data.organic_results?.length > 0) {
-          resultText = data.organic_results[0].snippet || data.organic_results[0].title;
-        }
-
+        const resultText = data.web?.results?.[0]?.description || "❌ No results found.";
         resultDiv.textContent = resultText;
+
       } catch (error) {
-        resultDiv.textContent = "❌ Supreme AI is currently offline. Please try again.";
-        console.error("Error:", error);
+        console.error("Brave API error:", error);
+        resultDiv.textContent = "❌ Supreme AI (Brave) is currently offline.";
       }
     }
 
     function handleSearch() {
       const input = document.getElementById("queryInput").value.trim();
       if (input) {
-        performDirectSearch(input);
+        searchWithBrave(input);
       }
     }
   </script>
