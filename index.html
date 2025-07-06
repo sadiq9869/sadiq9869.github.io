@@ -16,12 +16,14 @@
       min-height: 100vh;
       padding: 20px;
     }
+
     h1 {
       margin-top: 20px;
       font-size: 40px;
       color: #00ffff;
       text-shadow: 0 0 12px #00ffff;
     }
+
     #response {
       margin-top: 30px;
       width: 90%;
@@ -40,6 +42,7 @@
       overflow-y: auto;
       max-height: 60vh;
     }
+
     .signature {
       font-size: 18px;
       font-weight: bold;
@@ -56,10 +59,12 @@
       top: 50%;
       transform: translateY(-50%);
     }
+
     @keyframes signatureGlow {
       0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
       100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
     }
+
     .user-msg {
       align-self: flex-end;
       background-color: #007b7b;
@@ -68,6 +73,7 @@
       max-width: 80%;
       margin-top: 5px;
     }
+
     .ai-msg {
       align-self: flex-start;
       background-color: rgba(0,0,0,0.5);
@@ -114,13 +120,13 @@
       top: 50%;
       right: 10px;
       transform: translateY(-50%);
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
       background-color: #fff;
-      color: #000;
-      font-weight: bold;
-      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border: none;
       cursor: pointer;
       box-shadow: 0 0 8px #fff, 0 0 12px #fff;
@@ -129,6 +135,13 @@
 
     #sendBtn:hover {
       transform: translateY(-50%) scale(1.1);
+    }
+
+    #sendBtn svg {
+      width: 20px;
+      height: 20px;
+      stroke: black;
+      stroke-width: 2;
     }
 
     #warning {
@@ -163,7 +176,11 @@
   <div class="input-section">
     <div class="input-wrapper">
       <input type="text" id="chatInput" placeholder="Ask me anything..." />
-      <button id="sendBtn" onclick="showResponse()">↑</button>
+      <button id="sendBtn" onclick="showResponse()">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
   </div>
 
