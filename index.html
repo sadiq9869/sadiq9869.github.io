@@ -3,235 +3,123 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supreme AI Chat</title>
+  <title>Supreme AI - Search Assistant</title>
   <style>
     body {
-      margin: 0;
+      background: #0f172a;
+      color: #fff;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 40px;
-      color: #00ffff;
-      text-shadow: 0 0 12px #00ffff;
-    }
-
-    #response {
-      margin-top: 30px;
-      width: 90%;
-      max-width: 600px;
-      background-color: rgba(0, 0, 0, 0.3);
-      padding: 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      min-height: 80px;
-      white-space: pre-wrap;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      position: relative;
-      overflow-y: auto;
-      max-height: 60vh;
-    }
-
-    .signature {
-      font-size: 18px;
-      font-weight: bold;
-      color: #00ffff;
-      text-shadow: 0 0 6px #00ffff, 0 0 12px #00ffff;
-      border: 2px solid #00ffff;
-      border-radius: 20px;
-      padding: 6px 14px;
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 10px #00ffff, inset 0 0 8px #00ffff;
-      opacity: 0.9;
-      animation: signatureGlow 3s infinite alternate;
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-
-    @keyframes signatureGlow {
-      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
-      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
-    }
-
-    .user-msg {
-      align-self: flex-end;
-      background-color: #007b7b;
-      padding: 8px 15px;
-      border-radius: 15px;
-      max-width: 80%;
-      margin-top: 5px;
-    }
-
-    .ai-msg {
-      align-self: flex-start;
-      background-color: rgba(0,0,0,0.5);
-      padding: 8px 15px;
-      border-radius: 15px;
-      max-width: 80%;
-      font-weight: bold;
-      margin-top: 5px;
-      word-wrap: break-word;
-      white-space: normal;
-    }
-
-    .input-section {
-      position: fixed;
-      bottom: 60px;
-      width: 80%;
-      max-width: 400px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0 20px;
-    }
-
-    #chatInput {
-      width: 100%;
-      padding: 8px 45px 8px 15px; /* space for button */
-      border: 2px solid #00ffff;
-      border-radius: 20px;
-      font-size: 14px;
-      outline: none;
-      background-color: rgba(0, 0, 0, 0.5);
-      color: #fff;
-      box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-      resize: none;
-      overflow-y: auto;
-      line-height: 20px;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      position: relative;
-    }
-
-    #chatInput::placeholder {
-      color: #ccc;
-      text-shadow: 0 0 6px #00ffff;
-    }
-
-    #sendBtn {
-      position: absolute;
-      right: 28px;
-      bottom: 70px;
-      width: 32px;
-      height: 32px;
-      background-color: #ffffff;
-      border: none;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #00ffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: 0;
       padding: 0;
+    }
+    #chatbox {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 10px #00000060;
+    }
+    .message {
+      margin: 12px 0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      max-width: 90%;
+      word-wrap: break-word;
+    }
+    .user {
+      background: #3b82f6;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+    .bot {
+      background: #334155;
+      color: #f1f5f9;
+      margin-right: auto;
+      text-align: left;
+    }
+    #inputArea {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: white;
+      color: #0f172a;
+      font-weight: bold;
+      border: none;
+      border-radius: 9999px;
+      width: 42px;
+      height: 42px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: all 0.3s ease;
     }
-
-    #sendBtn:hover {
-      transform: scale(1.1);
-    }
-
-    #warning {
-      position: fixed;
-      bottom: 28px;
-      width: 100%;
-      text-align: center;
-      font-size: 11px;
-      color: #ffc107;
-      opacity: 0.95;
-      text-shadow: 0 0 10px #ffc107, 0 0 20px #ffc107;
-    }
-
-    footer {
-      position: fixed;
-      bottom: 15px;
-      width: 100%;
-      text-align: center;
-      font-size: 8px;
-      color: #fff;
-      opacity: 0.85;
-      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+    button:hover {
+      background: #e2e8f0;
     }
   </style>
 </head>
 <body>
-  <h1>🚀 Supreme AI</h1>
-
-  <div id="response">
-    <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
+  <div id="chatbox">
+    <div id="messages"></div>
+    <div id="inputArea">
+      <input type="text" id="userInput" placeholder="Ask Supreme AI anything..." autocomplete="off" />
+      <button onclick="sendMessage()">↑</button>
+    </div>
   </div>
-
-  <div class="input-section">
-    <textarea id="chatInput" placeholder="Ask me anything..." rows="2"></textarea>
-    <button id="sendBtn" onclick="showResponse()">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="black" viewBox="0 0 24 24">
-        <path d="M12 4l-8 8h6v8h4v-8h6z"/>
-      </svg>
-    </button>
-  </div>
-
-  <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
-  <footer>Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong></footer>
 
   <script>
-    async function showResponse() {
-      const inputField = document.getElementById("chatInput");
-      const userInput = inputField.value.trim();
-      const responseBox = document.getElementById("response");
-      const signature = document.getElementById("signature");
+    const apiKey = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
 
-      if (userInput === "") return;
-
-      if (signature) signature.style.display = "none";
-
-      const userMsg = document.createElement("div");
-      userMsg.className = "user-msg";
-      userMsg.textContent = userInput;
-      responseBox.appendChild(userMsg);
-      inputField.value = "";
-
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "ai-msg";
-      aiMsg.textContent = "Supreme AI is typing...";
-      responseBox.appendChild(aiMsg);
-
+    async function fetchFromSerpAPI(query) {
       try {
-        const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-
-        const res = await fetch(apiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `User: ${userInput}` }] }]
-          }),
-        });
-
+        const url = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&engine=brave&api_key=${apiKey}`;
+        const res = await fetch(url);
         const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-        aiMsg.textContent = "Supreme AI: " + text;
-      } catch {
-        aiMsg.textContent = "Supreme AI could not connect to the server.";
-      }
 
-      responseBox.scrollTop = responseBox.scrollHeight;
-
-      setTimeout(() => {
-        if (responseBox.children.length <= 1 && signature) {
-          signature.style.display = "block";
+        if (data.answer_box?.answer) {
+          return data.answer_box.answer;
+        } else if (data.organic_results?.length > 0) {
+          return data.organic_results[0].snippet || "🔍 I found something, but it had no summary.";
+        } else {
+          return "❌ Sorry, I couldn't find any relevant info.";
         }
-      }, 500);
+      } catch (error) {
+        console.error("API Error:", error);
+        return "⚠️ Error connecting to search service. Try again later.";
+      }
+    }
+
+    function addMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.className = `message ${sender}`;
+      msg.innerText = text;
+      document.getElementById("messages").appendChild(msg);
+      msg.scrollIntoView({ behavior: "smooth" });
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById("userInput");
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, "user");
+      input.value = "";
+
+      addMessage("Supreme AI is searching... 🔍", "bot");
+
+      const reply = await fetchFromSerpAPI(text);
+
+      const allBotMsgs = document.querySelectorAll(".bot");
+      allBotMsgs[allBotMsgs.length - 1].innerText = reply;
     }
   </script>
 </body>
