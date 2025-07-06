@@ -1,126 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sarapi Coffee Search</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-            text-align: center;
-        }
-        header {
-            background-color: #6f4e37; /* Coffee brown */
-            color: white;
-            padding: 20px;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        .search-bar {
-            margin: 20px 0;
-        }
-        .search-bar input {
-            padding: 10px;
-            width: 60%;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .search-bar button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #6f4e37;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .search-bar button:hover {
-            background-color: #5a3d2b;
-        }
-        .results {
-            margin-top: 20px;
-            text-align: left;
-        }
-        .result-item {
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        .hash {
-            font-family: monospace;
-            font-size: 1.1em;
-            background-color: #e9ecef;
-            padding: 5px;
-            border-radius: 5px;
-        }
-        footer {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #6f4e37;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI - Web Search Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+    input {
+      width: 300px;
+    }
+    button {
+      background-color: #6366f1;
+      color: white;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      background: #1f2937;
+      padding: 15px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>Sarapi Coffee Search</h1>
-    </header>
-    <div class="container">
-        <h2>Search for Coffee</h2>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Enter 'coffee' to search">
-            <button onclick="search()">Search</button>
-        </div>
-        <div class="results" id="results">
-            <!-- Search results will appear here -->
-        </div>
-        <div class="hash">
-            Unique Identifier: cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45
-        </div>
-    </div>
-    <footer>
-        <p>© 2025 Sarapi Coffee Search. All rights reserved.</p>
-    </footer>
+  <h1>Supreme AI Search</h1>
+  <input type="text" id="queryInput" placeholder="Enter your question..." />
+  <button onclick="handleSearch()">Search</button>
+  <div id="result">Result will appear here...</div>
 
-    <script>
-        function search() {
-            const input = document.getElementById('searchInput').value.toLowerCase();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
+  <script>
+    async function performDirectSearch(query) {
+      const apiKey = "cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45";
+      const apiUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(query)}&engine=google&api_key=${apiKey}`;
+      const resultDiv = document.getElementById("result");
 
-            if (input === 'coffee') {
-                resultsDiv.innerHTML = `
-                    <div class="result-item">
-                        <h3>Specialty Coffee</h3>
-                        <p>Discover over 450+ unique whole bean or ground coffees from top roasters across the USA. Specialty coffee, coined by Erna Knutsen in 1974, scores 80+ in quality grading. Try pour-over, French press, or espresso for a premium experience.</p>[](https://www.drinktrade.com/collections/all)
-                    </div>
-                    <div class="result-item">
-                        <h3>Coffee Shop SEO</h3>
-                        <p>Over 7,400,000 monthly U.S. searches for coffee shops highlight the importance of SEO. Optimize your site with keywords like 'coffee near me' to capture 33% of clicks from the top 3 Google results.</p>[](https://marketkeep.com/seo-keywords-for-coffee-shops/)
-                    </div>
-                    <div class="result-item">
-                        <h3>Unique Coffee Hash</h3>
-                        <p>Your search is associated with this unique identifier: <span class="hash">cac6db70d52a5bcc2fb2c75eca095557ec5fa1500c6e67a3230cba388e9d5a45</span></p>
-                    </div>
-                `;
-            } else {
-                resultsDiv.innerHTML = '<p>No results found. Try searching for "coffee".</p>';
-            }
+      resultDiv.textContent = "Supreme AI is searching...";
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        let resultText = "Sorry, Supreme AI couldn't find anything relevant.";
+
+        if (data.answer_box && data.answer_box.answer) {
+          resultText = data.answer_box.answer;
+        } else if (data.answer_box && data.answer_box.snippet) {
+          resultText = data.answer_box.snippet;
+        } else if (data.organic_results && data.organic_results.length > 0) {
+          resultText = data.organic_results[0].snippet || data.organic_results[0].title;
         }
-    </script>
+
+        resultDiv.textContent = resultText;
+      } catch (error) {
+        resultDiv.textContent = "Sorry, Supreme AI is currently offline. Please try again.";
+        console.error("Error:", error);
+      }
+    }
+
+    function handleSearch() {
+      const input = document.getElementById("queryInput").value.trim();
+      if (input) {
+        performDirectSearch(input);
+      }
+    }
+  </script>
 </body>
 </html>
