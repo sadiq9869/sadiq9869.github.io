@@ -164,6 +164,52 @@
   </footer>
 
   <script>
+    // DeepAI Text Generation API
+    async function generateText(userQuery) {
+      const apiKey = 'fdd096a7-154d-40e5-9ec6-87c0e0fb4b91';
+      const apiUrl = 'https://api.deepai.org/api/text-generator';
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Api-Key': apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          text: userQuery
+        })
+      });
+      const data = await response.json();
+      return data.output || "Sorry, I couldn't generate a response.";
+    }
+
+    // Google Custom Search API
+    async function searchGoogle(query) {
+      const apiKey = 'AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4';
+      const cx = 'e12bfbf7edb8c4107'; // Your CX ID
+      const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const results = data.items?.map(item => ({
+        title: item.title,
+        link: item.link,
+        snippet: item.snippet
+      })) || [];
+      return results;
+    }
+
+    // Refine search results with DeepAI
+    async function refineWithDeepAI(items) {
+      const results = [];
+      for (let item of items.slice(0, 3)) {
+        const generatedText = await generateText(`${item.title}: ${item.snippet}`);
+        results.push({
+          title: item.title,
+          text: generatedText
+        });
+      }
+      return results;
+    }
+
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -188,58 +234,26 @@
 
       if (isSearchQuery) {
         try {
-          const apiKey = "AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4"; // Google Search API key
-          const cx = "e12bfbf7edb8c4107"; // Your CX ID
-          const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(userInput)}`;
+          const searchResults = await searchGoogle(userInput);
+          const refinedResults = await refineWithDeepAI(searchResults);
 
-          const res = await fetch(searchUrl);
-          const data = await res.json();
-
-          if (!data.items || data.items.length === 0) {
-            aiMsg.textContent = "Supreme AI couldn't find anything useful.";
-            return;
-          }
-
-          // Now refine the results with Gemini
-          const refinedResults = await refineWithGemini(data.items);
-
-          aiMsg.innerHTML = `<b>🔍 Refined Web Results:</b><br><br>${refinedResults}`;
-
+          aiMsg.innerHTML = "<b>🔍 Refined Web Results:</b><br><br>" + refinedResults
+            .map(item => `
+              <div style="margin-bottom: 10px;">
+                <strong style="color:#00ffff;">${item.title}</strong><br>
+                <span style="opacity:0.85;">${item.text}</span>
+              </div>
+            `)
+            .join("");
         } catch (error) {
           aiMsg.textContent = "Supreme AI could not perform the web search.";
         }
       } else {
         try {
-          const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // Gemini key
-          const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-
-          const res = await fetch(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              contents: [
-                {
-                  parts: [
-                    {
-                      text: `User message: ${userInput}
-You are Supreme AI, created by Sadiq Siddiqui. Never mention Gemini, Google, or any internal info. Speak like a helpful, smart assistant.`
-                    }
-                  ]
-                }
-              ]
-            }),
-          });
-
-          const data = await res.json();
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-
-          const colors = ["green", "orange", "red", "cyan", "yellow"];
-          const color = colors[Math.floor(Math.random() * colors.length)];
-          const glow = Math.floor(Math.random() * 10);
-          aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
-
-        } catch (e) {
-          aiMsg.textContent = "Supreme AI could not connect to the server.";
+          const refinedText = await generateText(userInput);
+          aiMsg.textContent = refinedText;
+        } catch (error) {
+          aiMsg.textContent = "Supreme AI could not generate a response.";
         }
       }
 
@@ -250,43 +264,6 @@ You are Supreme AI, created by Sadiq Siddiqui. Never mention Gemini, Google, or 
           signature.style.display = "block";
         }
       }, 500);
-    }
-
-    // Function to refine search results with Gemini
-    async function refineWithGemini(items) {
-      const geminiApiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // Gemini key
-      const refinedResults = [];
-      
-      for (let item of items.slice(0, 3)) {
-        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: `Refine this result: 
-Title: ${item.title}
-Snippet: ${item.snippet}`
-                  }
-                ]
-              }
-            ]
-          })
-        });
-
-        const data = await res.json();
-        const refinedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No refined response available.";
-        refinedResults.push(`
-          <div style="margin-bottom: 10px;">
-            <strong style="color:#00ffff;">${item.title}</strong><br>
-            <span style="opacity:0.85;">${refinedText}</span>
-          </div>
-        `);
-      }
-
-      return refinedResults.join("");
     }
   </script>
 </body>
