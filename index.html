@@ -164,57 +164,6 @@
   </footer>
 
   <script>
-    // DeepAI Text Generation API
-    async function generateText(userQuery) {
-      const apiKey = 'fdd096a7-154d-40e5-9ec6-87c0e0fb4b91';
-      const apiUrl = 'https://api.deepai.org/api/text-generator';
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Api-Key': apiKey,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          text: userQuery
-        })
-      });
-
-      const data = await response.json();
-      if (data && data.output) {
-        return data.output;
-      } else {
-        return "Sorry, I couldn't generate a response.";
-      }
-    }
-
-    // Google Custom Search API
-    async function searchGoogle(query) {
-      const apiKey = 'AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4';
-      const cx = 'e12bfbf7edb8c4107'; // Your CX ID
-      const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      
-      if (data.items && data.items.length > 0) {
-        return data.items;
-      } else {
-        return null; // No results found
-      }
-    }
-
-    // Refine search results with DeepAI
-    async function refineWithDeepAI(items) {
-      const results = [];
-      for (let item of items.slice(0, 3)) {
-        const generatedText = await generateText(`${item.title}: ${item.snippet}`);
-        results.push({
-          title: item.title,
-          text: generatedText
-        });
-      }
-      return results;
-    }
-
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -239,28 +188,47 @@
 
       if (isSearchQuery) {
         try {
-          const searchResults = await searchGoogle(userInput);
-          if (searchResults) {
-            const refinedResults = await refineWithDeepAI(searchResults);
+          const apiKey = "db7e7f19-ea8e-481e-8806-43bc288b9aaf"; // DeepAI API key
+          const searchUrl = `https://api.deepai.org/api/text-generator`;
+          const res = await fetch(searchUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Api-Key": apiKey
+            },
+            body: JSON.stringify({
+              text: userInput
+            }),
+          });
 
-            aiMsg.innerHTML = "<b>🔍 Refined Web Results:</b><br><br>" + refinedResults
-              .map(item => `
-                <div style="margin-bottom: 10px;">
-                  <strong style="color:#00ffff;">${item.title}</strong><br>
-                  <span style="opacity:0.85;">${item.text}</span>
-                </div>
-              `)
-              .join("");
-          } else {
-            aiMsg.textContent = "Sorry, no relevant web search results were found.";
-          }
+          const data = await res.json();
+          const refinedText = data.output || "Supreme AI couldn't generate a response.";
+
+          aiMsg.innerHTML = `<strong>Refined Answer:</strong><br>${refinedText}`;
+
         } catch (error) {
           aiMsg.textContent = "Supreme AI could not perform the web search.";
         }
       } else {
         try {
-          const refinedText = await generateText(userInput);
-          aiMsg.textContent = refinedText;
+          const apiKey = "db7e7f19-ea8e-481e-8806-43bc288b9aaf"; // DeepAI API key
+          const searchUrl = `https://api.deepai.org/api/text-generator`;
+          const res = await fetch(searchUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Api-Key": apiKey
+            },
+            body: JSON.stringify({
+              text: userInput
+            }),
+          });
+
+          const data = await res.json();
+          const refinedText = data.output || "Supreme AI couldn't generate a response.";
+
+          aiMsg.innerHTML = `<strong>Generated Answer:</strong><br>${refinedText}`;
+
         } catch (error) {
           aiMsg.textContent = "Supreme AI could not generate a response.";
         }
