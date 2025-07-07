@@ -292,11 +292,10 @@ async function detectAnswerLength(userInput) {
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
       responseBox.appendChild(aiMsg);
-      
-        try {
-    const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
+    
 
       try {
+      const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
         const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
