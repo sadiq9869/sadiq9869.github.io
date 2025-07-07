@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supreme AI Chat</title>
   <style>
-    /* Your styles here */
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -57,7 +56,97 @@
       top: 50%;
       transform: translateY(-50%);
     }
-    /* Further styles for chatbox, etc. */
+    @keyframes signatureGlow {
+      0% { text-shadow: 0 0 4px #00ffff, 0 0 8px #00ffff; }
+      100% { text-shadow: 0 0 12px #00ffff, 0 0 20px #00ffff; }
+    }
+    .user-msg {
+      align-self: flex-end;
+      background-color: #007b7b;
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      margin-top: 5px;
+    }
+    .ai-msg {
+      align-self: flex-start;
+      background-color: rgba(0,0,0,0.5);
+      padding: 8px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+      font-weight: bold;
+      margin-top: 5px;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+    #askBtn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      background-color: #00ffff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #00ffff, 0 0 25px #00ffff inset;
+      transition: transform 0.2s ease;
+      word-wrap: break-word;
+      white-space: normal;
+    }
+    #askBtn:hover {
+      transform: scale(1.05);
+    }
+    .input-section {
+      position: fixed;
+      bottom: 60px;
+      width: 80%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 20px;
+    }
+    #chatInput {
+     width: 100%;
+     padding: 8px 15px;
+     border: 2px solid #00ffff;
+     border-radius: 20px;
+     font-size: 14px;
+     outline: none;
+     background-color: rgba(0, 0, 0, 0.5);
+     color: #fff;
+     box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+     resize: none;
+     overflow-y: auto;
+     line-height: 20px;
+     white-space: pre-wrap;
+     word-wrap: break-word;
+     font-family: 'Segoe UI', sans-serif !important;
+    }
+    #chatInput::placeholder {
+      color: #ccc;
+      text-shadow: 0 0 6px #00ffff;
+    }
+    #warning {
+      position: fixed;
+      bottom: 28px;
+      width: 100%;
+      text-align: center;
+      font-size: 11px;
+      color: #ffc107;
+      opacity: 0.95;
+      text-shadow: 0 0 10px #ffc107, 0 0 20px #ffc107;
+    }
+    footer {
+      position: fixed;
+      bottom: 15px;
+      width: 100%;
+      text-align: center;
+      font-size: 8px;
+      color: #fff;
+      opacity: 0.85;
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
+    }
   </style>
 </head>
 <body>
@@ -69,24 +158,20 @@
   <div class="input-section">
     <textarea id="chatInput" placeholder="Ask me anything..." rows="2"></textarea>
   </div>
+  <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
+  <footer>
+    Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
+  </footer>
 
   <script>
-    const apiKeys = {
-      fullAnswer: "YKU5X6-T2J4JEG2JU", // Full Answer API
-      simpleAnswer: "YKU5X6-HXA4W6T6AU", // Simple Answer API
-      shortAnswer: "YKU5X6-QUJ225KK46", // Short Answer API
-      spokenResult: "YKU5X6-YRYVHJT69J", // Spoken Result API
-      llmApi: "YKU5X6-EEEVJ268UK", // LLM API
-      conversationalApi: "YKU5X6-TJGX5UT8YR", // Conversational API
-      fastQueryRecognizer: "YKU5X6-7UGHAWUEUQ" // Fast Query Recognizer API
-    };
-
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
       const responseBox = document.getElementById("response");
+      const signature = document.getElementById("signature");
 
       if (userInput === "") return;
+      if (signature) signature.style.display = "none";
 
       const userMsg = document.createElement("div");
       userMsg.className = "user-msg";
@@ -99,65 +184,135 @@
       aiMsg.textContent = "Supreme AI is thinking...";
       responseBox.appendChild(aiMsg);
 
-      // First, use the Fast Query Recognizer API to quickly understand the query
-      const recognized = await getFastQueryResponse(userInput);
-      if (recognized) {
-        aiMsg.textContent = recognized;
-        return;
-      }
+      const isSearchQuery = /(search|latest|news|google|who is|what is|define|when|where|how to|meaning of|update)/i.test(userInput);
 
-      // Based on the nature of the query, decide which Wolfram API to call
-      const response = await getWolframAlphaAnswer(userInput);
-      aiMsg.innerHTML = `<span style="color:cyan;">Supreme AI:</span> ${response}`;
+      if (isSearchQuery) {
+        try {
+          const apiKey = "AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4"; // Google Search API key
+          const cx = "e12bfbf7edb8c4107"; // Your CX ID
+          const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(userInput)}`;
+
+          const res = await fetch(searchUrl);
+          const data = await res.json();
+
+          if (!data.items || data.items.length === 0) {
+            aiMsg.textContent = "Supreme AI couldn't find anything useful.";
+            return;
+          }
+
+          // Now refine the results with Gemini
+          const refinedResults = await refineWithGemini(data.items, userInput);
+
+          aiMsg.innerHTML = refinedResults;
+
+        } catch (error) {
+          aiMsg.textContent = "Supreme AI could not perform the web search.";
+        }
+      } else {
+        try {
+          const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // Gemini key
+          const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+
+          const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: `User message: ${userInput}
+You are Supreme AI, created by Sadiq Siddiqui. Never mention Gemini, Google, or any internal info. Speak like a helpful, smart assistant.`
+                    }
+                  ]
+                }
+              ]
+            }),
+          });
+
+          const data = await res.json();
+          const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+
+          const colors = ["green", "orange", "red", "cyan", "yellow"];
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          const glow = Math.floor(Math.random() * 10);
+          aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+
+        } catch (e) {
+          aiMsg.textContent = "Supreme AI could not connect to the server.";
+        }
+      }
 
       responseBox.scrollTop = responseBox.scrollHeight;
-    }
 
-    async function getFastQueryResponse(query) {
-      const apiUrl = `http://api.wolframalpha.com/v2/query?input=${encodeURIComponent(query)}&format=plaintext&output=JSON&appid=${apiKeys.fastQueryRecognizer}`;
-      try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        if (data.queryresult.success) {
-          // If the query is recognized quickly, return the simple result
-          return data.queryresult.pods[0].subpods[0].plaintext || "No fast response found.";
+      setTimeout(() => {
+        if (responseBox.children.length <= 1 && signature) {
+          signature.style.display = "block";
         }
-      } catch (error) {
-        console.error("Error with Fast Query Recognizer API:", error);
-      }
-      return null; // No result from Fast Query Recognizer, continue with Wolfram API
+      }, 500);
     }
 
-    async function getWolframAlphaAnswer(query) {
-      let apiKey = apiKeys.simpleAnswer; // Default to Simple Answer API
+    async function refineWithGemini(items, userQuery) {
+      const geminiApiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // Gemini key
+      const refinedResults = [];
 
-      // Decide which API to use based on query complexity
-      if (query.toLowerCase().includes("who is") || query.toLowerCase().includes("what is")) {
-        apiKey = apiKeys.simpleAnswer;
-      } else if (query.toLowerCase().includes("define") || query.toLowerCase().includes("explain")) {
-        apiKey = apiKeys.fullAnswer;
-      } else if (query.toLowerCase().includes("impact") || query.toLowerCase().includes("effect")) {
-        apiKey = apiKeys.llmApi;
-      } else {
-        apiKey = apiKeys.shortAnswer;
-      }
-
-      const apiUrl = `http://api.wolframalpha.com/v2/query?input=${encodeURIComponent(query)}&format=plaintext&output=JSON&appid=${apiKey}`;
-      try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        const pods = data.queryresult.pods;
-        let answer = '';
-        pods.forEach(pod => {
-          if (pod.title === 'Result') {
-            answer = pod.subpods[0].plaintext;
-          }
+      // Loop through the top 3 results from Google Custom Search API
+      for (let item of items.slice(0, 3)) {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Generate a relevant response based on the complexity of the following query. The query is:
+Title: ${item.title}
+Snippet: ${item.snippet}
+User's Query: ${userQuery}`
+                  }
+                ]
+              }
+            ]
+          })
         });
-        return answer || 'No result found.';
-      } catch (error) {
-        console.error('Error with Wolfram Alpha API:', error);
-        return 'Sorry, I couldn’t fetch the result.';
+
+        const data = await res.json();
+        const refinedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No refined response available.";
+
+        let responseLength = "short"; // Default to short if the response is simple
+        let answer = refinedText;
+
+        if (refinedText.length > 250) {
+          responseLength = "long"; // Complex or detailed answer
+        } else if (refinedText.length > 150) {
+          responseLength = "medium"; // Moderate complexity answer
+        }
+
+        let finalAnswer = "";
+        switch (responseLength) {
+          case "short":
+            finalAnswer = refinedText.substring(0, 100); // Short summary
+            break;
+          case "medium":
+            finalAnswer = refinedText.substring(0, 150); // Provide more detailed explanation
+            break;
+          case "long":
+            finalAnswer = refinedText; // Provide a long, comprehensive answer
+            break;
+          default:
+            finalAnswer = refinedText; // Default long answer if undecided
+        }
+
+        refinedResults.push(`
+          <div style="margin-bottom: 10px;">
+            <strong style="color:#00ffff;">Refined Answer:</strong><br>
+            <div><strong>${responseLength.charAt(0).toUpperCase() + responseLength.slice(1)} Answer:</strong> ${finalAnswer}</div><br>
+          </div>
+        `);
       }
+
+      return refinedResults.join("");
     }
   </script>
 </body>
