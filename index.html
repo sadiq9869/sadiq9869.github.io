@@ -1,150 +1,136 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome Page with GitHub Login</title>
-  <style>
-    /* Basic Styles */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f0f0;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      text-align: center;
-      margin-top: 50px;
-    }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    /* Modal Styles */
-    .modal {
-      display: none; /* Hidden by default */
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-      z-index: 1000;
-      justify-content: center;
-      align-items: center;
-    }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: bottom 0.5s ease-in-out;
+        }
 
-    .modal-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-      max-width: 400px;
-      margin: auto;
-    }
+        .login-box {
+            background-color: #1e1e1e;
+            color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
 
-    .modal h2 {
-      color: #333;
-    }
+        .login-box h2 {
+            margin-bottom: 10px;
+        }
 
-    .modal p {
-      margin-bottom: 20px;
-    }
+        .login-box p {
+            margin-bottom: 20px;
+        }
 
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-      border: none;
-    }
+        .buttons {
+            margin-top: 20px;
+        }
 
-    #login-btn {
-      background-color: #007bff;
-      color: white;
-    }
+        .login-btn, .signup-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
 
-    #signup-btn {
-      background-color: #28a745;
-      color: white;
-    }
+        .login-btn:hover, .signup-btn:hover {
+            background-color: #0056b3;
+        }
 
-    #github-login-btn {
-      background-color: #333;
-      color: white;
-    }
+        .logout-btn {
+            color: #999;
+            text-decoration: none;
+            display: block;
+            margin-top: 10px;
+        }
 
-    #stay-logged-out {
-      background-color: #dc3545;
-      color: white;
-    }
-  </style>
+        .logout-btn:hover {
+            color: #fff;
+        }
+
+        /* Animation for showing the login box */
+        .show-login {
+            bottom: 0;
+        }
+    </style>
 </head>
 <body>
-  <!-- Welcome Modal -->
-  <div id="welcome-modal" class="modal">
-    <div class="modal-content">
-      <h2>Welcome back</h2>
-      <p>Log in or sign up to get smarter responses, upload files and images, and more.</p>
-      <button id="login-btn">Log in</button>
-      <button id="signup-btn">Sign up for free</button>
-      <button id="github-login-btn">Log in with GitHub</button>
-      <button id="stay-logged-out">Stay logged out</button>
+    <div class="login-container" id="login-container">
+        <div class="login-box">
+            <h2>Welcome back</h2>
+            <p>Log in or sign up to get smarter responses, upload files and images, and more.</p>
+            <div class="buttons">
+                <button class="login-btn">Log in</button>
+                <button class="signup-btn">Sign up for free</button>
+                <a href="#" class="logout-btn">Stay logged out</a>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Rest of your content goes here -->
-  <div>
-    <h1>Your Website Content</h1>
-    <p>Welcome to your website. The modal will pop up on first visit.</p>
-  </div>
+    <script>
+        // Check if the user is logged in (for demonstration, we're using localStorage to simulate login status)
+        const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
 
-  <script>
-    // GitHub OAuth credentials
-    const clientID = 'Ov23limbkXqZGmu9WzFC';  // Your GitHub Client ID
-    const redirectURI = 'https://yourwebsite.com/auth/github/callback';  // Replace with your actual callback URL
+        // Function to show the login container with animation
+        const showLogin = () => {
+            document.getElementById('login-container').classList.add('show-login');
+        }
 
-    // Show the modal on page load
-    window.onload = function() {
-      const modal = document.getElementById('welcome-modal');
-      
-      // Show the modal if not previously closed (using localStorage)
-      if (!localStorage.getItem('modalClosed')) {
-        modal.style.display = 'flex'; // Show the modal
-      }
+        // If not logged in, show the login box
+        if (!isLoggedIn) {
+            showLogin();
+        }
 
-      // Close modal and store the state
-      document.getElementById('login-btn').addEventListener('click', function() {
-        alert('Redirecting to Login...');
-        closeModal();
-      });
+        // Simulate a login/logout action (for testing purposes)
+        document.querySelector('.login-btn').addEventListener('click', () => {
+            localStorage.setItem('loggedIn', 'true'); // Set login status to true
+            document.getElementById('login-container').style.display = 'none'; // Hide login box
+        });
 
-      document.getElementById('signup-btn').addEventListener('click', function() {
-        alert('Redirecting to Sign Up...');
-        closeModal();
-      });
+        document.querySelector('.signup-btn').addEventListener('click', () => {
+            // Simulate signup process (could be linked to actual signup logic)
+            localStorage.setItem('loggedIn', 'true'); // Set login status to true
+            document.getElementById('login-container').style.display = 'none'; // Hide login box
+        });
 
-      document.getElementById('github-login-btn').addEventListener('click', function() {
-        redirectToGitHub();
-      });
-
-      document.getElementById('stay-logged-out').addEventListener('click', function() {
-        closeModal();
-      });
-
-      // Close the modal and mark it as closed
-      function closeModal() {
-        modal.style.display = 'none';
-        localStorage.setItem('modalClosed', 'true'); // Remember the user closed the modal
-      }
-
-      // Redirect user to GitHub for OAuth
-      function redirectToGitHub() {
-        const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientID}&redirect_uri=${redirectURI}&scope=user`;
-
-        // Redirect to GitHub OAuth page
-        window.location.href = githubAuthUrl;
-      }
-    }
-  </script>
+        // Handle "Stay logged out" action
+        document.querySelector('.logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('loggedIn'); // Remove login status
+            document.getElementById('login-container').style.display = 'flex'; // Show login box again
+        });
+    </script>
 </body>
 </html>
