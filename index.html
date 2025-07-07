@@ -18,119 +18,83 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            margin: 0;
         }
 
         .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            bottom: -100%;
-            left: 0;
+            background-color: #1c1c1c;
+            color: white;
             width: 100%;
-            height: 100%;
-            transition: bottom 0.5s ease-in-out;
-        }
-
-        .login-box {
-            background-color: #1e1e1e;
-            color: #fff;
-            padding: 40px;
+            max-width: 400px;
+            padding: 30px;
             border-radius: 10px;
             text-align: center;
-            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease-in-out;
         }
 
-        .login-box h2 {
-            margin-bottom: 10px;
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
-        .login-box p {
+        h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 16px;
             margin-bottom: 20px;
         }
 
-        .buttons {
-            margin-top: 20px;
-        }
-
-        .login-btn, .signup-btn {
+        .login-btn, .signup-btn, .stay-logged-out-btn {
             width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            background-color: #007bff;
-            color: white;
+            padding: 12px;
+            margin: 8px 0;
+            background-color: #1e90ff;
             border: none;
-            border-radius: 5px;
+            color: white;
             font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        .login-btn:hover, .signup-btn:hover {
+        .login-btn:hover, .signup-btn:hover, .stay-logged-out-btn:hover {
             background-color: #0056b3;
         }
 
-        .logout-btn {
-            color: #999;
-            text-decoration: none;
-            display: block;
-            margin-top: 10px;
+        .login-btn:active, .signup-btn:active, .stay-logged-out-btn:active {
+            background-color: #00408b;
         }
 
-        .logout-btn:hover {
-            color: #fff;
+        .stay-logged-out-btn {
+            background-color: transparent;
+            color: #bbb;
+            font-size: 14px;
         }
 
-        /* Animation for showing the login box */
-        .show-login {
-            bottom: 0;
+        .stay-logged-out-btn:hover {
+            color: white;
+            text-decoration: underline;
         }
+
     </style>
 </head>
 <body>
-    <div class="login-container" id="login-container">
-        <div class="login-box">
-            <h2>Welcome back</h2>
-            <p>Log in or sign up to get smarter responses, upload files and images, and more.</p>
-            <div class="buttons">
-                <button class="login-btn">Log in</button>
-                <button class="signup-btn">Sign up for free</button>
-                <a href="#" class="logout-btn">Stay logged out</a>
-            </div>
-        </div>
+    <div class="login-container">
+        <h2>Welcome back</h2>
+        <p>Log in or sign up to get smarter responses, upload files and images, and more.</p>
+        <button class="login-btn">Log in</button>
+        <button class="signup-btn">Sign up for free</button>
+        <button class="stay-logged-out-btn">Stay logged out</button>
     </div>
-
-    <script>
-        // Check if the user is logged in (for demonstration, we're using localStorage to simulate login status)
-        const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
-
-        // Function to show the login container with animation
-        const showLogin = () => {
-            document.getElementById('login-container').classList.add('show-login');
-        }
-
-        // If not logged in, show the login box
-        if (!isLoggedIn) {
-            showLogin();
-        }
-
-        // Simulate a login/logout action (for testing purposes)
-        document.querySelector('.login-btn').addEventListener('click', () => {
-            localStorage.setItem('loggedIn', 'true'); // Set login status to true
-            document.getElementById('login-container').style.display = 'none'; // Hide login box
-        });
-
-        document.querySelector('.signup-btn').addEventListener('click', () => {
-            // Simulate signup process (could be linked to actual signup logic)
-            localStorage.setItem('loggedIn', 'true'); // Set login status to true
-            document.getElementById('login-container').style.display = 'none'; // Hide login box
-        });
-
-        // Handle "Stay logged out" action
-        document.querySelector('.logout-btn').addEventListener('click', () => {
-            localStorage.removeItem('loggedIn'); // Remove login status
-            document.getElementById('login-container').style.display = 'flex'; // Show login box again
-        });
-    </script>
 </body>
 </html>
