@@ -1,100 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supreme AI Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+    /* Popup styling */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s ease-in-out;
+    }
 
-        .login-container {
-            background-color: #1c1c1c;
-            color: white;
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.5s ease-in-out;
-        }
+    .popup.show {
+      opacity: 1;
+      visibility: visible;
+      animation: popupSlideDown 1s ease-out;
+    }
 
-        @keyframes slideUp {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
+    .popup-content {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 80%;
+      max-width: 400px;
+    }
 
-        h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
+    .popup img {
+      width: 100%;
+      max-height: 200px;
+      border-radius: 10px;
+    }
 
-        p {
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
+    .popup h2 {
+      margin-top: 20px;
+      color: #fff;
+      font-weight: bold;
+    }
 
-        .login-btn, .signup-btn, .stay-logged-out-btn {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background-color: #1e90ff;
-            border: none;
-            color: white;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .popup p {
+      color: grey;
+      font-size: 14px;
+    }
 
-        .login-btn:hover, .signup-btn:hover, .stay-logged-out-btn:hover {
-            background-color: #0056b3;
-        }
+    .popup .btn {
+      background-color: #ffcd00;
+      color: #333;
+      padding: 15px;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      margin-top: 20px;
+      font-weight: bold;
+    }
 
-        .login-btn:active, .signup-btn:active, .stay-logged-out-btn:active {
-            background-color: #00408b;
-        }
+    .popup .btn:hover {
+      background-color: #f0c00b;
+    }
 
-        .stay-logged-out-btn {
-            background-color: transparent;
-            color: #bbb;
-            font-size: 14px;
-        }
+    @keyframes popupSlideDown {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(0);
+      }
+    }
 
-        .stay-logged-out-btn:hover {
-            color: white;
-            text-decoration: underline;
-        }
+    /* Main content */
+    .content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
 
-    </style>
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>Welcome back</h2>
-        <p>Log in or sign up to get smarter responses, upload files and images, and more.</p>
-        <button class="login-btn">Log in</button>
-        <button class="signup-btn">Sign up for free</button>
-        <button class="stay-logged-out-btn">Stay logged out</button>
+
+  <!-- Popup for First Visit or Logout -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <img src="https://via.placeholder.com/300x200" alt="Supreme AI Welcome Image"> <!-- Welcome Image -->
+      <h2>Welcome to Supreme AI</h2>
+      <p>Log in to access smarter responses, upload files, and explore AI features like never before!</p>
+      <button class="btn" id="loginWithGitHub">Log in with GitHub</button>
+      <p class="status" id="status"></p>
     </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content" id="content">
+    <!-- Content goes here -->
+  </div>
+
+  <script>
+    // GitHub OAuth credentials
+    const GITHUB_CLIENT_ID = 'Ov23limbkXqZGmu9WzFC';
+    const GITHUB_CLIENT_SECRET = '343853d6fb03912f329b536e2ebbdf1778050990';
+    const GITHUB_CALLBACK_URL = 'https://sadiq9869.github.io/auth/github/callback';
+
+    // Check if the user is logged in (you would typically check a token or session here)
+    const checkLoginStatus = () => {
+      const user = localStorage.getItem('userToken');
+      if (user) {
+        document.getElementById('popup').classList.remove('show');
+      } else {
+        document.getElementById('popup').classList.add('show');
+      }
+    };
+
+    // Open GitHub OAuth login popup
+    document.getElementById('loginWithGitHub').addEventListener('click', () => {
+      // Open the GitHub login URL
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_CALLBACK_URL}&scope=user`;
+      window.location.href = authUrl;
+    });
+
+    // Simulate receiving the authorization code after GitHub redirects back
+    // This step should be handled by your backend, which exchanges the code for an access token
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code) {
+      fetch(`https://github.com/login/oauth/access_token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: GITHUB_CLIENT_ID,
+          client_secret: GITHUB_CLIENT_SECRET,
+          code: code,
+          redirect_uri: GITHUB_CALLBACK_URL,
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        const token = data.access_token;
+        localStorage.setItem('userToken', token);  // Store the token locally
+        document.getElementById('popup').classList.remove('show');
+        document.getElementById('status').textContent = 'You are logged in!';
+      })
+      .catch(error => {
+        document.getElementById('status').textContent = 'Login failed: ' + error.message;
+      });
+    }
+
+    // Call the function to check login status
+    window.onload = checkLoginStatus;
+  </script>
+
 </body>
 </html>
