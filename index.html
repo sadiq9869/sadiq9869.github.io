@@ -178,8 +178,13 @@
           text: userQuery
         })
       });
+
       const data = await response.json();
-      return data.output || "Sorry, I couldn't generate a response.";
+      if (data && data.output) {
+        return data.output;
+      } else {
+        return "Sorry, I couldn't generate a response.";
+      }
     }
 
     // Google Custom Search API
@@ -189,12 +194,12 @@
       const url = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
       const res = await fetch(url);
       const data = await res.json();
-      const results = data.items?.map(item => ({
-        title: item.title,
-        link: item.link,
-        snippet: item.snippet
-      })) || [];
-      return results;
+      
+      if (data.items && data.items.length > 0) {
+        return data.items;
+      } else {
+        return null; // No results found
+      }
     }
 
     // Refine search results with DeepAI
@@ -235,16 +240,20 @@
       if (isSearchQuery) {
         try {
           const searchResults = await searchGoogle(userInput);
-          const refinedResults = await refineWithDeepAI(searchResults);
+          if (searchResults) {
+            const refinedResults = await refineWithDeepAI(searchResults);
 
-          aiMsg.innerHTML = "<b>🔍 Refined Web Results:</b><br><br>" + refinedResults
-            .map(item => `
-              <div style="margin-bottom: 10px;">
-                <strong style="color:#00ffff;">${item.title}</strong><br>
-                <span style="opacity:0.85;">${item.text}</span>
-              </div>
-            `)
-            .join("");
+            aiMsg.innerHTML = "<b>🔍 Refined Web Results:</b><br><br>" + refinedResults
+              .map(item => `
+                <div style="margin-bottom: 10px;">
+                  <strong style="color:#00ffff;">${item.title}</strong><br>
+                  <span style="opacity:0.85;">${item.text}</span>
+                </div>
+              `)
+              .join("");
+          } else {
+            aiMsg.textContent = "Sorry, no relevant web search results were found.";
+          }
         } catch (error) {
           aiMsg.textContent = "Supreme AI could not perform the web search.";
         }
