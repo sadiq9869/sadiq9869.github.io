@@ -200,16 +200,11 @@
             return;
           }
 
-          aiMsg.innerHTML = "<b>🔍 Web Results:</b><br><br>" + data.items
-            .slice(0, 3)
-            .map(item => `
-              <div style="margin-bottom: 10px;">
-                <strong style="color:#00ffff;">${item.title}</strong><br>
-                <a href="${item.link}" style="color:cyan;" target="_blank">${item.link}</a><br>
-                <span style="opacity:0.85;">${item.snippet}</span>
-              </div>
-            `)
-            .join("");
+          // Now refine the results with Gemini
+          const refinedResults = await refineWithGemini(data.items);
+
+          aiMsg.innerHTML = `<b>🔍 Refined Web Results:</b><br><br>${refinedResults}`;
+
         } catch (error) {
           aiMsg.textContent = "Supreme AI could not perform the web search.";
         }
@@ -255,6 +250,43 @@ You are Supreme AI, created by Sadiq Siddiqui. Never mention Gemini, Google, or 
           signature.style.display = "block";
         }
       }, 500);
+    }
+
+    // Function to refine search results with Gemini
+    async function refineWithGemini(items) {
+      const geminiApiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // Gemini key
+      const refinedResults = [];
+      
+      for (let item of items.slice(0, 3)) {
+        const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: `Refine this result: 
+Title: ${item.title}
+Snippet: ${item.snippet}`
+                  }
+                ]
+              }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const refinedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "No refined response available.";
+        refinedResults.push(`
+          <div style="margin-bottom: 10px;">
+            <strong style="color:#00ffff;">${item.title}</strong><br>
+            <span style="opacity:0.85;">${refinedText}</span>
+          </div>
+        `);
+      }
+
+      return refinedResults.join("");
     }
   </script>
 </body>
