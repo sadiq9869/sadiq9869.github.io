@@ -3,177 +3,239 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supreme AI Login</title>
+  <title>Login - Supreme AI</title>
   <style>
-    body {
+    /* General Reset */
+    * {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
-      color: #fff;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* Body Styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      flex-direction: column;
+      margin: 0;
     }
 
-    /* Popup styling */
-    .popup {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+    /* Login Form Styling */
+    .login-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.5s ease-in-out;
+      height: 100%;
+      background-color: #f4f4f4;
     }
 
-    .popup.show {
-      opacity: 1;
-      visibility: visible;
-      animation: popupSlideDown 1s ease-out;
-    }
-
-    .popup-content {
+    .form-container {
       background-color: #333;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      width: 35%;
       text-align: center;
-      width: 80%;
-      max-width: 400px;
+      transform: translateY(-50px);
+      animation: slideUp 1s ease-in-out;
     }
 
-    .popup img {
-      width: 100%;
-      max-height: 200px;
-      border-radius: 10px;
-    }
-
-    .popup h2 {
-      margin-top: 20px;
-      color: #fff;
+    .welcome-text {
+      color: white;
+      font-size: 30px;
       font-weight: bold;
+      text-shadow: 0 0 10px white;
     }
 
-    .popup p {
-      color: grey;
+    .supreme-features {
+      color: white;
       font-size: 14px;
+      text-shadow: 0 0 6px white;
+      margin-bottom: 20px;
     }
 
-    .popup .btn {
-      background-color: #ffcd00;
-      color: #333;
-      padding: 15px;
-      border-radius: 8px;
+    input {
       width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
-      margin-top: 20px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    button:hover {
+      background-color: #45a049;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    .signup-text {
+      color: white;
+      margin-top: 10px;
+    }
+
+    .signup-link {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+
+    .signup-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Redirect Page Styling */
+    .redirect-container {
+      display: none;
+      text-align: center;
+      background-color: #333;
+      padding: 50px;
+      width: 50%;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .supreme-header {
+      color: white;
+      font-size: 40px;
       font-weight: bold;
+      text-shadow: 0 0 10px white;
+      margin-bottom: 20px;
     }
 
-    .popup .btn:hover {
-      background-color: #f0c00b;
+    .social-btn {
+      margin: 10px;
+      padding: 12px;
+      width: 60%;
+      background-color: #555;
+      color: white;
+      border: none;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     }
 
-    @keyframes popupSlideDown {
-      0% {
-        transform: translateY(-100%);
+    .social-btn:hover {
+      background-color: #666;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Keyframe Animation for Form Slide */
+    @keyframes slideUp {
+      from {
+        transform: translateY(50px);
       }
-      100% {
+      to {
         transform: translateY(0);
       }
     }
-
-    /* Main content */
-    .content {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
   </style>
 </head>
 <body>
-
-  <!-- Popup for First Visit or Logout -->
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <img src="https://via.placeholder.com/300x200" alt="Supreme AI Welcome Image"> <!-- Welcome Image -->
-      <h2>Welcome to Supreme AI</h2>
-      <p>Log in to access smarter responses, upload files, and explore AI features like never before!</p>
-      <button class="btn" id="loginWithGitHub">Log in with GitHub</button>
-      <p class="status" id="status"></p>
+  <!-- Login Section -->
+  <div class="login-container">
+    <div class="form-container">
+      <h2 class="welcome-text">Welcome Back!</h2>
+      <p class="supreme-features">Supreme AI Features</p>
+      <form id="loginForm">
+        <input type="email" id="email" placeholder="Enter your email" required>
+        <input type="password" id="password" placeholder="Enter your password" required>
+        <button type="submit" class="login-btn">Login</button>
+        <p class="signup-text">Don't have an account? <a href="signup.html" class="signup-link">Sign Up</a></p>
+      </form>
+      <button class="social-btn" id="google-login-btn">Login with Google</button>
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div class="content" id="content">
-    <!-- Content goes here -->
+  <!-- Redirected Page with Login Options (Google, GitHub, OTP) -->
+  <div id="redirectPage" class="redirect-container" style="display: none;">
+    <h2 class="supreme-header">Supreme AI</h2>
+    <div class="login-options">
+      <button class="social-btn" id="google-login">Login with Google</button>
+      <button class="social-btn">Login with GitHub</button>
+      <button class="social-btn">Login with Apple</button>
+      <button class="social-btn">Login with OTP</button>
+    </div>
   </div>
 
-  <script>
-    // GitHub OAuth credentials
-    const GITHUB_CLIENT_ID = 'Ov23limbkXqZGmu9WzFC';
-    const GITHUB_CLIENT_SECRET = '343853d6fb03912f329b536e2ebbdf1778050990';
-    const GITHUB_CALLBACK_URL = 'https://sadiq9869.github.io/auth/github/callback';
+  <!-- Firebase Authentication Scripts -->
+  <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
 
-    // Check if the user is logged in (you would typically check a token or session here)
-    const checkLoginStatus = () => {
-      const user = localStorage.getItem('userToken');
-      if (user) {
-        document.getElementById('popup').classList.remove('show');
-      } else {
-        document.getElementById('popup').classList.add('show');
-      }
+    // Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmQyMu-Va-Mo3utQStaz3shbxWDyIK5qw",
+      authDomain: "supreme-ai.firebaseapp.com",
+      projectId: "supreme-ai",
+      storageBucket: "supreme-ai.firebasestorage.app",
+      messagingSenderId: "586558875086",
+      appId: "1:586558875086:web:328051e411d2b76deeb79f",
+      measurementId: "G-BV6KDTHHP7"
     };
 
-    // Open GitHub OAuth login popup
-    document.getElementById('loginWithGitHub').addEventListener('click', () => {
-      // Open the GitHub login URL
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${GITHUB_CLIENT_ID}&redirect_uri=${GITHUB_CALLBACK_URL}&scope=user`;
-      window.location.href = authUrl;
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Handle Login with Email/Password
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent form submission
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log('User Logged In:', user);
+          document.querySelector('.login-container').style.display = "none";  // Hide login form
+          document.getElementById('redirectPage').style.display = "block"; // Show redirected page
+        })
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
     });
 
-    // Simulate receiving the authorization code after GitHub redirects back
-    // This step should be handled by your backend, which exchanges the code for an access token
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-
-    if (code) {
-      fetch(`https://github.com/login/oauth/access_token`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          client_id: GITHUB_CLIENT_ID,
-          client_secret: GITHUB_CLIENT_SECRET,
-          code: code,
-          redirect_uri: GITHUB_CALLBACK_URL,
+    // Google Authentication
+    const googleProvider = new GoogleAuthProvider();
+    document.getElementById('google-login-btn').addEventListener('click', function() {
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          console.log("Logged in with Google: ", user);
+          document.querySelector('.login-container').style.display = "none";
+          document.getElementById('redirectPage').style.display = "block";
         })
-      })
-      .then(response => response.json())
-      .then(data => {
-        const token = data.access_token;
-        localStorage.setItem('userToken', token);  // Store the token locally
-        document.getElementById('popup').classList.remove('show');
-        document.getElementById('status').textContent = 'You are logged in!';
-      })
-      .catch(error => {
-        document.getElementById('status').textContent = 'Login failed: ' + error.message;
-      });
-    }
+        .catch((error) => {
+          alert("Error: " + error.message);
+        });
+    });
 
-    // Call the function to check login status
-    window.onload = checkLoginStatus;
+    // Check for authenticated user on page load
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('User is logged in:', user);
+        document.querySelector('.login-container').style.display = "none";  // Hide login form
+        document.getElementById('redirectPage').style.display = "block"; // Show redirected page
+      } else {
+        console.log('No user logged in');
+      }
+    });
   </script>
-
 </body>
 </html>
