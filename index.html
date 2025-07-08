@@ -292,22 +292,12 @@ async function detectAnswerLength(userInput) {
       aiMsg.className = "ai-msg";
       aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
       responseBox.appendChild(aiMsg);
-      
+    
+
       try {
-    const hfChoice = await askHuggingfaceRouter(userInput);
-    const orChoice = await askOpenrouterRouter(userInput);
-    const finalEngine = decideFinalEngine(hfChoice, orChoice);
-
-    let finalReply = "";
-
-    if (finalEngine.includes("huggingface")) {
-      finalReply = await smartAnalyzeWithHuggingFace(userInput);
-    } else if (finalEngine.includes("openrouter")) {
-      finalReply = await askOpenRouterAI(userInput);
-    } else if (finalEngine.includes("gemini")) {
-      const lengthType = await detectAnswerLength(userInput);
-      const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
-      const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+      const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
+        const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
+        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
         const res = await fetch(apiUrl, {
           method: "POST",
@@ -406,54 +396,6 @@ Question: "${userInput}"`
         }
       }, 500);
     }
-    
-    // ✅ AI Router Integration Start
-const huggingfaceKey = "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";
-const openrouterKey = "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";
-
-async function askHuggingfaceRouter(userInput) {
-  const res = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-xxl", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${huggingfaceKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      inputs: `User said: "${userInput}"\\nWhich engine(s) would give the best answer? Options: gemini, huggingface, openrouter, websearch, gemini + huggingface, huggingface + openrouter, gemini + openrouter + websearch. Answer:`
-    })
-  });
-
-  const data = await res.json();
-  return data[0]?.generated_text?.trim().toLowerCase() || "gemini";
-}
-
-async function askOpenrouterRouter(userInput) {
-  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${openrouterKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: "openrouter/mistral-7b",
-      messages: [
-        { role: "system", content: "You are a smart AI router. Decide which engine(s) are best for replying to a user." },
-        { role: "user", content: `User said: "${userInput}". Which engine is ideal? Answer one of: gemini, huggingface, openrouter, websearch, combo.` }
-      ]
-    })
-  });
-
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content?.trim().toLowerCase() || "gemini";
-}
-
-function decideFinalEngine(hf, or) {
-  if (hf === or) return hf;
-  if (hf.includes("combo") || or.includes("combo")) return "combo";
-  if (hf.includes("+") || or.includes("+")) return "combo";
-  return "multiapi";
-}
-// ✅ AI Router Integration End
   </script>
 </body>
 </html>
