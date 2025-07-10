@@ -276,47 +276,6 @@ async function detectAnswerLength(userInput) {
     return "medium";
   }
 }
-    
-    function checkIfAnswerIsGood(answer) {
-  if (!answer || typeof answer !== "string") return false;
-  const redFlags = [
-    "i'm not sure", "i cannot", "sorry", "no data", 
-    "i don’t have", "search online", "unavailable"
-  ];
-  return !redFlags.some(flag => answer.toLowerCase().includes(flag));
-}
-
-     function decideRefiner(webResult) {
-  const length = webResult.length;
-  if (length < 200) return "own";
-  if (length < 400) return "hugging";
-  if (length < 800) return "gemini";
-  return "combo";
-}
-   
-   
-    async function getWebSearchResult(query) {
-  const apiKey = "AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4";
-  const cx = "e12bfbf7edb8c4107";
-  const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${cx}&q=${encodeURIComponent(query)}`;
-
-  try {
-    const res = await fetch(searchUrl);
-    const data = await res.json();
-
-    if (!data.items || data.items.length === 0) {
-      return "No search results found.";
-    }
-
-    return data.items
-      .slice(0, 3)
-      .map(item => `🔗 ${item.title}\n${item.snippet}\n${item.link}`)
-      .join("\n\n");
-  } catch (err) {
-    console.error("Web search error:", err);
-    return "No search results due to an error.";
-  }
-}
 
 
     async function showResponse() {
@@ -506,76 +465,6 @@ saveToMemory(userInput, text); // Save to temporary memory
         }
       }, 500);
     }
-    
-    
-    async function generateSupremeAIResponse(userInput) {
-  const chatInput = document.getElementById("chatInput");
-  chatInput.value = userInput;
-  return new Promise((resolve) => {
-    const originalShowResponse = showResponse;
-    showResponse = async function() {
-      await originalShowResponse();
-      const responseBox = document.getElementById("response");
-      const lastAIResponse = Array.from(responseBox.getElementsByClassName("ai-msg")).pop();
-      resolve(lastAIResponse?.textContent?.replace(/^Supreme AI:\s*/, "") || "No reply.");
-      showResponse = originalShowResponse;
-    };
-    document.getElementById("askBtn").click();
-  });
-}
-
-
-   ...
-function decideRefiner(webResult) {
-   ...
-}
-
-async function getWebSearchResult(query) {
-  // ✅ Paste this full function here
-}
-
-async function handleSmartSupremeAI(userInput) {
-  ...
-}
-
-
-    
-    async function handleSmartSupremeAI(userInput) {
-  try {
-    let finalAnswer;
-
-    const geminiAnswer = await generateSupremeAIResponse(userInput);
-    if (checkIfAnswerIsGood(geminiAnswer)) {
-      finalAnswer = geminiAnswer;
-    } else {
-      const webResult = await getWebSearchResult(userInput);
-
-      if (!webResult || webResult.includes("No search results")) {
-        finalAnswer = "Sorry, I couldn't find anything useful for that.";
-      } else {
-        const refineMethod = decideRefiner(webResult);
-
-        if (refineMethod === "own") {
-          finalAnswer = await generateSupremeAIResponse(webResult);
-        } else if (refineMethod === "gemini") {
-          finalAnswer = await generateSupremeAIResponse(`${userInput}\nBased on this info:\n${webResult}`);
-        } else if (refineMethod === "hugging") {
-          finalAnswer = await smartAnalyzeWithHuggingFace(webResult, userInput);
-        } else {
-          const hugging = await smartAnalyzeWithHuggingFace(webResult, userInput);
-          finalAnswer = await generateSupremeAIResponse(`${userInput}\nRefined info:\n${hugging}`);
-        }
-      }
-    }
-
-    showResponse(finalAnswer);
-
-  } catch (error) {
-    console.error("Supreme AI failed:", error);
-    showResponse("⚠️ Sorry, an internal error occurred. Please try again.");
-  }
-}
-
   </script>
 </body>
 </html>
