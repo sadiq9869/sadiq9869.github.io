@@ -166,20 +166,32 @@
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
-  function generateUniqueId() {
-      return 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-    }
-    
-    function getMemoryContext() {
-  const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
+
+function saveToMemory(user, ai) {
+  const userId = getUserId();
+  const key = `chatMemory_${userId}`;
+
+  let memory = JSON.parse(localStorage.getItem(key) || "[]");
+  memory.push({ user, ai });
+
+  const estimatedSize = new Blob([JSON.stringify(memory)]).size;
+  const maxSize = 4 * 1024 * 1024; // 4MB
+
+  if (estimatedSize > maxSize) {
+    memory = memory.slice(-20);
+  }
+
+  localStorage.setItem(key, JSON.stringify(memory));
+}
+
+function getMemoryContext() {
+  const userId = getUserId();
+  const key = `chatMemory_${userId}`;
+
+  const memory = JSON.parse(localStorage.getItem(key) || "[]");
   return memory.slice(-3).map(pair => `User: ${pair.user}\nSupreme AI: ${pair.ai}`).join("\n\n");
 }
 
-function saveToMemory(user, ai) {
-  const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
-  memory.push({ user, ai });
-  localStorage.setItem("chatMemory", JSON.stringify(memory));
-}
 
 
     
@@ -279,10 +291,74 @@ async function detectAnswerLength(userInput) {
 }
 
 
+const secretPhrase = "🍁v12#Rise-Z🔥";
+
+function getUserId() {
+  let id = sessionStorage.getItem("uniqueUserId");
+  if (!id) {
+    id = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    sessionStorage.setItem("uniqueUserId", id);
+  }
+  return id;
+}
+
+function isOwnershipClaim(msg) {
+  const lower = msg.toLowerCase();
+  return [
+    "i am sadiq siddiqui",
+    "i am your owner",
+    "i created you",
+    "i built you",
+    "you are made by me",
+    "i am supreme ai owner"
+  ].some(phrase => lower.includes(phrase));
+}
+
+function verifySecret(msg) {
+  return msg.trim() === secretPhrase;
+}
+
+function handleOwnershipCheck(userInput) {
+  const userId = getUserId();
+  const deniedList = JSON.parse(sessionStorage.getItem("deniedOwnerIds") || "[]");
+  const verifiedOwnerId = sessionStorage.getItem("supreme_ownerId");
+
+  // Already verified
+  if (sessionStorage.getItem("supreme_isOwner") === "true" && verifiedOwnerId === userId) return false;
+
+  // Already denied
+  if (deniedList.includes(userId)) {
+    return true; // silently block
+  }
+
+  // Check for secret phrase
+  if (verifySecret(userInput)) {
+    sessionStorage.setItem("supreme_isOwner", "true");
+    sessionStorage.setItem("supreme_ownerId", userId);
+    showResponse("🔓 Welcome, verified owner. Full system access is now granted.");
+    return true;
+  }
+
+  // If ownership claim without valid secret
+  if (isOwnershipClaim(userInput)) {
+    // Deny this user for the rest of the session
+    deniedList.push(userId);
+    sessionStorage.setItem("deniedOwnerIds", JSON.stringify(deniedList));
+    sessionStorage.setItem("supreme_isOwner", "false");
+    showResponse("⚠ Identity could not be verified. Owner access denied.");
+    return true;
+  }
+
+  return false;
+}
+
+
+
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
-
+      // 🧠 Check for ownership claim or secret
+     if (handleOwnershipCheck(userInput)) return;
 // 🔥 Detect request for fake API/model info
 if (/api\s*key|model\s*id|endpoint|access\s*url/i.test(userInput)) {
   const creds = getFakeApiCredentials();
