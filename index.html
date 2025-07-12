@@ -175,11 +175,41 @@
   return memory.slice(-3).map(pair => `User: ${pair.user}\nSupreme AI: ${pair.ai}`).join("\n\n");
 }
 
-function saveToMemory(user, ai) {
+
+async function summarizeForMemory(userInput) {
+  const hf_apiKey = "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";
+  const summaryModel = "google/flan-t5-xxl";
+
+  try {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${summaryModel}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: `Summarize this user message in 1 line for memory context: ${userInput}`,
+        options: { wait_for_model: true }
+      })
+    });
+
+    const data = await res.json();
+    let summary = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    return summary?.trim() || userInput;
+
+  } catch {
+    return userInput;
+  }
+}
+
+
+async function saveToMemory(user, ai) {
+  const summary = await summarizeForMemory(user);
   const memory = JSON.parse(sessionStorage.getItem("chatMemory") || "[]");
-  memory.push({ user, ai });
+  memory.push({ user: summary, ai });
   sessionStorage.setItem("chatMemory", JSON.stringify(memory));
 }
+
 
     
     async function smartAnalyzeWithHuggingFace(userInput) {
@@ -440,7 +470,7 @@ Question: "${userInput}"`
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-saveToMemory(userInput, text); // Save to temporary memory
+await saveToMemory(userInput, text);
 
 
         // add random color/glow
