@@ -175,41 +175,11 @@
   return memory.slice(-3).map(pair => `User: ${pair.user}\nSupreme AI: ${pair.ai}`).join("\n\n");
 }
 
-
-async function summarizeForMemory(userInput) {
-  const hf_apiKey = "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";
-  const summaryModel = "google/flan-t5-xxl";
-
-  try {
-    const res = await fetch(`https://api-inference.huggingface.co/models/${summaryModel}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${hf_apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        inputs: `Summarize this user message in 1 line for memory context: ${userInput}`,
-        options: { wait_for_model: true }
-      })
-    });
-
-    const data = await res.json();
-    let summary = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
-    return summary?.trim() || userInput;
-
-  } catch {
-    return userInput;
-  }
-}
-
-
-async function saveToMemory(user, ai) {
-  const summary = await summarizeForMemory(user);
+function saveToMemory(user, ai) {
   const memory = JSON.parse(sessionStorage.getItem("chatMemory") || "[]");
-  memory.push({ user: summary, ai });
+  memory.push({ user, ai });
   sessionStorage.setItem("chatMemory", JSON.stringify(memory));
 }
-
 
     
     async function smartAnalyzeWithHuggingFace(userInput) {
@@ -311,7 +281,6 @@ async function detectAnswerLength(userInput) {
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
-      const correctedInput = correctSpelling(userInput);
       const responseBox = document.getElementById("response");
       const signature = document.getElementById("signature");
 
@@ -338,7 +307,7 @@ async function detectAnswerLength(userInput) {
     
 
       try {
-      const lengthType = await detectAnswerLength(correctedInput);
+      const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
         const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
@@ -457,7 +426,7 @@ Previous conversation:
 ${getMemoryContext()}
 
 The user wants a ${lengthType}-length response.
-Question: "${correctedInput}"
+
 Question: "${userInput}"`
 
 
@@ -470,7 +439,7 @@ Question: "${userInput}"`
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-await saveToMemory(userInput, text);
+saveToMemory(userInput, text); // Save to temporary memory
 
 
         // add random color/glow
