@@ -297,22 +297,19 @@ Analyze and understand the user message: "${userInput}"`,
   if (validResponses.length === 0) {
     return "Sorry, no model could analyze your message well.";
   } 
-  let finalIntent = "";
+let finalIntent = "";
 if (validResponses.length === 1) {
     finalIntent = validResponses[0].text;
-  } else {
-    // Multiple responses: choose best one (e.g., longest) and refine
+} else {
     const sorted = validResponses.sort((a, b) => b.text.length - a.text.length);
     const bestIntent = sorted[0].text;
-      
-   finalIntent = await refineIntentWithGemini(bestIntent, userInput);
-   }
-   
- }
- // 💾 Save to cache
-  localStorage.setItem("intent_" + normalized, finalIntent);
-  return finalIntent;
- }
+    finalIntent = await refineIntentWithGemini(bestIntent, userInput);
+}
+
+// ✅ Now properly placed here:
+localStorage.setItem("intent_" + normalized, finalIntent);
+return finalIntent;
+
 // 👉 INSERTED: Detect expected answer length (short, medium, long)
 async function detectAnswerLength(userInput) {
   const hf_apiKey = "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";
