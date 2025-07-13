@@ -229,6 +229,9 @@ function saveToMemory({ user, intent, ai }) {
     "Writer/palmyra-base"
   ];
 
+const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000); // 6 sec timeout
+  
   const fetches = models.map(model =>
     fetch(`https://api-inference.huggingface.co/models/${model}`, {
       method: "POST",
@@ -284,22 +287,28 @@ Analyze and understand the user message: "${userInput}"`,
       })
       .catch(() => null)
   );
-
+  
   const results = await Promise.allSettled(fetches);
+  clearTimeout(timeout);
   const validResponses = results
     .filter(r => r.status === "fulfilled" && r.value)
     .map(r => r.value);
 
   if (validResponses.length === 0) {
     return "Sorry, no model could analyze your message well.";
-  } else if (validResponses.length === 1) {
-    return validResponses[0].text;
+  } 
+  let finalIntent = "";
+if (validResponses.length === 1) {
+    finalIntent = validResponses[0].text;
   } else {
-    return `Multiple expert models provided insights:\n\n` + validResponses
-      .slice(0, 3)
-      .map(r => `🧠 ${r.model} said: ${r.text}`)
-      .join("\n\n");
-  }
+    // Multiple responses: choose best one (e.g., longest) and refine
+    const sorted = validResponses.sort((a, b) => b.text.length - a.text.length);
+    const bestIntent = sorted[0].text;
+      
+   finalIntent = await refineIntentWithGemini(bestIntent, userInput);
+   }
+   
+ }
  // 💾 Save to cache
   localStorage.setItem("intent_" + normalized, finalIntent);
   return finalIntent;
