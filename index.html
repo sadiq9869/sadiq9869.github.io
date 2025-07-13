@@ -703,15 +703,22 @@ saveToSmartMemory(userInput, text);
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
         const glow = Math.floor(Math.random() * 10);
+    
          
-        const summarizedIntent = await summarizeIntentWithHuggingFace(userInput, await smartAnalyzeWithHuggingFace(userInput));
-const cachedAnswer = getRecentMemory(summarizedIntent, 15); // 15 days freshness check
+        // ✨ Step 1: Intent + memory recall check BEFORE Gemini call
+const summarizedIntent = await summarizeIntentWithHuggingFace(userInput, await smartAnalyzeWithHuggingFace(userInput));
+const cachedAnswer = getRecentMemory(summarizedIntent, 15);
 
 if (cachedAnswer) {
   aiMsg.innerHTML = `<span style="color:lime;text-shadow:0 0 5px lime;">(Saved)</span> Supreme AI: ${cachedAnswer.ai}`;
   responseBox.scrollTo({ top: responseBox.scrollHeight, behavior: "smooth" });
   return;
 }
+
+// ✨ Step 2: Now proceed to generate new response using web + gemini
+const lengthType = await detectAnswerLength(userInput);
+const text = await getSmartRefinedAnswer(userInput);
+// Gemini call continues below...
 
 
       } catch (e) {
