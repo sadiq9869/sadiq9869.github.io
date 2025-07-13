@@ -166,6 +166,12 @@
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
+  
+  document.getElementById("chatInput").addEventListener("input", function () {
+  this.style.height = "auto";
+  this.style.height = (this.scrollHeight) + "px";
+});
+
   function generateUniqueId() {
   let existingId = localStorage.getItem("supremeUserId");
 
@@ -698,7 +704,15 @@ saveToSmartMemory(userInput, text);
         emoji = await detectEmojiFromHuggingFace(userInput);
    }
 
-        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px       ${color};">Supreme AI:</span> ${text} ${emoji}`;
+        const cached = sessionStorage.getItem("gemini_" + userInput);
+if (cached) {
+  aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${cached} ${emoji}`;
+  return;
+}
+
+// after getting response:
+sessionStorage.setItem("gemini_" + userInput, text);
+
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
       }
