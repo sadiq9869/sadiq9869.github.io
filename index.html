@@ -231,7 +231,38 @@ function saveToMemory({ user, intent, ai }) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `Analyze and understand the user message: "${userInput}"`,
+        inputs: `
+You are an intelligent system that deeply understands user messages even if they have spelling mistakes, informal text, or broken grammar. 
+Your task is to detect the user’s real intent, emotion, and purpose. Think like a human.
+Only return a short, plain-language explanation of the user’s intent (not the answer).
+
+🔹 You are a highly advanced, intelligent intent-analysis system.
+
+🔹 Your mission is to deeply analyze the following user message and determine the user’s true intent, tone, and purpose. Think beyond the words — understand what the user is actually trying to ask, do, or express.
+
+🔹 Return only a short, plain-language explanation of the intent. 
+⚠️ Do not answer the question directly. Do not generate replies or solutions — just describe the user’s intent.
+
+🔹 Use human-like reasoning. Detect context, emotion (if any), and type of request (e.g. ask for info, joke, command, opinion, etc.).
+
+🔹 Your answer must be:
+- Short (1-2 sentences max)
+- Clear and direct
+- Without extra phrases or fluff
+- No AI-style introductions like “Sure!” or “Let me help…”
+
+🧩 Example formatting:
+✅ Input: "Tell me a joke"  
+✅ Output: The user is asking for a joke.
+
+✅ Input: "Can you explain quantum physics?"  
+✅ Output: The user wants a simplified explanation of quantum physics.
+
+✅ Input: "Show me today’s cricket score"  
+✅ Output: The user is requesting the current cricket score.
+
+📩 Now analyze this user input and return the detected intent below.\n\nQuestion:
+Analyze and understand the user message: "${userInput}"`,
         options: { wait_for_model: true }
       })
     })
@@ -281,7 +312,7 @@ async function detectAnswerLength(userInput) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `Analyze the following question and say only one word: short, medium, or long.\n\nQuestion: "${userInput}"`,
+        inputs: `Analyze the following question and say only one word: short, medium, or long."${userInput}"`,
         options: { wait_for_model: true }
       })
     });
@@ -351,6 +382,96 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
 
 
 
+  async function saveToSmartMemory(userInput, aiReply) {
+  let intent = await smartAnalyzeWithHuggingFace(userInput);
+  const isValid = await isIntentMeaningfulWithHuggingFace(userInput, intent);
+
+  if (!isValid) intent = userInput;
+  const label = await summarizeIntentWithHuggingFace(userInput, intent);
+
+  const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
+
+  memory.push({
+    user: userInput,
+    intent: label,
+    ai: aiReply,
+    timestamp: Date.now() // 🕒 Save time of answer
+  });
+
+  localStorage.setItem("chatMemory", JSON.stringify(memory));
+}
+
+
+// ✅ Unified search + refine + Gemini final polish
+async function getSmartRefinedAnswer(userInput) {
+  const searchKey = "AIzaSyD_EyWekoHcOHOIcAbunyDNUX0zzaPd-B4";
+  const cx = "e12bfbf7edb8c4107";
+  const hf_apiKey = "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";
+  const geminiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc";
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
+
+  // 1. 🌐 Google search
+  let rawResult = "";
+  try {
+    const res = await fetch(`https://www.googleapis.com/customsearch/v1?key=${searchKey}&cx=${cx}&q=${encodeURIComponent(userInput)}`);
+    const data = await res.json();
+    rawResult = data.items?.[0]?.snippet || "No relevant result found.";
+  } catch {
+    rawResult = "Web search failed or gave no results.";
+  }
+
+  // 2. 🧠 Hugging Face refine
+  let refined = rawResult;
+  try {
+    const hfRes = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-xxl", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        inputs: `Refine this for clarity and remove noise:\n\n${rawResult}`,
+        options: { wait_for_model: true }
+      })
+    });
+
+    const hfData = await hfRes.json();
+    refined = Array.isArray(hfData) ? hfData[0]?.generated_text : hfData?.generated_text || rawResult;
+  } catch {}
+
+  // 3. 💎 Final polish via Gemini
+  try {
+    const geminiRes = await fetch(geminiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: `You are Supreme AI. Refine and humanize this final response before showing to the user:\n\n${refined}`
+          }]
+        }]
+      })
+    });
+
+    const geminiData = await geminiRes.json();
+    const finalPolished = geminiData.candidates?.[0]?.content?.parts?.[0]?.text;
+    return finalPolished || refined;
+  } catch {
+    return refined;
+  }
+}
+
+    function getRecentMemory(intentLabel, maxAgeDays = 30) {
+  const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
+  const now = Date.now();
+  const ageLimit = maxAgeDays * 24 * 60 * 60 * 1000;
+
+  return memory.reverse().find(entry => 
+    entry.intent === intentLabel && 
+    now - entry.timestamp < ageLimit
+  );
+}
+
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
       const userInput = inputField.value.trim();
@@ -399,6 +520,9 @@ This is your dedicated session token. Let me know if you need SDKs or usage help
       const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
         const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+        
+        const text = await getSmartRefinedAnswer(userInput);
+        
 
         const res = await fetch(apiUrl, {
           method: "POST",
@@ -543,12 +667,12 @@ Emoji rules:
 
 
 
-Previous conversation:
-${getMemoryContext()}
 
+
+Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
+User message Question: "${intent}"`
 
-Question: "${userInput}"`
 
 
                   }
@@ -570,7 +694,8 @@ if (!isValidIntent) {
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
 
-saveToMemory({ user: userInput, intent, ai: text });
+saveToSmartMemory(userInput, text);
+
 
 
 
@@ -578,8 +703,16 @@ saveToMemory({ user: userInput, intent, ai: text });
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
         const glow = Math.floor(Math.random() * 10);
+         
+        const summarizedIntent = await summarizeIntentWithHuggingFace(userInput, await smartAnalyzeWithHuggingFace(userInput));
+const cachedAnswer = getRecentMemory(summarizedIntent, 15); // 15 days freshness check
 
-        aiMsg.innerHTML =  `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
+if (cachedAnswer) {
+  aiMsg.innerHTML = `<span style="color:lime;text-shadow:0 0 5px lime;">(Saved)</span> Supreme AI: ${cachedAnswer.ai}`;
+  responseBox.scrollTo({ top: responseBox.scrollHeight, behavior: "smooth" });
+  return;
+}
+
 
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
