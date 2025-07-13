@@ -296,7 +296,6 @@ Analyze and understand the user message: "${userInput}"`,
   }
  // 💾 Save to cache
   sessionStorage.setItem("intent_" + normalized, finalIntent);
-
   return finalIntent;
  }
 // 👉 INSERTED: Detect expected answer length (short, medium, long)
@@ -380,6 +379,89 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
   }
 }
 
+   async function saveToSmartMemory(userInput, aiReply) {
+  let intent = await smartAnalyzeWithHuggingFace(userInput);
+  const isValid = await isIntentMeaningfulWithHuggingFace(userInput, intent);
+
+  if (!isValid) intent = userInput;
+  const label = await summarizeIntentWithHuggingFace(userInput, intent);
+
+  const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
+
+  memory.push({
+    user: userInput,
+    intent: label,
+    ai: aiReply
+  });
+
+  localStorage.setItem("chatMemory", JSON.stringify(memory));
+}
+
+
+    async function detectEmojiFromHuggingFace(userInput) {
+  const hf_apiKey = "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";
+  const model = "google/flan-t5-xxl";
+
+  const prompt = `
+You're an AI assistant that adds a relevant emoji based on the user's message.
+Analyze the user's tone, emotion, and purpose, then return ONLY ONE appropriate emoji.
+Do NOT add any text or explanation, just return the single emoji.
+
+User message: "${userInput}"
+`;
+
+  try {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
+    });
+
+    const data = await res.json();
+    let output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    return output?.trim().match(/[\p{Emoji}]/gu)?.[0] || ""; // Extract only emoji if exists
+  } catch {
+    return "";
+  }
+}
+
+
+   async function shouldUseEmoji(userInput) {
+  const hf_apiKey = "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";
+  const model = "google/flan-t5-xxl";
+
+  const prompt = `
+You're an advanced AI assistant. Based on the user's message, decide if adding an emoji would feel **natural and appropriate**.
+
+Return YES if:
+- The tone is casual, fun, friendly, emotional, or expressive
+Return NO if:
+- The message is technical, serious, sad, or professional
+
+Only return YES or NO.
+User: "${userInput}"
+`;
+
+  try {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
+    });
+
+    const data = await res.json();
+    let output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    return (output || "").toLowerCase().includes("yes");
+  } catch {
+    return false; // Default to no emoji if model fails
+  }
+}
 
 
     async function showResponse() {
@@ -601,7 +683,8 @@ if (!isValidIntent) {
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
 
-saveToMemory({ user: userInput, intent, ai: text });
+saveToSmartMemory(userInput, text);
+
 
 
 
@@ -609,9 +692,13 @@ saveToMemory({ user: userInput, intent, ai: text });
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
         const glow = Math.floor(Math.random() * 10);
+        let emoji = "";
+        const useEmoji = await shouldUseEmoji(userInput);
+        if (useEmoji) {
+        emoji = await detectEmojiFromHuggingFace(userInput);
+   }
 
-        aiMsg.innerHTML =  `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${text}`;
-
+        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px       ${color};">Supreme AI:</span> ${text} ${emoji}`;
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
       }
