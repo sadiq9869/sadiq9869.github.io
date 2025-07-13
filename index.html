@@ -166,7 +166,6 @@
     Supreme AI © 2025 • Owner: <strong>Sadiq Siddiqui (Siddique)</strong>
   </footer>
   <script>
-  
   document.getElementById("chatInput").addEventListener("input", function () {
   this.style.height = "auto";
   this.style.height = (this.scrollHeight) + "px";
@@ -410,9 +409,9 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
 
   const prompt = `
 You're an AI assistant that adds a relevant emoji based on the user's message.
-Analyze the user's tone, emotion, and purpose, then return ONLY ONE or multiple appropriate emoji.
-Do NOT add any text or explanation, just return the single emoji or multiple emoji 
- give own answer and take own decision like real intelligent supreme Ai.
+Analyze the user's tone, emotion, and purpose, then return ONLY ONE appropriate emoji.
+Do NOT add any text or explanation, just return the single emoji.
+
 User message: "${userInput}"
 `;
 
@@ -446,7 +445,7 @@ Return YES if:
 - The tone is casual, fun, friendly, emotional, or expressive
 Return NO if:
 - The message is technical, serious, sad, or professional
- give own answer and take own decision like real intelligent supreme Ai.
+
 Only return YES or NO.
 User: "${userInput}"
 `;
@@ -704,15 +703,7 @@ saveToSmartMemory(userInput, text);
         emoji = await detectEmojiFromHuggingFace(userInput);
    }
 
-        const cached = localStorage.getItem("gemini_" + userInput);
-if (cached) {
-  aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${cached} ${emoji}`;
-  return;
-}
-
-// after getting response:
-localStorage.setItem("gemini_" + userInput, text);
-
+        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px       ${color};">Supreme AI:</span> ${text} ${emoji}`;
       } catch (e) {
         aiMsg.textContent = "Supreme AI could not connect to the server.";
       }
