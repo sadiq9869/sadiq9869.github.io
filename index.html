@@ -578,7 +578,8 @@ Emoji rules:
 
 Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
-User message Question: "${userInput}"`
+User message Question: "${intent}"`
+
 
 
                   }
@@ -600,7 +601,8 @@ if (!isValidIntent) {
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
 
-saveToMemory({ user: userInput, intent, ai: text });
+saveToSmartMemory(userInput, text);
+
 
 
 
