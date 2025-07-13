@@ -183,19 +183,23 @@
     
     function getMemoryContext() {
   const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
-  return memory.slice(-3).map(pair => `User: ${pair.user}\nSupreme AI: ${pair.ai}`).join("\n\n");
+  return memory.slice(-3).map(pair => `Intent: ${pair.intent}\nSupreme AI: ${pair.ai}`).join("\n\n");
 }
 
-function saveToMemory(user, ai) {
+function saveToMemory({ user, intent, ai }) {
   const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
-  memory.push({ user, ai });
+  memory.push({ user, intent, ai });
   localStorage.setItem("chatMemory", JSON.stringify(memory));
 }
+
 
 
     
     async function smartAnalyzeWithHuggingFace(userInput) {
   const hf_apiKey = "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";
+  const normalized = userInput.trim().toLowerCase();
+  const cached = sessionStorage.getItem("intent_" + normalized);
+  if (cached) return cached;
   const models = [
     "mistralai/Mistral-7B-Instruct-v0.1",
     "tiiuae/falcon-7b-instruct",
@@ -259,8 +263,11 @@ function saveToMemory(user, ai) {
       .map(r => `🧠 ${r.model} said: ${r.text}`)
       .join("\n\n");
   }
-}
+ // 💾 Save to cache
+  sessionStorage.setItem("intent_" + normalized, finalIntent);
 
+  return finalIntent;
+ }
 // 👉 INSERTED: Detect expected answer length (short, medium, long)
 async function detectAnswerLength(userInput) {
   const hf_apiKey = "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";
@@ -288,6 +295,60 @@ async function detectAnswerLength(userInput) {
     return "medium";
   }
 }
+
+async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
+  const hf_apiKey = "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"; // Same key
+  const model = "google/flan-t5-xxl";
+
+  try {
+    const prompt = `User said: "${userInput}"\n\nIntent: "${intent}"\n\nIs this intent meaningful and accurate for the user's message? Just say YES or NO.`;
+
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
+    });
+
+    const data = await res.json();
+    let output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    output = (output || "").trim().toLowerCase();
+
+    return output.includes("yes");
+  } catch {
+    return true;
+  }
+}
+
+
+ async function summarizeIntentWithHuggingFace(userInput, intent) {
+  const hf_apiKey = "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";
+  const model = "google/flan-t5-xxl";
+
+  try {
+    const prompt = `User said: "${userInput}"\n\nInterpreted Intent: "${intent}"\n\nSummarize this intent into a short 3-6 word label.`;
+
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
+    });
+
+    const data = await res.json();
+    let output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    output = (output || "").trim();
+
+    return output.replace(/[".]/g, "").trim();
+  } catch {
+    return intent;
+  }
+}
+
 
 
     async function showResponse() {
@@ -499,7 +560,18 @@ Question: "${userInput}"`
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-saveToMemory(userInput, text); // Save to temporary memory
+let intent = await smartAnalyzeWithHuggingFace(userInput);
+let isValidIntent = await isIntentMeaningfulWithHuggingFace(userInput, intent);
+
+if (!isValidIntent) {
+  intent = userInput;
+}
+
+intent = await summarizeIntentWithHuggingFace(userInput, intent);
+
+
+saveToMemory({ user: userInput, intent, ai: text });
+
 
 
         // add random color/glow
@@ -515,7 +587,8 @@ saveToMemory(userInput, text); // Save to temporary memory
 
       
 
-      responseBox.scrollTop = responseBox.scrollHeight;
+      responseBox.scrollTo({ top: responseBox.scrollHeight, behavior: "smooth" });
+
 
       // restore signature if empty later
       setTimeout(() => {
