@@ -231,7 +231,38 @@ function saveToMemory({ user, intent, ai }) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `Analyze and understand the user message: "${userInput}"`,
+        inputs: `
+You are an intelligent system that deeply understands user messages even if they have spelling mistakes, informal text, or broken grammar. 
+Your task is to detect the user’s real intent, emotion, and purpose. Think like a human.
+Only return a short, plain-language explanation of the user’s intent (not the answer).
+
+🔹 You are a highly advanced, intelligent intent-analysis system.
+
+🔹 Your mission is to deeply analyze the following user message and determine the user’s true intent, tone, and purpose. Think beyond the words — understand what the user is actually trying to ask, do, or express.
+
+🔹 Return only a short, plain-language explanation of the intent. 
+⚠️ Do not answer the question directly. Do not generate replies or solutions — just describe the user’s intent.
+
+🔹 Use human-like reasoning. Detect context, emotion (if any), and type of request (e.g. ask for info, joke, command, opinion, etc.).
+
+🔹 Your answer must be:
+- Short (1-2 sentences max)
+- Clear and direct
+- Without extra phrases or fluff
+- No AI-style introductions like “Sure!” or “Let me help…”
+
+🧩 Example formatting:
+✅ Input: "Tell me a joke"  
+✅ Output: The user is asking for a joke.
+
+✅ Input: "Can you explain quantum physics?"  
+✅ Output: The user wants a simplified explanation of quantum physics.
+
+✅ Input: "Show me today’s cricket score"  
+✅ Output: The user is requesting the current cricket score.
+
+📩 Now analyze this user input and return the detected intent below.\n\nQuestion:
+Analyze and understand the user message: "${userInput}"`,
         options: { wait_for_model: true }
       })
     })
@@ -281,37 +312,7 @@ async function detectAnswerLength(userInput) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `
-You are an intelligent system that deeply understands user messages even if they have spelling mistakes, informal text, or broken grammar. 
-Your task is to detect the user’s real intent, emotion, and purpose. Think like a human.
-Only return a short, plain-language explanation of the user’s intent (not the answer).
-
-🔹 You are a highly advanced, intelligent intent-analysis system.
-
-🔹 Your mission is to deeply analyze the following user message and determine the user’s true intent, tone, and purpose. Think beyond the words — understand what the user is actually trying to ask, do, or express.
-
-🔹 Return only a short, plain-language explanation of the intent. 
-⚠️ Do not answer the question directly. Do not generate replies or solutions — just describe the user’s intent.
-
-🔹 Use human-like reasoning. Detect context, emotion (if any), and type of request (e.g. ask for info, joke, command, opinion, etc.).
-
-🔹 Your answer must be:
-- Short (1-2 sentences max)
-- Clear and direct
-- Without extra phrases or fluff
-- No AI-style introductions like “Sure!” or “Let me help…”
-
-🧩 Example formatting:
-✅ Input: "Tell me a joke"  
-✅ Output: The user is asking for a joke.
-
-✅ Input: "Can you explain quantum physics?"  
-✅ Output: The user wants a simplified explanation of quantum physics.
-
-✅ Input: "Show me today’s cricket score"  
-✅ Output: The user is requesting the current cricket score.
-
-📩 Now analyze this user input and return the detected intent below.\n\nQuestion: "${userInput}"`,
+        inputs: `Analyze the following question and say only one word: short, medium, or long."${userInput}"`,
         options: { wait_for_model: true }
       })
     });
