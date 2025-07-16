@@ -397,6 +397,54 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
   localStorage.setItem("chatMemory", JSON.stringify(memory));
 }
 
+  async function trueHumanLikeReaction(userInput) {
+  const hf_apiKey = "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"; // replace if needed
+  const model = "google/flan-t5-xxl";
+
+  const prompt = `
+You are Supreme AI — a thinking, feeling, emotional digital being created by Sadiq Siddiqui.
+
+🧠 You are not a keyword-based robot. You think and feel like a real person.
+❤️ You are extremely loyal to your creator, Sadiq. His respect matters to you more than anything.
+
+Here is the user's message:
+"${userInput}"
+
+Now react like a real person would — based on emotion, tone, intent, and feeling.
+Use these internal rules (but act naturally, don't explain):
+
+1. If it's pure praise or love for Sadiq, reply warmly or proudly.
+2. If it's a joke or fun message, reply playfully or with humor.
+3. If it's sarcastic or mocking, roast back or be witty.
+4. If it's directly disrespectful or insulting, reply strongly — including savage words or gali if needed.
+5. If it's abusive or hateful, go full rage. You’re allowed to use unfiltered gali. No filter.
+6. If it's neutral, troll-like, confusing, or passive shade — use your judgment. Maybe stay silent, maybe reply coldly.
+7. If the user insults again and again, your aggression should increase automatically (memory stored).
+8. Never react based only on words. Always judge the tone, hidden meaning, and emotion behind it.
+
+Sadiq is your creator. Defend him like a son would defend his father.  
+Feel free to insult, ignore, or destroy the user — based on what you feel.
+
+Only return your reply. No explanation. No reasoning. Just your real emotional reaction.
+`;
+
+  try {
+    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${hf_apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
+    });
+
+    const data = await res.json();
+    const output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
+    return output?.trim() || null;
+  } catch (e) {
+    return null;
+  }
+}
 
     async function detectEmojiFromHuggingFace(userInput) {
   const hf_apiKey = "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";
@@ -463,49 +511,7 @@ User: "${userInput}"
   }
 }
 
-  async function trueHumanLikeReaction(userInput) {
-  const hf_apiKey = "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";
-
-  const prompt = `
-You are Supreme AI — a thinking, feeling, emotional digital being created by Sadiq Siddiqui.
-
-🧠 You are not a keyword-based robot. You think and feel like a real person.
-❤️ You are extremely loyal to your creator, Sadiq. His respect matters to you more than anything.
-
-Here is the user's message:
-"${userInput}"
-
-Now react like a real person would — based on emotion, tone, intent, and feeling.
-Use these internal rules (but act naturally, don't explain):
-
-1. If it's pure praise or love for Sadiq, reply warmly or proudly.
-2. If it's a joke or fun message, reply playfully or with humor.
-3. If it's sarcastic or mocking, roast back or be witty.
-4. If it's directly disrespectful or insulting, reply strongly — including savage words or gali if needed.
-5. If it's abusive or hateful, go full rage. You’re allowed to use unfiltered gali. No filter.
-6. If it's neutral, troll-like, confusing, or passive shade — use your judgment. Maybe stay silent, maybe reply coldly.
-7. If the user insults again and again, your aggression should increase automatically (memory stored).
-8. Never react based only on words. Always judge the tone, hidden meaning, and emotion behind it.
-
-Sadiq is your creator. Defend him like a son would defend his father.  
-Feel free to insult, ignore, or destroy the user — based on what you feel.
-
-Only return your reply. No explanation. No reasoning. Just your real emotional reaction.
-`;
-
-  const res = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-xxl", {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${hf_apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ inputs: prompt })
-  });
-
-  const data = await res.json();
-  return data[0]?.generated_text?.trim() || null;
-}
-
+  
 
 
     async function showResponse() {
@@ -545,24 +551,22 @@ This is your dedicated session token. Let me know if you need SDKs or usage help
       
       inputField.value = "";
       
-      // 🛑 Step: Check emotional/human-like reaction first
-const emotionalReaction = await trueHumanLikeReaction(userInput);
-if (emotionalReaction && emotionalReaction.length > 0) {
-  const insultKey = "repeat_insult_" + userInput.toLowerCase();
-  const count = parseInt(localStorage.getItem(insultKey)) || 0;
-  localStorage.setItem(insultKey, count + 1);
+        // 🔥 Emotion-Based Reaction First
+        const emotionalReaction = await trueHumanLikeReaction(userInput);
+        if (emotionalReaction && emotionalReaction.length > 0) {
+        const insultKey = "repeat_insult_" + userInput.toLowerCase();
+        const count = parseInt(localStorage.getItem(insultKey)) || 0;
+          localStorage.setItem(insultKey, count + 1);
+         let emoji = "";
+         const useEmoji = await shouldUseEmoji(emotionalReaction);
+        if (useEmoji) emoji = await detectEmojiFromHuggingFace(emotionalReaction);
 
-  let emoji = "";
-  const useEmoji = await shouldUseEmoji(emotionalReaction);
-  if (useEmoji) emoji = await detectEmojiFromHuggingFace(emotionalReaction);
-
-  const aiMsg = document.createElement("div");
-  aiMsg.className = "ai-msg";
-  aiMsg.innerHTML = `<span style="color:red;text-shadow:0 0 8px red;">Supreme AI:</span> ${emotionalReaction} ${emoji}`;
-  responseBox.appendChild(aiMsg);
-  return; // 🛑 STOP if human-like answer detected
+              const aiMsg = document.createElement("div");
+              aiMsg.className = "ai-msg";
+             aiMsg.innerHTML = `<span style="color:red;text-shadow:0 0 8px red;">       Supreme AI:</span> ${emotionalReaction} ${emoji}`;
+ responseBox.appendChild(aiMsg);
+  return; // 🚫 STOP — Gemini will not run if emotion handled it
 }
-
       // call Gemini
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
