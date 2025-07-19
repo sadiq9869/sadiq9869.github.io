@@ -107,26 +107,23 @@
       padding: 0 20px;
     }
     #chatInput {
-  width: 100%;
-  min-height: 40px;
-  max-height: 200px;
-  resize: none;
-  overflow-y: auto;
-  padding: 8px 15px;
-  font-size: 14px;
-  font-family: 'Segoe UI', sans-serif !important;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  border-radius: 20px;
-  border: 2px solid #00ffff;
-  outline: none;
-  line-height: 20px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+     width: 100%;
+     padding: 8px 15px;
+     border: 2px solid #00ffff;
+     border-radius: 20px;
+     font-size: 14px;
+     outline: none;
+     background-color: rgba(0, 0, 0, 0.5);
+     color: #fff;
+     box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+     transition: box-shadow 0.3s ease, border-color 0.3s ease;
+     resize: none; /* So user can't drag to resize */
+     overflow-y: auto;
+     line-height: 20px;
+     white-space: pre-wrap;
+     word-wrap: break-word;
+     font-family: 'Segoe UI', sans-serif !important;
   }
-
 
     #chatInput::placeholder {
       color: #ccc;
@@ -162,7 +159,7 @@
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
 
-<textarea id="chatInput" placeholder="Ask me anything..." rows="1"></textarea>
+<textarea id="chatInput" placeholder="Ask me anything..." rows="2"></textarea>
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
   <footer>
@@ -176,27 +173,7 @@
     return existingId; // ✅ Already saved, return it
   }
   
-  const inputArea = document.getElementById("userInput");
-
-  inputArea.addEventListener("input", () => {
-    inputArea.style.height = "auto";
-    inputArea.style.height = inputArea.scrollHeight + "px";
-  });
-
-  // Optional: Reset height on send or enter
-  function resetInputHeight() {
-    inputArea.style.height = "40px";
-  }
-
-  // If you're using Enter key to submit:
-  inputArea.addEventListener("keydown", function (e) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      // trigger your send function
-      sendMessage(); // update if your send function is named differently
-      resetInputHeight();
-    }
-  });
+  
 
   // 🆕 Generate new unique ID
   const newId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
