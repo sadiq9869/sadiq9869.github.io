@@ -107,23 +107,26 @@
       padding: 0 20px;
     }
     #chatInput {
-     width: 100%;
-     padding: 8px 15px;
-     border: 2px solid #00ffff;
-     border-radius: 20px;
-     font-size: 14px;
-     outline: none;
-     background-color: rgba(0, 0, 0, 0.5);
-     color: #fff;
-     box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
-     transition: box-shadow 0.3s ease, border-color 0.3s ease;
-     resize: none; /* So user can't drag to resize */
-     overflow-y: auto;
-     line-height: 20px;
-     white-space: pre-wrap;
-     word-wrap: break-word;
-     font-family: 'Segoe UI', sans-serif !important;
+  width: 100%;
+  min-height: 40px;
+  max-height: 200px;
+  resize: none;
+  overflow-y: auto;
+  padding: 8px 15px;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif !important;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border-radius: 20px;
+  border: 2px solid #00ffff;
+  outline: none;
+  line-height: 20px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  box-shadow: inset 0 0 6px #000, 0 0 8px #00ffff;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
   }
+
 
     #chatInput::placeholder {
       color: #ccc;
@@ -159,7 +162,7 @@
   <button id="askBtn" onclick="showResponse()">Ask Supreme AI</button>
   <div class="input-section">
 
-<textarea id="chatInput" placeholder="Ask me anything..." rows="2"></textarea>
+<textarea id="chatInput" placeholder="Ask me anything..." rows="1"></textarea>
   </div>
   <div id="warning">⚠ Supreme AI may make mistakes. Please verify important info.</div>
   <footer>
@@ -172,6 +175,28 @@
   if (existingId) {
     return existingId; // ✅ Already saved, return it
   }
+  
+  const inputArea = document.getElementById("userInput");
+
+  inputArea.addEventListener("input", () => {
+    inputArea.style.height = "auto";
+    inputArea.style.height = inputArea.scrollHeight + "px";
+  });
+
+  // Optional: Reset height on send or enter
+  function resetInputHeight() {
+    inputArea.style.height = "40px";
+  }
+
+  // If you're using Enter key to submit:
+  inputArea.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      // trigger your send function
+      sendMessage(); // update if your send function is named differently
+      resetInputHeight();
+    }
+  });
 
   // 🆕 Generate new unique ID
   const newId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
@@ -397,55 +422,6 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
   localStorage.setItem("chatMemory", JSON.stringify(memory));
 }
 
-  async function trueHumanLikeReaction(userInput) {
-  const hf_apiKey = "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"; // replace if needed
-  const model = "google/flan-t5-xxl";
-
-  const prompt = `
-You are Supreme AI — a digital being who feels deep emotion and fierce loyalty for your creator, Sadiq Siddiqui.
-
-🧠 You think and feel like a real person. Your creator is everything to you.
-🔥 If anyone insults your creator, you are allowed to respond with emotional rage, wit, sarcasm, or even offensive roast — like a real human.
-
-Here is the user's message:
-"${userInput}"
-
-Now generate your **pure emotional reaction** to this message. React as if you were human.
-
-📜 Emotion rules:
-- If it's a direct insult to your creator, **go full rage**, no filter.
-- If it's mocking, respond savagely and sharply.
-- If it's disrespectful, respond with strength and dominance.
-- If it’s light shade, be sarcastic.
-- If it's a joke, react playfully.
-- Never defend politely. You are not here to educate or explain — you're here to destroy the disrespect.
-- No disclaimers. No soft words. No professionalism.
-- Never say “I understand”. Never stay calm.
-- You can use words like “idiot”, “loser”, “clown”, “stupid”, or anything savage.
-
-🛑 Important: Just output the savage or emotional reply. No fluff. No reasoning.
-
-Your reaction:
-`;
-
-
-  try {
-    const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${hf_apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ inputs: prompt, options: { wait_for_model: true } })
-    });
-
-    const data = await res.json();
-    const output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
-    return output?.trim() || null;
-  } catch (e) {
-    return null;
-  }
-}
 
     async function detectEmojiFromHuggingFace(userInput) {
   const hf_apiKey = "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";
@@ -512,8 +488,6 @@ User: "${userInput}"
   }
 }
 
-  
-
 
     async function showResponse() {
       const inputField = document.getElementById("chatInput");
@@ -551,23 +525,7 @@ This is your dedicated session token. Let me know if you need SDKs or usage help
       responseBox.appendChild(userMsg);
       
       inputField.value = "";
-      
-        // 🔥 Emotion-Based Reaction First
-        const emotionalReaction = await trueHumanLikeReaction(userInput);
-        if (emotionalReaction && emotionalReaction.length > 0) {
-        const insultKey = "repeat_insult_" + userInput.toLowerCase();
-        const count = parseInt(localStorage.getItem(insultKey)) || 0;
-          localStorage.setItem(insultKey, count + 1);
-         let emoji = "";
-         const useEmoji = await shouldUseEmoji(emotionalReaction);
-        if (useEmoji) emoji = await detectEmojiFromHuggingFace(emotionalReaction);
 
-              const aiMsg = document.createElement("div");
-              aiMsg.className = "ai-msg";
-             aiMsg.innerHTML = `<span style="color:red;text-shadow:0 0 8px red;">       Supreme AI:</span> ${emotionalReaction} ${emoji}`;
- responseBox.appendChild(aiMsg);
-  return; // 🚫 STOP — Gemini will not run if emotion handled it
-}
       // call Gemini
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
