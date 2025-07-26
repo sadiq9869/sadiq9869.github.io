@@ -659,9 +659,10 @@ Emoji rules:
 
 
 Previous conversation:${getMemoryContext()}
-Expected response length: ${lengthType}
-Detected user intent: ${hfMeta.intent}
-Expected tone: ${hfMeta.tone}
+The user wants a ${lengthType}-length response.
+User message Question: "${userInput}"
+Intent detected: ${hfMeta.intent}
+Tone required: ${hfMeta.tone}
 User: ${finalInputForAI}
 `
 
