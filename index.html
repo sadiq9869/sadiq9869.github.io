@@ -412,7 +412,7 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
 
 Return ONLY emojis, no explanation or words. you have no rule add emoji according to you.
 
-User message: "${userinput}"
+User message: "${userIntent}"
 `;
 
   try {
@@ -447,7 +447,7 @@ Return NO if:
 - The message is technical, serious, sad, or professional
 
 Only return YES or NO.
-User: "${userIntent}"
+User: "${userinput}"
 `;
 
   try {
