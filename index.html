@@ -262,7 +262,7 @@ Only return a short, plain-language explanation of the user’s intent (not the 
 ✅ Output: The user is requesting the current cricket score.
 
 📩 Now analyze this user input and return the detected intent below.\n\nQuestion:
-Analyze and understand the user message: "${userInput}"`,
+Analyze and understand the user message: "${userIntent}"`,
         options: { wait_for_model: true }
       })
     })
@@ -311,7 +311,7 @@ async function detectAnswerLength(userInput) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        inputs: `Analyze the following question and say only one word: short, medium, or long."${userInput}"`,
+        inputs: `Analyze the following question and say only one word: short, medium, or long."${userIntent}"`,
         options: { wait_for_model: true }
       })
     });
@@ -358,7 +358,7 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
   const model = "google/flan-t5-xxl";
 
   try {
-    const prompt = `User said: "${userInput}"\n\nInterpreted Intent: "${intent}"\n\nSummarize this intent into a short 3-6 word label.`;
+    const prompt = `User said: "${userInput}"\n\nInterpreted Intent: "${intent}"\n\nSummarize this intent into a short 3-6 word label or more if need.`;
 
     const res = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
       method: "POST",
@@ -403,11 +403,16 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
   const model = "google/flan-t5-xxl";
 
   const prompt = `
-You're an AI assistant that adds a relevant emoji based on the user's message.
-Analyze the user's tone, emotion, and purpose, then return ONLY ONE appropriate emoji.
-Do NOT add any text or explanation, just return the single emoji.
+ an expressive and creative AI that adds the **perfect mix of emojis** to match the user's message.
 
-User message: "${userInput}"
+🎯 Analyze the tone, mood, and meaning of the message.
+✨ Return 0, 1, 2, or 3 emojis that feel **emotionally appropriate, modern, and human-like**.
+❌ Avoid boring or repetitive emojis like ✅ 😁 😂 unless they're  needed if they are cool.
+💡 Use unique emojis when possible: 🎨 🧠 🚀 🎧 🌈 🔮 📚 🎉 ☕ 💬 🧘 💡 🎯 🌟 💭 etc.
+
+Return ONLY emojis, no explanation or words. you have no rule add emoji according to you.
+
+User message: "${userIntent}"
 `;
 
   try {
@@ -422,7 +427,7 @@ User message: "${userInput}"
 
     const data = await res.json();
     let output = Array.isArray(data) ? data[0]?.generated_text : data?.generated_text;
-    return output?.trim().match(/[\p{Emoji}]/gu)?.[0] || ""; // Extract only emoji if exists
+    return output?.trim().match(/[\p{Emoji}]/gu)?.join('') || "";
   } catch {
     return "";
   }
@@ -442,7 +447,7 @@ Return NO if:
 - The message is technical, serious, sad, or professional
 
 Only return YES or NO.
-User: "${userInput}"
+User: "${userIntent}"
 `;
 
   try {
@@ -660,15 +665,11 @@ Emoji rules:
 
 Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
+User message Question: "${userIntent}"
+(Original: ${userInput})
+Supreme AI Final Answer: "${finalAnswer}"
 
-Original user message: "${userInput}"
-Refined question for understanding: "${finalInputForAI}"
-
-${hfMeta.intent && hfMeta.intent !== "unknown" ? `Detected Intent: ${hfMeta.intent}` : ""}
-${hfMeta.tone && hfMeta.tone !== "neutral" ? `Preferred Tone: ${hfMeta.tone}` : ""}
-
-Please answer clearly, intelligently, and in the tone as per the detected intent.
-`.trim();
+`
 
 
                   }
