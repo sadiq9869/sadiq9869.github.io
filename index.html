@@ -172,8 +172,6 @@
   if (existingId) {
     return existingId; // ✅ Already saved, return it
   }
-  
-  
 
   // 🆕 Generate new unique ID
   const newId = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
@@ -660,9 +658,12 @@ Emoji rules:
 
 
 
-Previous conversation:${getMemoryContext()}
-The user wants a ${lengthType}-length response.
-User message Question: "${userInput}"
+Previous conversation: ${getMemoryContext()}
+User's Original Question: "${userInput}"
+Detected user intent: ${hfMeta.intent}
+Expected tone: ${hfMeta.tone}
+Expected response length: ${lengthType}
+User: ${finalInputForAI}
 `
 
 
