@@ -660,11 +660,15 @@ Emoji rules:
 
 Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
-User message Question: "${userInput}"
-Intent detected: ${hfMeta.intent}
-Tone required: ${hfMeta.tone}
-User: ${finalInputForAI}
-`
+
+Original user message: "${userInput}"
+Refined question for understanding: "${finalInputForAI}"
+
+${hfMeta.intent && hfMeta.intent !== "unknown" ? `Detected Intent: ${hfMeta.intent}` : ""}
+${hfMeta.tone && hfMeta.tone !== "neutral" ? `Preferred Tone: ${hfMeta.tone}` : ""}
+
+Please answer clearly, intelligently, and in the tone as per the detected intent.
+`.trim();
 
 
                   }
