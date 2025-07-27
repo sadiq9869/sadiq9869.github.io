@@ -670,8 +670,7 @@ Emoji rules:
 Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
 User message Question: "${userInput}"
-User Intent: "${intent}"
-            `.trim()
+`
 
                   }
                 ] 
@@ -683,8 +682,7 @@ User Intent: "${intent}"
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
 
-saveToSmartMemory(userInput, userIntent,text);
-
+saveToSmartMemory(userInput, text, intent);
 
 
 
