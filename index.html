@@ -510,6 +510,15 @@ This is your dedicated session token. Let me know if you need SDKs or usage help
 
       try {
       const lengthType = await detectAnswerLength(userInput); // 🔍 Detect short/medium/long
+      let intent = await smartAnalyzeWithHuggingFace(userInput);
+let isValidIntent = await isIntentMeaningfulWithHuggingFace(userInput, intent);
+
+if (!isValidIntent) {
+  intent = userInput;
+}
+
+intent = await summarizeIntentWithHuggingFace(userInput, intent);
+
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
         const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
@@ -661,8 +670,8 @@ Emoji rules:
 Previous conversation:${getMemoryContext()}
 The user wants a ${lengthType}-length response.
 User message Question: "${userInput}"
-`
-
+User Intent: "${intent}"
+            `.trim()
 
                   }
                 ] 
@@ -673,17 +682,8 @@ User message Question: "${userInput}"
 
         const data = await res.json();
         const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-let intent = await smartAnalyzeWithHuggingFace(userInput);
-let isValidIntent = await isIntentMeaningfulWithHuggingFace(userInput, intent);
 
-if (!isValidIntent) {
-  intent = userInput;
-}
-
-intent = await summarizeIntentWithHuggingFace(userInput, intent);
-
-
-saveToSmartMemory(userInput, text);
+saveToSmartMemory(userInput, userIntent,text);
 
 
 
