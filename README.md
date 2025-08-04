@@ -8,7 +8,7 @@ Supreme AI is a powerful, intelligent, and human-like conversational AI made wit
 
 ## 🌐 Live Demo
 
-👉 [Open Supreme AI Website](https://sadiq9869.github.io/)
+👉 [Open Supreme AI Website](https://supreme.AI.github.io/)
 
 ![Supreme AI Banner](https://sadiq9869.github.io/images/supreme-ai-banner.jpg)
 
