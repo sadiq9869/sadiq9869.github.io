@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supreme AI | Powered by Sadiq Siddiqui</title>
+  <style>
+    body { background-color: #111; color: white; font-family: Arial; text-align: center; padding: 20px; }
+    .chat-box { background: #222; border-radius: 10px; padding: 10px; margin: 10px; }
+    input, button { padding: 10px; font-size: 16px; margin: 5px; }
+    .msg { margin: 5px 0; }
+    .ai { color: #0ff; }
+  </style>
+</head>
+<body>
+  <h2>Created by Sadiq Siddiqui | The Smartest Free AI Assistant</h2>
+
+  <div>
+    <h3>💬 ChatGPT</h3>
+    <div class="chat-box" id="chatBox"></div>
+    <form id="chatForm">
+      <input type="text" id="chatInput" placeholder="Ask me anything..." required />
+      <button type="submit">Send</button>
+    </form>
+  </div>
+
+  <div>
+    <h3>🎙️ Voice to Text</h3>
+    <button onclick="startVoiceInput()">Start Voice Input</button>
+    <input type="text" id="voiceOutput" readonly />
+  </div>
+
+  <div>
+    <h3>🔊 Speak Answer</h3>
+    <input type="text" id="speakText" placeholder="Enter text to speak..." />
+    <button onclick="speak()">Speak</button>
+  </div>
+
+  <div>
+    <h3>🌤️ Weather</h3>
+    <input type="text" id="weatherCity" placeholder="Enter city..." />
+    <button onclick="getWeather()">Get Weather</button>
+    <pre id="weatherResult"></pre>
+  </div>
+
+  <div>
+    <h3>🖼️ Image Search</h3>
+    <input type="text" id="imageQuery" placeholder="Search image..." />
+    <button onclick="searchImage()">Search</button>
+    <div id="imageResults"></div>
+  </div>
+
+  <footer>
+    <p>Supreme AI © 2025 | Powered by Sadiq's personal APIs</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
