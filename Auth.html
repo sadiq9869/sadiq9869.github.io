@@ -1,1 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Supreme AI — Auth (Firebase Phone + Google)</title>
+
+  <!-- Firebase SDK (modules) -->
+  <script type="module">
+    // We will import firebase modules inside main script below
+  </script>
+
+  <style>
+    :root{
+      --bg:#071018;
+      --card:#2f2f2f;
+      --cyan:#00d9ff;
+      --white:#ffffff;
+      --muted:#bfbfbf;
+      --black:#000000;
+      --success:#16a34a;
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif}
+    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#071018 0%, #0a0a0a 100%);color:var(--white);display:flex;align-items:center;justify-content:center;padding:20px}
+    .container{width:100%;max-width:1100px}
+    .welcome-card{background:var(--card);border-radius:12px;padding:26px;box-shadow:0 8px 40px rgba(0,0,0,.6);display:flex;gap:18px;align-items:flex-start}
+    .left{flex:1}
+    .right{width:260px;padding-left:18px;border-left:1px solid rgba(255,255,255,.06)}
+    h1.title{font-size:28px;margin:0 0 8px;font-weight:800;color:var(--white)}
+    p.features{margin:0 0 16px;color:var(--white);opacity:.95}
+    .actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+    .circle-btn{width:82px;height:82px;border-radius:999px;border:2px solid var(--black);display:flex;align-items:center;justify-content:center;background:var(--white);cursor:pointer;font-weight:800;color:var(--black);font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+    .google-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;background:transparent;border:1px solid #bdbdbd;color:var(--white);cursor:pointer;height:44px}
+    .google-logo{width:18px;height:18px}
+    .muted-note{color:var(--muted);margin-top:12px;font-size:13px}
+    .panel{background:var(--white);color:#000;border-radius:14px;padding:20px;margin-top:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .brand{color:var(--cyan);font-weight:800;text-align:center;font-size:24px}
+    .input-circle{border-radius:999px;border:2px solid #000;padding:12px 16px;display:flex;align-items:center;gap:10px;max-width:420px;margin:14px auto}
+    .input-circle input{border:0;outline:0;font-size:16px;background:transparent;width:100%}
+    .continue-btn{display:block;margin:14px auto 0;padding:12px 26px;border-radius:999px;background:#000;color:#fff;border:0;font-size:15px;cursor:pointer}
+    .continue-btn.secondary{background:#e6e6e6;color:#000}
+    .rules{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+    .rule{background:#fff;border-radius:10px;padding:8px 12px;color:#000;display:flex;align-items:center;gap:8px;font-size:13px;border:1px solid #eee}
+    .rule.ok{border-color:var(--cyan);color:var(--cyan);font-weight:700}
+    .otp-wrap{display:flex;gap:10px;justify-content:center;margin-top:10px}
+    .otp-box{width:46px;height:56px;border-radius:8px;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:20px;background:#fff}
+    .otp-box.success{border-color:var(--success);transform:translateY(-6px)}
+    .otp-box.err{border-color:var(--danger)}
+    .app-area{display:none;margin-top:18px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 8px}
+    .logout-btn{background:linear-gradient(90deg,var(--cyan),#00a6e6);padding:8px 14px;border-radius:10px;color:#fff;border:0;cursor:pointer;font-weight:700}
+    .ai-frame{width:100%;height:78vh;border:0;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+    .phone-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:999px;background:var(--white);color:#000;border:2px solid #000;cursor:pointer;height:44px;font-weight:700}
+    .phone-icon{font-size:18px}
+    .hidden{display:none}
+    #recaptcha-container{margin-top:10px}
+    .user-info{display:flex;align-items:center;gap:12px}
+    .user-info img{border-radius:50%;width:40px;height:40px;object-fit:cover}
+    .small-muted{font-size:12px;color:#666;text-align:center;margin-top:8px}
+    @media (max-width:720px){
+      .welcome-card{flex-direction:column;padding:16px}
+      .right{width:100%;padding-left:0;border-left:none;border-top:1px solid rgba(255,255,255,.06);padding-top:12px;margin-top:12px}
+      .ai-frame{height:60vh}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- MAIN WELCOME + AUTH -->
+    <div class="welcome-card" id="welcomeCard">
+      <div class="left">
+        <h1 class="title">Welcome</h1>
+        <p class="features">Supreme AI — smart assistant, code helper, and your dev buddy. Ask, build, and automate.</p>
+
+        <div class="actions">
+          <div>
+            <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+              <div class="circle-btn" id="openSignup">Sign up</div>
+              <div class="circle-btn" id="openLogin">Login</div>
+            </div>
+
+            <div class="muted-note">Or continue with</div>
+
+            <div style="margin-top:10px;display:flex;gap:10px;align-items:center">
+              <button id="phoneBtn" class="phone-btn"><span class="phone-icon">📞</span> Continue with Phone</button>
+
+              <button id="googleBtn" class="google-btn" aria-label="Continue with Google">
+                <img class="google-logo" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><path fill='%23EA4335' d='M24 9.5c3.9 0 6.7 1.6 8.2 2.9l6.1-6.1C35.7 3.2 30.2 1 24 1 14.9 1 6.9 6.3 3.3 14.5l7.9 6.1C12.6 14.1 17.8 9.5 24 9.5z'/><path fill='%234285F4' d='M46.5 24.5c0-1.5-.1-2.6-.4-3.8H24v7.2h12.9c-.6 3.2-2.4 5.8-5 7.4l7.9 6.1C44.6 36.9 46.5 30.9 46.5 24.5z'/><path fill='%23FBBC05' d='M10.6 29.9C9.9 27.9 9.9 25.6 9.9 24s0-3.9.7-5.9L1 11.9C-1.2 15.1-1.2 20.6 1 24l9.6 5.9z'/><path fill='%2326A853' d='M24 46.9c6.2 0 11.7-2 15.8-5.4l-7.9-6.1c-2.2 1.5-5 2.4-7.9 2.4-6.2 0-11.4-4.6-13.1-10.6L3.3 33.5C6.9 41.7 14.9 46.9 24 46.9z'/></svg>">
+                <span style="font-weight:700;color:var(--white)">Google</span>
+              </button>
+            </div>
+
+            <div class="muted-note" style="margin-top:10px">Already have an account? <span style="color:var(--cyan);cursor:pointer" id="smallLoginLink">Log in</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="right">
+        <div style="font-weight:700;color:var(--white);">AI Features</div>
+        <ul style="color:var(--white);padding-left:14px;margin-top:8px;line-height:1.6">
+          <li>Code help & fixes</li>
+          <li>Web search + summaries</li>
+          <li>Image generation</li>
+          <li>File analysis (PDF, DOCX)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PHONE AUTH PANEL -->
+    <div id="phonePanel" class="panel hidden" style="margin-top:18px">
+      <div class="brand">SUPREME AI</div>
+      <h2 style="text-align:center">Continue with Phone</h2>
+
+      <div id="phoneStepInput">
+        <div class="input-circle" style="max-width:360px;margin:10px auto">
+          <span style="font-weight:700;color:#000">+91</span>
+          <input id="phoneNumber" placeholder="Enter phone number (without + or country code)" type="tel" inputmode="numeric" />
+        </div>
+
+        <div id="recaptcha-container"></div>
+
+        <button class="continue-btn" id="sendOtpBtn">Send OTP</button>
+        <div class="small-muted">We'll send an SMS with verification code.</div>
+      </div>
+
+      <div id="phoneStepOtp" class="hidden">
+        <div style="text-align:center">Enter the 6-digit code sent to <span id="phoneDisplay" style="font-weight:700"></span></div>
+        <div class="otp-wrap" style="margin-top:12px">
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+          <input class="otp-box" maxlength="1" inputmode="numeric" />
+        </div>
+        <div style="text-align:center;margin-top:12px">
+          <button class="continue-btn" id="verifyOtpBtn">Verify & Open my AI</button>
+        </div>
+        <div class="small-muted" style="margin-top:8px">Didn't receive? <span id="resendOtp" style="color:var(--cyan);cursor:pointer">Resend</span></div>
+      </div>
+    </div>
+
+    <!-- APP AREA (after login) -->
+    <div id="appArea" class="app-area">
+      <div class="topbar">
+        <div class="user-info" id="userInfo"></div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button id="logoutBtn" class="logout-btn">Logout</button>
+        </div>
+      </div>
+
+      <iframe id="aiFrame" class="ai-frame" src="https://sadiq9869.github.io"></iframe>
+    </div>
+
+  </div>
+
+  <!-- Firebase + App logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, RecaptchaVerifier, signInWithPhoneNumber, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
+    // ---- FIREBASE CONFIG (use your project's config) ----
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmQyMu-Va-Mo3utQStaz3shbxWDyIK5qw",
+      authDomain: "supreme-ai.firebaseapp.com",
+      projectId: "supreme-ai",
+      storageBucket: "supreme-ai.firebasestorage.app",
+      messagingSenderId: "586558875086",
+      appId: "1:586558875086:web:328051e411d2b76deeb79f",
+      measurementId: "G-BV6KDTHHP7"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // UI elements
+    const phoneBtn = document.getElementById('phoneBtn');
+    const googleBtn = document.getElementById('googleBtn');
+    const phonePanel = document.getElementById('phonePanel');
+    const sendOtpBtn = document.getElementById('sendOtpBtn');
+    const phoneNumberInput = document.getElementById('phoneNumber');
+    const phoneStepInput = document.getElementById('phoneStepInput');
+    const phoneStepOtp = document.getElementById('phoneStepOtp');
+    const phoneDisplay = document.getElementById('phoneDisplay');
+    const otpBoxes = Array.from(document.querySelectorAll('.otp-box'));
+    const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+    const resendOtp = document.getElementById('resendOtp');
+
+    const appArea = document.getElementById('appArea');
+    const welcomeCard = document.getElementById('welcomeCard');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const userInfo = document.getElementById('userInfo');
+    const aiFrame = document.getElementById('aiFrame');
+    const smallLoginLink = document.getElementById('smallLoginLink');
+
+    // Sign-in / UI handlers
+    googleBtn.addEventListener('click', async () => {
+      try {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        // result.user contains Firebase user
+        openAppForUser(result.user);
+      } catch (err) {
+        console.error(err);
+        alert('Google sign-in failed: ' + (err.message || err));
+      }
+    });
+
+    // Phone flow
+    phoneBtn.addEventListener('click', () => {
+      // show phone panel
+      phonePanel.classList.remove('hidden');
+      phoneStepInput.classList.remove('hidden');
+      phoneStepOtp.classList.add('hidden');
+      // render recaptcha (invisible)
+      window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible',
+        'callback': (resp) => {
+          // reCAPTCHA solved automatically
+        }
+      }, auth);
+    });
+
+    sendOtpBtn.addEventListener('click', async () => {
+      const phone = phoneNumberInput.value.trim();
+      if(!phone || !/^\d{6,15}$/.test(phone)){
+        alert('Please enter a valid phone number digits only (without +cc). Example: 9876543210');
+        return;
+      }
+      // construct E.164 with +91 default OR let user include country code?
+      // We'll assume Indian numbers if length==10 (prefix +91)
+      let e164 = phone;
+      if(phone.length === 10) e164 = '+91' + phone;
+      else if(phone.startsWith('+')) e164 = phone;
+      else e164 = '+' + phone; // assume user provided country code digits
+
+      // show display
+      phoneDisplay.innerText = e164;
+
+      try {
+        const appVerifier = window.recaptchaVerifier;
+        const confirmationResult = await signInWithPhoneNumber(auth, e164, appVerifier);
+        // store confirmationResult globally to verify later
+        window.confirmationResult = confirmationResult;
+        // show otp step
+        phoneStepInput.classList.add('hidden');
+        phoneStepOtp.classList.remove('hidden');
+        // focus first otp box
+        otpBoxes[0].focus();
+        console.log('OTP sent to', e164);
+      } catch (err) {
+        console.error('SMS not sent', err);
+        alert('Failed to send SMS: ' + (err.message || err));
+        // reset reCAPTCHA so user can try again
+        window.recaptchaVerifier.clear && window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {'size':'invisible'}, auth);
+      }
+    });
+
+    // OTP inputs auto-advance
+    otpBoxes.forEach((ip, idx) => {
+      ip.addEventListener('input', (e) => {
+        const v = ip.value;
+        if(v.length > 1) ip.value = v.slice(-1);
+        if(ip.value && idx < otpBoxes.length - 1) otpBoxes[idx+1].focus();
+      });
+      ip.addEventListener('keydown', (e) => {
+        if(e.key === 'Backspace' && !ip.value && idx > 0) otpBoxes[idx-1].focus();
+      });
+    });
+
+    verifyOtpBtn.addEventListener('click', async () => {
+      const code = otpBoxes.map(i => i.value || '').join('');
+      if(code.length !== otpBoxes.length){
+        alert('Please enter the full code');
+        return;
+      }
+      try {
+        const result = await window.confirmationResult.confirm(code);
+        // signed in
+        openAppForUser(result.user);
+      } catch (err) {
+        console.error('OTP verify failed', err);
+        // animate boxes red
+        otpBoxes.forEach(b => { b.classList.add('err'); setTimeout(()=>b.classList.remove('err'),800); });
+        alert('Incorrect code. Try again.');
+      }
+    });
+
+    resendOtp.addEventListener('click', () => {
+      // For security, recommend re-clicking send OTP (toggle UI)
+      phoneStepInput.classList.remove('hidden');
+      phoneStepOtp.classList.add('hidden');
+      // clear boxes
+      otpBoxes.forEach(b => b.value = '');
+      phoneNumberInput.focus();
+    });
+
+    // logout
+    logoutBtn.addEventListener('click', async () => {
+      await signOut(auth);
+      // reset UI
+      appArea.style.display = 'none';
+      welcomeCard.style.display = 'flex';
+      phonePanel.classList.add('hidden');
+      // clear recaptcha
+      if(window.recaptchaVerifier && window.recaptchaVerifier.clear) window.recaptchaVerifier.clear();
+      // clear confirmation
+      window.confirmationResult = null;
+    });
+
+    // on auth state
+    onAuthStateChanged(auth, (user) => {
+      if(user){
+        openAppForUser(user);
+      } else {
+        // logged out
+        appArea.style.display = 'none';
+        welcomeCard.style.display = 'flex';
+      }
+    });
+
+    // helper to open app UI
+    function openAppForUser(user){
+      // show app area
+      welcomeCard.style.display = 'none';
+      phonePanel.classList.add('hidden');
+      appArea.style.display = 'block';
+      // fill user info
+      const displayName = user.displayName || user.phoneNumber || user.email || 'User';
+      const photoURL = user.photoURL || '';
+      userInfo.innerHTML = `
+        <div style="display:flex;align-items:center;gap:12px">
+          ${photoURL ? `<img src="${photoURL}" alt="avatar">` : `<div style="width:40px;height:40px;border-radius:50%;background:#00172b;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">${(displayName||'U')[0].toUpperCase()}</div>`}
+          <div style="text-align:left">
+            <div style="font-weight:700">${escapeHtml(displayName)}</div>
+            <div style="font-size:12px;color:#dff7ff">${escapeHtml(user.email || user.phoneNumber || '')}</div>
+          </div>
+        </div>
+      `;
+      // ensure iframe points to your chat site (can be your repo page)
+      aiFrame.src = "https://sadiq9869.github.io";
+    }
+
+    function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, (m)=> ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    // small login link goes to phone panel for quick access
+    smallLoginLink.addEventListener('click', () => {
+      phonePanel.classList.remove('hidden');
+      phoneStepInput.classList.remove('hidden');
+      phoneStepOtp.classList.add('hidden');
+    });
+
+    // initial UI state: show welcome or app if logged in (onAuthStateChanged covers it)
+    // nothing else required here
+
+  </script>
+</body>
+</html>
 
