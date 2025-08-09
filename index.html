@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supreme AI - Login</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Identity Services script -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <div class="form-container sign-up">
+      <form id="signup-form">
+        <h1>Join Supreme AI</h1>
+        <div class="social-icons">
+          <!-- Replace the old google icon link with actual Google Sign-In button -->
+          <div id="g_id_signin_signup"></div>
+          <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+          <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+        <span>or use your email for registration</span>
+        <input type="text" placeholder="Name" required />
+        <input type="email" placeholder="Email" required />
+        <input type="password" placeholder="Password" required />
+        <button>Sign Up with Supreme AI</button>
+      </form>
+    </div>
+
+    <div class="form-container sign-in">
+      <form id="signin-form">
+        <h1>Welcome to Supreme AI</h1>
+        <div class="social-icons">
+          <!-- Google Sign-In button for sign-in -->
+          <div id="g_id_signin_signin"></div>
+          <a href="#" class="icon"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" class="icon"><i class="fa-brands fa-github"></i></a>
+          <a href="#" class="icon"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+        <span>or use your email password</span>
+        <input type="email" placeholder="Email" required />
+        <input type="password" placeholder="Password" required />
+        <a href="#">Forget Your Password?</a>
+        <button>Sign In to Supreme AI</button>
+      </form>
+    </div>
+
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1>Welcome Back to Supreme AI!</h1>
+          <p>Enter your details to continue your AI journey</p>
+          <button class="hidden" id="login">Sign In</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1>Hello, Friend of Supreme AI!</h1>
+          <p>Create your account to explore the power of AI</p>
+          <button class="hidden" id="register">Sign Up</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+  <script>
+    // Google Client ID
+    const CLIENT_ID = '183020375733-l81e2ur2a6gc4re1p72udipg1iles5e0.apps.googleusercontent.com';
+
+    // Render Google Sign-In button for Sign Up form
+    window.onload = function () {
+      google.accounts.id.initialize({
+        client_id: CLIENT_ID,
+        callback: handleCredentialResponse,
+      });
+
+      // Render sign-up Google button
+      google.accounts.id.renderButton(
+        document.getElementById('g_id_signin_signup'),
+        { theme: 'outline', size: 'medium', text: 'signup_with', shape: 'rectangular' }
+      );
+
+      // Render sign-in Google button
+      google.accounts.id.renderButton(
+        document.getElementById('g_id_signin_signin'),
+        { theme: 'outline', size: 'medium', text: 'signin', shape: 'rectangular' }
+      );
+
+      // Optional: prompt the One Tap sign-in (commented out here)
+      // google.accounts.id.prompt();
+    };
+
+    // This function handles the ID token returned by Google after sign-in
+    function handleCredentialResponse(response) {
+      // The response.credential contains the JWT ID token
+      // You can decode and use this token on your backend or here
+
+      console.log('Encoded JWT ID token: ' + response.credential);
+
+      // For demo, decode token client-side (using base64 decode)
+      // To decode properly, you can use a JWT library or parse the payload manually
+
+      const base64Url = response.credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+          })
+          .join('')
+      );
+      const userObject = JSON.parse(jsonPayload);
+      console.log('User info:', userObject);
+
+      alert(`Welcome, ${userObject.name}! You are logged in with Supreme AI using Google.`);
+      // Here you can redirect or do whatever you want after login
+    }
+  </script>
+</body>
+
+</html>
