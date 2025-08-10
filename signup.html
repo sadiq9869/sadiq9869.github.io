@@ -26,14 +26,8 @@
     animation: fadeInUp 0.8s ease-out;
   }
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from {opacity: 0; transform: translateY(30px);} 
+    to {opacity: 1; transform: translateY(0);} 
   }
   h1 {
     margin-bottom: 25px;
@@ -61,7 +55,7 @@
     position: relative;
     margin-bottom: 10px;
     width: 100%;
-    height: 45px;
+    height: auto;
   }
   .email-wrapper input {
     width: 100%;
@@ -77,6 +71,9 @@
   }
   .email-wrapper input:focus {
     box-shadow: 0 0 10px #4a90e2;
+  }
+  .email-wrapper.error input {
+    color: red; /* Red when invalid */
   }
   .placeholder {
     position: absolute;
@@ -137,65 +134,21 @@
   .continue-btn:hover::before {
     width: 0;
   }
-  .login-link {
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-  .login-link a {
-    color: #4a90e2;
-    text-decoration: none;
-  }
-  .divider {
-    display: flex;
-    align-items: center;
-    color: #aaa;
-    margin: 20px 0;
-  }
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid #555;
-  }
-  .divider:not(:empty)::before {
-    margin-right: .75em;
-  }
-  .divider:not(:empty)::after {
-    margin-left: .75em;
-  }
+  .login-link {font-size: 14px; margin-bottom: 20px;}
+  .login-link a {color: #4a90e2; text-decoration: none;}
+  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0;}
+  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
+  .divider:not(:empty)::before {margin-right: .75em;}
+  .divider:not(:empty)::after {margin-left: .75em;}
   .social-btn {
-    background: white;
-    color: black;
-    padding: 10px 60px 10px 10px;
-    border-radius: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    cursor: pointer;
-    font-weight: bold;
-    gap: 10px;
-    border: none;
-    outline: none;
-    width: 100%;
-    margin-bottom: 10px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
+    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
+    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-  .social-btn:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 5px 15px rgba(255,255,255,0.3);
-  }
-  .social-btn img {
-    width: 20px;
-    height: 20px;
-  }
-  .terms {
-    font-size: 12px;
-    color: #aaa;
-    margin-top: 20px;
-  }
-  .terms a {
-    color: #aaa;
-    text-decoration: underline;
-  }
+  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.3);} 
+  .social-btn img {width: 20px; height: 20px;}
+  .terms {font-size: 12px; color: #aaa; margin-top: 20px;}
+  .terms a {color: #aaa; text-decoration: underline;}
 
   /* Error styles with animation */
   .error-message {
@@ -242,25 +195,11 @@
     <button class="continue-btn">Continue</button>
     <p class="login-link">Already have an account? <a href="#">Log in</a></p>
     <div class="divider">OR</div>
-    <button class="social-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">
-      Continue with phone
-    </button>
-    <button class="social-btn">
-      <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google Logo">
-      Continue with Google
-    </button>
-    <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo">
-      Continue with Microsoft Account
-    </button>
-    <button class="social-btn">
-      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo">
-      Continue with GitHub
-    </button>
-    <div class="terms">
-      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
-    </div>
+    <button class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png">Continue with phone</button>
+    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000">Continue with Google</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg">Continue with Microsoft Account</button>
+    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">Continue with GitHub</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
   </div>
 <script>
   const emailInput = document.getElementById('email');
@@ -268,19 +207,16 @@
   const continueBtn = document.querySelector('.continue-btn');
 
   emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
-
   emailInput.addEventListener('blur', () => {
     wrapper.classList.remove('focused');
     if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
     else wrapper.classList.remove('filled');
   });
-
   emailInput.addEventListener('input', () => {
     const existingError = document.querySelector('.error-message');
     if (existingError) existingError.remove();
     emailInput.classList.remove('error-border');
   });
-
   continueBtn.addEventListener('click', () => {
     const emailValue = emailInput.value.trim();
     const existingError = document.querySelector('.error-message');
