@@ -195,6 +195,37 @@
   .terms a {
     color: #aaa;
     text-decoration: underline;
+  /* Error styles with animation */
+    .error-message {
+   display: flex;
+   align-items: center;
+   color: red;
+   font-size: 14px;
+   margin-top: 5px;
+   gap: 6px;
+   animation: shake 0.4s ease, fadeIn 0.3s  ease-in;
+   }
+   @keyframes shake {
+   0%, 100% { transform: translateX(0); }
+   20%, 60% { transform: translateX(-5px); }
+   40%, 80% { transform: translateX(5px); }
+  }
+    .error-icon {
+    background: red;   
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+    .error-border {
+    border-color: red !important;
+    box-shadow: 0 0 6px red !important;
+    animation: shake 0.4s ease;
   }
 </style>
 </head>
@@ -232,6 +263,7 @@
 <script>
   const emailInput = document.getElementById('email');
   const wrapper = document.querySelector('.email-wrapper');
+  const continueBtn = document.querySelector('.continue-btn');
 
   emailInput.addEventListener('focus', () => {
     wrapper.classList.add('focused');
@@ -243,6 +275,38 @@
       wrapper.classList.add('filled');
     } else {
       wrapper.classList.remove('filled');
+    }
+  });
+
+  // Remove error instantly when typing
+  emailInput.addEventListener('input', () => {
+    const existingError = document.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
+  });
+
+  // Validate email on Continue button click
+  continueBtn.addEventListener('click', () => {
+    const emailValue = emailInput.value.trim();
+    const existingError = document.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
+
+    let errorText = '';
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailValue === '') {
+      errorText = 'Email is required.';
+    } else if (!emailPattern.test(emailValue)) {
+      errorText = 'Email is not valid.';
+    }
+
+    if (errorText) {
+      emailInput.classList.add('error-border');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+      wrapper.appendChild(errorDiv);
     }
   });
 </script>
