@@ -3,150 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supreme AI Signup</title>
+<title>Supreme AI Popup</title>
 <style>
   body {
     background: #0a0f1f;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: Arial, sans-serif;
     margin: 0;
+    font-family: Arial, sans-serif;
   }
-  .container {
-    background: rgba(255, 255, 255, 0.05);
+
+  .popup {
+    background: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(255,0,255,0.15));
+    border: 2px solid rgba(0,255,255,0.5);
+    border-radius: 20px 60px 20px 60px;
     padding: 30px;
-    border-radius: 20px;
+    max-width: 270px;
     text-align: center;
-    width: 320px;
-    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    color: white;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(255,0,255,0.3);
+    transform: rotateY(15deg) scale(0.8);
+    animation: enter 1s ease forwards, breathe 3s infinite alternate ease-in-out;
   }
+
+  @keyframes enter {
+    from { opacity: 0; transform: rotateY(90deg) scale(0.5); }
+    to { opacity: 1; transform: rotateY(0deg) scale(1); }
+  }
+
+  @keyframes breathe {
+    0% { transform: scale(1) rotateY(0deg); }
+    100% { transform: scale(1.05) rotateY(2deg); }
+  }
+
   h1 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    font-weight: normal;
-  }
-  p.create-account {
-    margin-bottom: 20px;
-    font-size: 30px;
-    font-weight: normal;
-    color: white;
-    white-space: nowrap;
-  }
-  input[type="email"] {
-    width: 100%;
-    padding: 12px 0;
-    border: none;
-    border-bottom: 2px solid #aaa;
-    border-radius: 0;
-    outline: none;
-    font-size: 16px;
-    background: transparent;
-    color: white;
-    margin-bottom: 30px;
-  }
-  input[type="email"]::placeholder {
-    color: #aaa;
-  }
-  .continue-btn {
-    background: linear-gradient(90deg, #ff005e, #ff7b00);
-    border: none;
-    padding: 14px 20px;
-    width: 100%;
-    border-radius: 50px;
-    cursor: pointer;
-    color: white;
-    font-size: 16px;
+    font-size: 28px;
     font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
+    color: cyan;
   }
-  .login-link {
-    font-size: 14px;
+
+  p {
+    font-size: 16px;
     margin-bottom: 20px;
+    opacity: 0.85;
   }
-  .login-link a {
-    color: #4a90e2;
+
+  .btn {
+    display: inline-block;
+    padding: 12px 100px;
+    border-radius: 50px;
+    font-weight: bold;
     text-decoration: none;
+    font-size: 16px;
+    transition: 0.4s ease;
+    position: relative;
+    overflow: hidden;
   }
-  .divider {
-    display: flex;
-    align-items: center;
-    color: #aaa;
-    margin: 20px 0;
-  }
-  .divider::before, .divider::after {
+
+  .btn::after {
     content: '';
-    flex: 1;
-    border-bottom: 1px solid #555;
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: rgba(255,255,255,0.2);
+    transform: rotate(45deg) translateY(-100%);
+    transition: transform 0.5s ease;
   }
-  .divider:not(:empty)::before {
-    margin-right: .75em;
+
+  .btn:hover::after {
+    transform: rotate(45deg) translateY(100%);
   }
-  .divider:not(:empty)::after {
-    margin-left: .75em;
-  }
-  .social-btn {
+
+  .login {
     background: white;
     color: black;
-    padding: 10px 60px 10px 10px;
-    border-radius: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    cursor: pointer;
-    font-weight: bold;
-    gap: 10px;
-    border: none;
-    outline: none;
-    width: 100%;
-    margin-bottom: 10px;
+    border: 2px solid cyan;
+    margin-bottom: 15px;
   }
-  .social-btn img {
-    width: 20px;
-    height: 20px;
+
+  .signup {
+    background: black;
+    color: white;
+    border: 2px solid magenta;
   }
-  .terms {
-    font-size: 12px;
-    color: #aaa;
-    margin-top: 20px;
+
+  .login:hover {
+    background: cyan;
+    color: black;
   }
-  .terms a {
-    color: #aaa;
-    text-decoration: underline;
+
+  .signup:hover {
+    background: magenta;
+    color: white;
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Supreme AI</h1>
-    <p class="create-account">Create an account</p>
-    <input type="email" placeholder="Email address">
-    <button class="continue-btn">Continue</button>
-    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
-    <div class="divider">OR</div>
-    <button class="social-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">
-      Continue with phone
-    </button>
-    <button class="social-btn">
-      <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google Logo">
-      Continue with Google
-    </button>
-    <button class="social-btn">
-      <img src="https://msftstories.thesourcemediaassets.com/2022/05/Microsoft-logo_rgb_c-wht.png" alt="Microsoft Logo">
-      Continue with Microsoft Account
-      <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/20px-Apple_logo_black.svg.png" alt="Apple Logo">
-      Continue with Apple
-    </button>
-    <div class="terms">
-      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
-    </div>
+  <div class="popup">
+    <h1>Welcome</h1>
+    <p>Explore Supreme AI’s most powerful features and unlock the future of intelligence.</p>
+    <a href="#" class="btn login">Login</a><br>
+    <a href="#" class="btn signup">Sign Up</a>
   </div>
 </body>
 </html>
+ 
