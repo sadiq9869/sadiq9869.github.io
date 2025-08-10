@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Supreme AI Signup</title>
 <style>
   body {
@@ -14,6 +14,7 @@
     height: 100vh;
     font-family: Arial, sans-serif;
     margin: 0;
+    overflow: hidden; /* optional to prevent scroll during animation */
   }
   .container {
     background: rgba(255, 255, 255, 0.05);
@@ -22,11 +23,27 @@
     text-align: center;
     width: 320px;
     box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: fadeInUp 0.8s ease-out;
+  }
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   h1 {
     margin-bottom: 20px;
     font-size: 24px;
     font-weight: normal;
+    animation: glowText 2s infinite alternate;
+  }
+  @keyframes glowText {
+    0% { text-shadow: 0 0 5px #4a90e2; }
+    100% { text-shadow: 0 0 20px #4a90e2; }
   }
   p.create-account {
     margin-bottom: 20px;
@@ -34,85 +51,52 @@
     font-weight: normal;
     color: white;
     white-space: nowrap;
+    animation: fadeIn 1s ease-out 0.3s both;
   }
-  /* Circle input container */
-  .circle-input-wrapper {
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .email-wrapper {
     position: relative;
-    width: 200px;
-    height: 200px;
-    margin: 0 auto 30px auto;
-  }
-
-  /* Hide the actual input but keep it accessible */
-  .circle-input-wrapper input[type="email"] {
-    position: absolute;
+    margin-bottom: 30px;
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    height: 50px;
+  }
+  .email-wrapper input {
+    width: 100%;
+    padding: 12px;
     border: 2px solid #aaa;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
     background: transparent;
     color: white;
-    font-size: 18px;
-    padding: 0 20px;
-    outline: none;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.4s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
-
-  /* The label is the visible circle with text */
-  .circle-input-wrapper label {
+  .email-wrapper input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 10px #4a90e2;
+  }
+  .placeholder {
     position: absolute;
     top: 50%;
-    left: 50%;
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    border: 2px solid #aaa;
+    left: 20px;
+    transform: translateY(-50%);
     color: #aaa;
-    font-size: 24px;
-    line-height: 200px;
-    text-align: center;
-    transform: translate(-50%, -50%);
-    pointer-events: none; /* so clicks go to input */
-    user-select: none;
-    transition:
-      all 0.5s ease,
-      color 0.3s ease;
-  }
-
-  /* When input is focused or has content */
-  .circle-input-wrapper input[type="email"]:focus + label,
-  .circle-input-wrapper input[type="email"]:not(:placeholder-shown) + label {
-    width: 120px;
-    height: 120px;
-    line-height: 120px;
     font-size: 16px;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper.focused .placeholder,
+  .email-wrapper.filled .placeholder {
+    top: 0%;
+    left: 20px;
+    transform: translateY(-50%) scale(0.85);
+    background: #0a0f1f;
+    padding: 0 5px;
     color: #4a90e2;
-    border-color: #4a90e2;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
   }
-
-  /* Also change input border color on focus or filled */
-  .circle-input-wrapper input[type="email"]:focus,
-  .circle-input-wrapper input[type="email"]:not(:placeholder-shown) {
-    border-color: #4a90e2;
-    cursor: text;
-  }
-
-  /* When focused, show cursor */
-  .circle-input-wrapper input[type="email"]:focus {
-    cursor: text;
-  }
-
-  /* The placeholder is hidden so we can use label */
-  .circle-input-wrapper input[type="email"]::placeholder {
-    color: transparent;
-  }
-
-  /* Button styles */
   .continue-btn {
     background: linear-gradient(90deg, #ff005e, #ff7b00);
     border: none;
@@ -188,22 +172,12 @@
   <div class="container">
     <h1>Supreme AI</h1>
     <p class="create-account">Create an account</p>
-    
-    <div class="circle-input-wrapper">
-      <input
-        type="email"
-        id="email"
-        placeholder="Email address"
-        required
-        autocomplete="off"
-      />
-      <label for="email">Email address</label>
+    <div class="email-wrapper">
+      <input type="email" id="email" />
+      <span class="placeholder">Email address</span>
     </div>
-    
     <button class="continue-btn">Continue</button>
-    <p class="login-link">
-      Already have an account? <a href="#">Log in</a>
-    </p>
+    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
     <div class="divider">OR</div>
     <button class="social-btn">
       <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone" />
@@ -225,5 +199,22 @@
       <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
     </div>
   </div>
+<script>
+  const emailInput = document.getElementById('email');
+  const wrapper = document.querySelector('.email-wrapper');
+
+  emailInput.addEventListener('focus', () => {
+    wrapper.classList.add('focused');
+  });
+
+  emailInput.addEventListener('blur', () => {
+    wrapper.classList.remove('focused');
+    if (emailInput.value.trim() !== '') {
+      wrapper.classList.add('filled');
+    } else {
+      wrapper.classList.remove('filled');
+    }
+  });
+</script>
 </body>
 </html>
