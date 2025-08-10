@@ -3,255 +3,114 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Supreme AI Signup - Animated</title>
+<title>Supreme AI Popup</title>
 <style>
   body {
     background: #0a0f1f;
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: Arial, sans-serif;
     margin: 0;
-    overflow: hidden;
+    font-family: Arial, sans-serif;
   }
-  .container {
-    background: rgba(255, 255, 255, 0.05);
+
+  .popup {
+    background: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(255,0,255,0.15));
+    border: 2px solid rgba(0,255,255,0.5);
+    border-radius: 20px 60px 20px 60px;
     padding: 30px;
-    border-radius: 20px;
+    max-width: 270px;
     text-align: center;
-    width: 320px;
-    box-shadow: 0 0 20px rgba(255,255,255,0.1);
-    animation: fadeInUp 0.8s ease-out;
+    color: white;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(255,0,255,0.3);
+    transform: rotateY(15deg) scale(0.8);
+    animation: enter 1s ease forwards, breathe 3s infinite alternate ease-in-out;
   }
-  @keyframes fadeInUp {
-    from {opacity: 0; transform: translateY(30px);} 
-    to {opacity: 1; transform: translateY(0);} 
+
+  @keyframes enter {
+    from { opacity: 0; transform: rotateY(90deg) scale(0.5); }
+    to { opacity: 1; transform: rotateY(0deg) scale(1); }
   }
+
+  @keyframes breathe {
+    0% { transform: scale(1) rotateY(0deg); }
+    100% { transform: scale(1.05) rotateY(2deg); }
+  }
+
   h1 {
-    margin-bottom: 25px;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: bold;
-    animation: glowText 5s infinite alternate;
-  }
-  @keyframes glowText {
-    0% { text-shadow: 0 0 5px #4a90e2; }
-    100% { text-shadow: 0 0 20px #4a90e2; }
-  }
-  p.create-account {
-    margin-bottom: 20px;
-    font-size: 30px;
-    font-weight: normal;
-    color: white;
-    white-space: nowrap;
-    animation: fadeIn 1s ease-out 0.3s both;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  .email-wrapper {
-    position: relative;
     margin-bottom: 10px;
-    width: 100%;
-    height: auto;
+    color: cyan;
   }
-  .email-wrapper input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border: 2px solid #aaa;
-    border-radius: 25px;
-    outline: none;
+
+  p {
     font-size: 16px;
-    background: transparent;
-    color: white;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
 
-.email-wrapper input:focus {
-    box-shadow: 0 0 10px #4a90e2;
-}
-
-.email-wrapper.error input {
-    color: red !important; /* Increased specificity with !important */
-}
-
-.placeholder {
-    position: absolute;
-    top: 50%;
-    left: 20px;
-    transform: translateY(-50%);
-    color: #aaa;
-    font-size: 16px;
-    pointer-events: none;
-    transition: all 0.4s ease;
-}
-
-.email-wrapper.focused .placeholder,
-.email-wrapper.filled .placeholder {
-    top: 0%;
-    left: 20px;
-    transform: translateY(-50%) scale(0.85);
-    background: #0a0f1f;
-    padding: 0 5px;
-    color: #4a90e2;
-}
-
-.email-wrapper.error .placeholder {
-    color: red !important; /* Ensure placeholder turns red on error */
-}
-
-.email-wrapper.focused input {
-    border-color: #4a90e2;
-}
-  .continue-btn {
-    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
-    border: none;
-    padding: 9px 10px;
-    width: 100%;
-    border-radius: 30px;
-    cursor: pointer;
-    color: white;
-    font-size: 16px;
+  .btn {
+    display: inline-block;
+    padding: 12px 100px;
+    border-radius: 50px;
     font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.4s ease;
     position: relative;
     overflow: hidden;
   }
-  .continue-btn:hover {
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
-    background: linear-gradient(90deg, #a78bfa, #60a5fa);
-  }
-  .continue-btn::before {
+
+  .btn::after {
     content: '';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 300%;
-    height: 300%;
-    background: rgba(255, 255, 255, 0.1);
-    transform: translate(-50%, -50%) rotate(45deg);
-    transition: width 0.4s ease;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: rgba(255,255,255,0.2);
+    transform: rotate(45deg) translateY(-100%);
+    transition: transform 0.5s ease;
   }
-  .continue-btn:hover::before {
-    width: 0;
-  }
-  .login-link {font-size: 14px; margin-bottom: 20px;}
-  .login-link a {color: #4a90e2; text-decoration: none;}
-  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0;}
-  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
-  .divider:not(:empty)::before {margin-right: .75em;}
-  .divider:not(:empty)::after {margin-left: .75em;}
-  .social-btn {
-    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
-    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
-    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.3);} 
-  .social-btn img {width: 20px; height: 20px;}
-  .terms {font-size: 12px; color: #aaa; margin-top: 20px;}
-  .terms a {color: #aaa; text-decoration: underline;}
 
-  /* Error styles with animation */
-  .error-message {
-    display: flex;
-    align-items: center;
-    color: red;
-    font-size: 14px;
-    margin-top: 5px;
-    gap: 6px;
-    animation: shake 0.4s ease, fadeIn 0.3s ease-in;
+  .btn:hover::after {
+    transform: rotate(45deg) translateY(100%);
   }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-5px); }
-    40%, 80% { transform: translateX(5px); }
+
+  .login {
+    background: white;
+    color: black;
+    border: 2px solid cyan;
+    margin-bottom: 15px;
   }
-  .error-icon {
-    background: red;
+
+  .signup {
+    background: black;
     color: white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 12px;
+    border: 2px solid magenta;
   }
-  .error-border {
-    border-color: red !important;
-    box-shadow: 0 0 6px red !important;
-    animation: shake 0.4s ease;
+
+  .login:hover {
+    background: cyan;
+    color: black;
+  }
+
+  .signup:hover {
+    background: magenta;
+    color: white;
   }
 </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Supreme AI</h1>
-    <p class="create-account">Create an account</p>
-    <div class="email-wrapper">
-      <input type="email" id="email">
-      <span class="placeholder">Email address</span>
-    </div>
-    <button class="continue-btn">Continue</button>
-    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
-    <div class="divider">OR</div>
-    <button class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png">Continue with phone</button>
-    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000">Continue with Google</button>
-    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg">Continue with Microsoft Account</button>
-    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">Continue with GitHub</button>
-    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  <div class="popup">
+    <h1>Welcome</h1>
+    <p>Explore Supreme AI’s most powerful features and unlock the future of intelligence.</p>
+    <a href="#" class="btn login">Login</a><br>
+    <a href="signup.html" class="btn signup">Sign Up</a>
   </div>
-<script>
-  const emailInput = document.getElementById('email');
-  const wrapper = document.querySelector('.email-wrapper');
-  const continueBtn = document.querySelector('.continue-btn');
-
-  emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
-  emailInput.addEventListener('blur', () => {
-    wrapper.classList.remove('focused');
-    if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
-    else wrapper.classList.remove('filled');
-  });
-  emailInput.addEventListener('input', () => {
-    const existingError = document.querySelector('.error-message');
-    if (existingError) existingError.remove();
-    emailInput.classList.remove('error-border');
-wrapper.classList.remove('error'); // 🔹 REMOVE RED PLACEHOLDER ON TYPING
-
-  });
-  continueBtn.addEventListener('click', () => {
-    const emailValue = emailInput.value.trim();
-    const existingError = document.querySelector('.error-message');
-    if (existingError) existingError.remove();
-    emailInput.classList.remove('error-border');
-
-    let errorText = '';
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (emailValue === '') errorText = 'Email is required.';
-    else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
-
-    if (errorText) {
-  emailInput.classList.add('error-border');
-  wrapper.classList.add('error'); // 🔹 ADD THIS
-  const errorDiv = document.createElement('div');
-  errorDiv.className = 'error-message';
-  errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
-  wrapper.appendChild(errorDiv);
-} else {
-  wrapper.classList.remove('error'); // 🔹 REMOVE ERROR WHEN FIXED
-
-    }
-  });
-</script>
 </body>
 </html>
+ 
