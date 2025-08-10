@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Supreme AI Signup</title>
 <style>
   body {
@@ -100,15 +100,19 @@
     justify-content: flex-start;
     cursor: pointer;
     font-weight: bold;
-    gap: 10px;
+    gap: 12px;
     border: none;
     outline: none;
     width: 100%;
     margin-bottom: 10px;
+    transition: background 0.3s ease;
+  }
+  .social-btn:hover {
+    background: #f0f0f0;
   }
   .social-btn img {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
   .terms {
     font-size: 12px;
@@ -125,26 +129,29 @@
   <div class="container">
     <h1>Supreme AI</h1>
     <p class="create-account">Create an account</p>
-    <input type="email" placeholder="Email address">
+    <input type="email" placeholder="Email address" />
     <button class="continue-btn">Continue</button>
     <p class="login-link">Already have an account? <a href="#">Log in</a></p>
     <div class="divider">OR</div>
+
+    <!-- Phone -->
     <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Black_phone_font_awesome.svg/20px-Black_phone_font_awesome.svg.png" alt="Phone">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/Font_Awesome_5_solid_phone.svg" alt="Phone" />
       Continue with phone
     </button>
+
+    <!-- Google -->
     <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/20px-Google_%22G%22_logo.svg.png" alt="Google Logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" />
       Continue with Google
     </button>
+
+    <!-- Microsoft -->
     <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/20px-Microsoft_logo.svg.png" alt="Microsoft Logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" />
       Continue with Microsoft Account
     </button>
-    <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/20px-Apple_logo_black.svg.png" alt="Apple Logo">
-      Continue with Apple
-    </button>
+
     <div class="terms">
       <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
     </div>
