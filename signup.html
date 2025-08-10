@@ -73,7 +73,7 @@
     box-shadow: 0 0 10px #4a90e2;
   }
     .error-label {
-    color: red !important;
+  color: red !important;
   }
   .placeholder {
     position: absolute;
@@ -202,41 +202,52 @@
     <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
   </div>
 <script>
-  const emailInput = document.getElementById('email');
-  const wrapper = document.querySelector('.email-wrapper');
-  const continueBtn = document.querySelector('.continue-btn');
+const emailInput = document.getElementById('email');
+const wrapper = document.querySelector('.email-wrapper');
+const placeholder = document.querySelector('.placeholder');
+const continueBtn = document.querySelector('.continue-btn');
 
-  emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
-  emailInput.addEventListener('blur', () => {
-    wrapper.classList.remove('focused');
-    if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
-    else wrapper.classList.remove('filled');
-  });
-  emailInput.addEventListener('input', () => {
-    const existingError = document.querySelector('.error-message');
-    if (existingError) existingError.remove();
-    emailInput.classList.remove('error-border');
-  });
-  continueBtn.addEventListener('click', () => {
-    const emailValue = emailInput.value.trim();
-    const existingError = document.querySelector('.error-message');
-    if (existingError) existingError.remove();
-    emailInput.classList.remove('error-border');
+// Focus blur events
+emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
+emailInput.addEventListener('blur', () => {
+  wrapper.classList.remove('focused');
+  if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
+  else wrapper.classList.remove('filled');
+});
 
-    let errorText = '';
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Remove error while typing
+emailInput.addEventListener('input', () => {
+  const existingError = document.querySelector('.error-message');
+  if (existingError) existingError.remove();
+  emailInput.classList.remove('error-border');
+  placeholder.classList.remove('error-label'); // back to blue
+});
 
-    if (emailValue === '') errorText = 'Email is required.';
-    else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+// On click validate
+continueBtn.addEventListener('click', () => {
+  const emailValue = emailInput.value.trim();
+  const existingError = document.querySelector('.error-message');
+  if (existingError) existingError.remove();
+  emailInput.classList.remove('error-border');
+  placeholder.classList.remove('error-label');
 
-    if (errorText) {
-      emailInput.classList.add('error-border');
-      const errorDiv = document.createElement('div');
-      errorDiv.className = 'error-message';
-      errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
-      wrapper.appendChild(errorDiv);
-    }
-  });
+  let errorText = '';
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (emailValue === '') errorText = 'Email is required.';
+  else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+
+  if (errorText) {
+    emailInput.classList.add('error-border');
+    placeholder.classList.add('error-label'); // make label red
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+    wrapper.appendChild(errorDiv);
+  }
+});
+
+  
 </script>
 </body>
 </html>
