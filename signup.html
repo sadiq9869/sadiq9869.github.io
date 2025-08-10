@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supreme AI Signup</title>
+<style>
+  body {
+    background: #0a0f1f;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+  }
+  h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: normal;
+  }
+  p.create-account {
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: normal;
+    color: white;
+    white-space: nowrap;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 0;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    border-radius: 0;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: white;
+    margin-bottom: 30px;
+  }
+  input[type="email"]::placeholder {
+    color: #aaa;
+  }
+  .continue-btn {
+    background: linear-gradient(90deg, #ff005e, #ff7b00);
+    border: none;
+    padding: 14px 20px;
+    width: 100%;
+    border-radius: 50px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .login-link {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .login-link a {
+    color: #4a90e2;
+    text-decoration: none;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    color: #aaa;
+    margin: 20px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #555;
+  }
+  .divider:not(:empty)::before {
+    margin-right: .75em;
+  }
+  .divider:not(:empty)::after {
+    margin-left: .75em;
+  }
+  .social-btn {
+    background: white;
+    color: black;
+    padding: 10px 60px 10px 10px;
+    border-radius: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    font-weight: bold;
+    gap: 10px;
+    border: none;
+    outline: none;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .social-btn img {
+    width: 20px;
+    height: 20px;
+  }
+  .terms {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 20px;
+  }
+  .terms a {
+    color: #aaa;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Supreme AI</h1>
+    <p class="create-account">Create an account</p>
+    <input type="email" placeholder="Email address">
+    <button class="continue-btn">Continue</button>
+    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
+    <div class="divider">OR</div>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Black_phone_font_awesome.svg/20px-Black_phone_font_awesome.svg.png" alt="Phone">
+      Continue with phone
+    </button>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/20px-Google_%22G%22_logo.svg.png" alt="Google Logo">
+      Continue with Google
+    </button>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/20px-Microsoft_logo.svg.png" alt="Microsoft Logo">
+      Continue with Microsoft Account
+    </button>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Apple_logo_black.svg/20px-Apple_logo_black.svg.png" alt="Apple Logo">
+      Continue with Apple
+    </button>
+    <div class="terms">
+      <a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a>
+    </div>
+  </div>
+</body>
+</html>
