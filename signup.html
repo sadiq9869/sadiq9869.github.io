@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Supreme AI Signup</title>
 <style>
   body {
@@ -35,21 +35,84 @@
     color: white;
     white-space: nowrap;
   }
-  input[type="email"] {
+  /* Circle input container */
+  .circle-input-wrapper {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 30px auto;
+  }
+
+  /* Hide the actual input but keep it accessible */
+  .circle-input-wrapper input[type="email"] {
+    position: absolute;
     width: 100%;
-    padding: 12px 0;
-    border: none;
-    border-bottom: 2px solid #aaa;
-    border-radius: 0;
-    outline: none;
-    font-size: 16px;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid #aaa;
     background: transparent;
     color: white;
-    margin-bottom: 30px;
+    font-size: 18px;
+    padding: 0 20px;
+    outline: none;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.4s ease;
   }
-  input[type="email"]::placeholder {
+
+  /* The label is the visible circle with text */
+  .circle-input-wrapper label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    border: 2px solid #aaa;
     color: #aaa;
+    font-size: 24px;
+    line-height: 200px;
+    text-align: center;
+    transform: translate(-50%, -50%);
+    pointer-events: none; /* so clicks go to input */
+    user-select: none;
+    transition:
+      all 0.5s ease,
+      color 0.3s ease;
   }
+
+  /* When input is focused or has content */
+  .circle-input-wrapper input[type="email"]:focus + label,
+  .circle-input-wrapper input[type="email"]:not(:placeholder-shown) + label {
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    font-size: 16px;
+    color: #4a90e2;
+    border-color: #4a90e2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Also change input border color on focus or filled */
+  .circle-input-wrapper input[type="email"]:focus,
+  .circle-input-wrapper input[type="email"]:not(:placeholder-shown) {
+    border-color: #4a90e2;
+    cursor: text;
+  }
+
+  /* When focused, show cursor */
+  .circle-input-wrapper input[type="email"]:focus {
+    cursor: text;
+  }
+
+  /* The placeholder is hidden so we can use label */
+  .circle-input-wrapper input[type="email"]::placeholder {
+    color: transparent;
+  }
+
+  /* Button styles */
   .continue-btn {
     background: linear-gradient(90deg, #ff005e, #ff7b00);
     border: none;
@@ -125,23 +188,37 @@
   <div class="container">
     <h1>Supreme AI</h1>
     <p class="create-account">Create an account</p>
-    <input type="email" placeholder="Email address">
+    
+    <div class="circle-input-wrapper">
+      <input
+        type="email"
+        id="email"
+        placeholder="Email address"
+        required
+        autocomplete="off"
+      />
+      <label for="email">Email address</label>
+    </div>
+    
     <button class="continue-btn">Continue</button>
-    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
+    <p class="login-link">
+      Already have an account? <a href="#">Log in</a>
+    </p>
     <div class="divider">OR</div>
     <button class="social-btn">
-      <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">
+      <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone" />
       Continue with phone
     </button>
     <button class="social-btn">
-      <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google Logo">
+      <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google Logo" />
       Continue with Google
     </button>
     <button class="social-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" />
       Continue with Microsoft Account
-      <button class="social-btn">
-      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo">
+    </button>
+    <button class="social-btn">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub Logo" />
       Continue with GitHub
     </button>
     <div class="terms">
