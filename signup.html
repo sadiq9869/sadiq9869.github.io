@@ -13,121 +13,229 @@
     align-items: center;
     height: 100vh;
     font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
   }
-
   .container {
-    background: #11182f;
+    background: rgba(255, 255, 255, 0.05);
     padding: 30px;
-    border-radius: 12px;
-    width: 350px;
+    border-radius: 20px;
     text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: fadeInUp 0.8s ease-out;
   }
-
-  h2 {
+  @keyframes fadeInUp {
+    from {opacity: 0; transform: translateY(30px);} 
+    to {opacity: 1; transform: translateY(0);} 
+  }
+  h1 {
+    margin-bottom: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    animation: glowText 5s infinite alternate;
+  }
+  @keyframes glowText {
+    0% { text-shadow: 0 0 5px #4a90e2; }
+    100% { text-shadow: 0 0 20px #4a90e2; }
+  }
+  p.create-account {
     margin-bottom: 20px;
-    color: #4da3ff;
+    font-size: 30px;
+    font-weight: normal;
+    color: white;
+    white-space: nowrap;
+    animation: fadeIn 1s ease-out 0.3s both;
   }
-
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
   .email-wrapper {
     position: relative;
-    text-align: left;
-    margin-bottom: 15px;
-  }
-
-  .email-label {
-    color: #4da3ff;
-    font-size: 14px;
-    display: block;
-    margin-bottom: 5px;
-    transition: color 0.3s ease;
-  }
-
-  .email-wrapper.error .email-label {
-    color: red;
-  }
-
-  input {
+    margin-bottom: 10px;
     width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px solid #4da3ff;
-    background: #0a0f1f;
-    color: white;
+    height: auto;
+  }
+  .email-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 2px solid #aaa;
+    border-radius: 25px;
     outline: none;
-    transition: border-color 0.3s ease;
+    font-size: 16px;
+    background: transparent;
+    color: white;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
-
-  .error-border {
-    border-color: red !important;
+  .email-wrapper input:focus {
+    box-shadow: 0 0 10px #4a90e2;
   }
-
-  .error-message {
-    color: red;
-    font-size: 13px;
-    margin-top: 5px;
+    .error-label {
+    color: red !important;
+  
+  .placeholder {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.4s ease;
   }
-
-  button {
-    background: #4da3ff;
+  .email-wrapper.focused .placeholder,
+  .email-wrapper.filled .placeholder {
+    top: 0%;
+    left: 20px;
+    transform: translateY(-50%) scale(0.85);
+    background: #0a0f1f;
+    padding: 0 5px;
+    color: #4a90e2;
+  }
+  .email-wrapper.focused input {
+    border-color: #4a90e2;
+  }
+  .continue-btn {
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
     border: none;
-    padding: 10px 15px;
-    border-radius: 8px;
+    padding: 9px 10px;
+    width: 100%;
+    border-radius: 30px;
     cursor: pointer;
     color: white;
+    font-size: 16px;
     font-weight: bold;
-    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
   }
+  .continue-btn:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  }
+  .continue-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%) rotate(45deg);
+    transition: width 0.4s ease;
+  }
+  .continue-btn:hover::before {
+    width: 0;
+  }
+  .login-link {font-size: 14px; margin-bottom: 20px;}
+  .login-link a {color: #4a90e2; text-decoration: none;}
+  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0;}
+  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
+  .divider:not(:empty)::before {margin-right: .75em;}
+  .divider:not(:empty)::after {margin-left: .75em;}
+  .social-btn {
+    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
+    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
+    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.3);} 
+  .social-btn img {width: 20px; height: 20px;}
+  .terms {font-size: 12px; color: #aaa; margin-top: 20px;}
+  .terms a {color: #aaa; text-decoration: underline;}
 
-  button:hover {
-    background: #368fe0;
+  /* Error styles with animation */
+  .error-message {
+    display: flex;
+    align-items: center;
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    gap: 6px;
+    animation: shake 0.4s ease, fadeIn 0.3s ease-in;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  .error-icon {
+    background: red;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .error-border {
+    border-color: red !important;
+    box-shadow: 0 0 6px red !important;
+    animation: shake 0.4s ease;
   }
 </style>
 </head>
 <body>
   <div class="container">
-    <h2>Supreme AI Signup</h2>
-    <div class="email-wrapper" id="emailWrapper">
-      <label class="email-label">Email address</label>
-      <input type="email" id="emailInput" placeholder="Enter your email">
+    <h1>Supreme AI</h1>
+    <p class="create-account">Create an account</p>
+    <div class="email-wrapper">
+      <input type="email" id="email">
+      <span class="placeholder">Email address</span>
     </div>
-    <button id="continueBtn">Continue</button>
+    <button class="continue-btn">Continue</button>
+    <p class="login-link">Already have an account? <a href="#">Log in</a></p>
+    <div class="divider">OR</div>
+    <button class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png">Continue with phone</button>
+    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000">Continue with Google</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg">Continue with Microsoft Account</button>
+    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">Continue with GitHub</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
   </div>
-
 <script>
-  const emailInput = document.getElementById("emailInput");
-  const continueBtn = document.getElementById("continueBtn");
-  const wrapper = document.getElementById("emailWrapper");
+  const emailInput = document.getElementById('email');
+  const wrapper = document.querySelector('.email-wrapper');
+  const continueBtn = document.querySelector('.continue-btn');
 
-  continueBtn.addEventListener("click", () => {
-    const emailValue = emailInput.value.trim();
-    const existingError = wrapper.querySelector(".error-message");
+  emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
+  emailInput.addEventListener('blur', () => {
+    wrapper.classList.remove('focused');
+    if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
+    else wrapper.classList.remove('filled');
+  });
+  emailInput.addEventListener('input', () => {
+    const existingError = document.querySelector('.error-message');
     if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
+  });
+  continueBtn.addEventListener('click', () => {
+    const emailValue = emailInput.value.trim();
+    const existingError = document.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
 
-    let errorText = "";
-    if (!emailValue) {
-      errorText = "Please enter your email address.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
-      errorText = "Please enter a valid email address.";
-    }
+    let errorText = '';
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailValue === '') errorText = 'Email is required.';
+    else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
 
     if (errorText) {
-      emailInput.classList.add("error-border");
-      wrapper.classList.add("error"); // Make label red
-      const errorDiv = document.createElement("div");
-      errorDiv.className = "error-message";
-      errorDiv.textContent = errorText;
+      emailInput.classList.add('error-border');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
       wrapper.appendChild(errorDiv);
-    } else {
-      wrapper.classList.remove("error");
-      emailInput.classList.remove("error-border");
     }
-  });
-
-  emailInput.addEventListener("input", () => {
-    emailInput.classList.remove("error-border");
-    wrapper.classList.remove("error");
-    const existingError = wrapper.querySelector(".error-message");
-    if (existingError) existingError.remove();
   });
 </script>
 </body>
