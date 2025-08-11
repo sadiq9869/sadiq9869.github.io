@@ -182,12 +182,36 @@
     box-shadow: 0 0 6px red !important;
     animation: shake 0.4s ease;
   }
+
+  /* Added better animations and glow effects */
+  .social-btn.google-btn {
+    animation: pulseGlow 2s infinite alternate;
+  }
+  @keyframes pulseGlow {
+    0% { box-shadow: 0 0 5px #4285f4; }
+    100% { box-shadow: 0 0 15px #4285f4; }
+  }
+  .container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(74,144,226,0.1) 0%, rgba(0,0,0,0) 70%);
+    animation: rotateGlow 20s linear infinite;
+    pointer-events: none;
+  }
+  @keyframes rotateGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
 </style>
 </head>
 <body>
   <div class="container">
     <h1>Supreme AI</h1>
-    <p class="create-account">Create an account</p>
+    <p class="create-account">Create an account or log in</p> <!-- Updated text for better line -->
     <div class="email-wrapper">
       <input type="email" id="email">
       <span class="placeholder">Email address</span>
@@ -195,13 +219,112 @@
     <button class="continue-btn">Continue</button>
     <p class="login-link">Already have an account? <a href="#">Log in</a></p>
     <div class="divider">OR</div>
-    <button class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png">Continue with phone</button>
-    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000">Continue with Google</button>
-    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg">Continue with Microsoft Account</button>
-    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png">Continue with GitHub</button>
+    <button class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone</button>
+    <button class="social-btn google-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft Account</button>
+    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
     <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
   </div>
 <script>
+const clientId = '183020375733-l81e2ur2a6gc4re1p72udipg1iles5e0.apps.googleusercontent.com';
+// Note: Client secret is not used here as we're using PKCE for client-side auth flow.
+
+async function sha256(plain) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plain);
+  return window.crypto.subtle.digest('SHA-256', data);
+}
+
+function base64urlencode(a) {
+  return btoa(String.fromCharCode.apply(null, new Uint8Array(a)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function generateCodeChallenge(verifier) {
+  const hashed = await sha256(verifier);
+  return base64urlencode(hashed);
+}
+
+function generateVerifier() {
+  const array = new Uint32Array(28);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('');
+}
+
+async function googleLogin() {
+  const verifier = generateVerifier();
+  localStorage.setItem('oauth_verifier', verifier);
+  const challenge = await generateCodeChallenge(verifier);
+  const state = Math.random().toString(36).substring(7);
+  localStorage.setItem('oauth_state', state);
+  const redirectUri = window.location.origin + window.location.pathname;
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=${encodeURIComponent(clientId)}&` +
+    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+    `scope=${encodeURIComponent('openid email profile')}&` +
+    `response_type=code&` +
+    `code_challenge=${encodeURIComponent(challenge)}&` +
+    `code_challenge_method=S256&` +
+    `state=${encodeURIComponent(state)}`;
+  window.location.href = authUrl;
+}
+
+async function handleRedirect() {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get('code');
+  const state = params.get('state');
+  if (code && state) {
+    const storedState = localStorage.getItem('oauth_state');
+    if (state !== storedState) {
+      console.error('State mismatch for security');
+      return;
+    }
+    const verifier = localStorage.getItem('oauth_verifier');
+    if (!verifier) {
+      console.error('No verifier found');
+      return;
+    }
+    const redirectUri = window.location.origin + window.location.pathname;
+    const tokenUrl = 'https://oauth2.googleapis.com/token';
+    const body = `code=${encodeURIComponent(code)}&` +
+      `client_id=${encodeURIComponent(clientId)}&` +
+      `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+      `grant_type=authorization_code&` +
+      `code_verifier=${encodeURIComponent(verifier)}`;
+    try {
+      const response = await fetch(tokenUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body
+      });
+      if (!response.ok) {
+        throw new Error('Failed to exchange code for token');
+      }
+      const data = await response.json();
+      localStorage.removeItem('oauth_verifier');
+      localStorage.removeItem('oauth_state');
+      const idToken = data.id_token;
+      const payload = JSON.parse(atob(idToken.split('.')[1]));
+      const user = {
+        email: payload.email,
+        username: payload.name
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+      // Redirect to Supreme AI home page
+      window.location.href = 'supreme-ai.html';
+    } catch (err) {
+      console.error('Error during token exchange:', err);
+      // Optionally, show an error message on the page
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = `<span class="error-icon">!</span> Login failed. Please try again.`;
+      document.querySelector('.container').appendChild(errorDiv);
+    }
+  }
+}
+
+window.addEventListener('load', handleRedirect);
+
 const emailInput = document.getElementById('email');
 const wrapper = document.querySelector('.email-wrapper');
 const placeholder = document.querySelector('.placeholder');
@@ -247,6 +370,11 @@ continueBtn.addEventListener('click', () => {
   }
 });
 
+// Attach Google login to the Google button
+document.querySelectorAll('.social-btn')[1].addEventListener('click', (e) => {
+  e.preventDefault();
+  googleLogin();
+});
   
 </script>
 </body>
