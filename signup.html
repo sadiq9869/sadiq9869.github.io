@@ -320,6 +320,8 @@ async function handleRedirect() {
       errorDiv.innerHTML = `<span class="error-icon">!</span> Login failed. Please try again.`;
       document.querySelector('.container').appendChild(errorDiv);
     }
+    // Clean up the URL parameters after handling
+    history.replaceState(null, '', window.location.pathname);
   }
 }
 
