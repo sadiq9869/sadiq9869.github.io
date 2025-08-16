@@ -679,6 +679,7 @@ User message Question: "${userInput}"
           tools: [
          {
            google_search: {} // Enable Google Search grounding
+           code_execution: {} // Enable code execution in sandbox
          }
         ]
       })
@@ -703,10 +704,21 @@ if (sources.length > 0) {
     "SearchSources:" + userInput,
     JSON.stringify(sources),
     "search"
-  );
+      );
+    }
+   if (execCode) {
+  saveToSmartMemory("CodeSnippet:" + userInput, execCode, "code");
+}
+if (execResult) {
+  saveToSmartMemory("CodeResult:" + userInput, execResult, "code_result");
 }
 
-
+// 5. Display response
+let finalReply = text;
+if (execResult) {
+  finalReply += `\n\n🖥️ Code Execution Result:\n${execResult}`;
+}
+ showMessage("Supreme AI: " + finalReply, "bot");
 
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
