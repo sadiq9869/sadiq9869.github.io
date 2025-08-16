@@ -678,7 +678,7 @@ User message Question: "${userInput}"
         ],
           tools: [
          {
-           google_search: {}, // Enable Google Search grounding
+           google_search: {} // Enable Google Search grounding
            code_execution: {} // Enable code execution in sandbox
          }
         ]
@@ -686,12 +686,10 @@ User message Question: "${userInput}"
     });
 
      const data = await res.json();
-    let text = data.candidates?.[0]?.content?.parts?.[0]?.text 
-|| "Supreme AI could not generate a reply.";
-// 2. Extract grounded search snippets (if any)
-let grounding = data.candidates?.[0]?.groundingMetadata?.groundingChunks 
-  || [];
-
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+    const groundingMetadata = data.candidates?.[0]?.groundingMetadata || {};
+    const codeExecutionResult = data.candidates?.[0]?.content?.parts?.find(part => part.executableCode || part.codeExecutionResult) || {};
+    
 let sources = grounding
   .map(chunk => chunk.web?.title + " - " + chunk.web?.uri)
   .filter(Boolean);
@@ -712,17 +710,56 @@ if (sources.length > 0) {
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const glow = Math.floor(Math.random() * 10);
-        let emoji = "";
-        const useEmoji = await shouldUseEmoji(userInput);
-        if (useEmoji) {
-        emoji = await detectEmojiFromHuggingFace(userInput);
+ const glow = Math.floor(Math.random() * 10);
+   let emoji = "";
+     const useEmoji = await shouldUseEmoji(userInput);
+       if (useEmoji) {
+         emoji = await detectEmojiFromHuggingFace(userInput);
+  }
+      // Process response with code execution and grounding
+    let responseText = text;
+    if (codeExecutionResult.executableCode || codeExecutionResult.codeExecutionResult) {
+      // Handle code execution output
+      const code = codeExecutionResult.executableCode?.code || "";
+      const executionOutput = codeExecutionResult.codeExecutionResult?.output || "";
+      responseText = `
+Supreme AI: Here's the solution for your coding query:
+
+**Generated Code**:
+\`\`\`python
+${code}
+\`\`\`
+
+**Execution Output**:
+${executionOutput || "No output (code may have failed or produced a graph)."}
+
+${text}
+`;
+    }
+      if (groundingMetadata.groundingSupports && groundingMetadata.groundingChunks) {
+      const supports = groundingMetadata.groundingSupports.sort((a, b) => b.segment.endIndex - a.segment.endIndex);
+      const chunks = groundingMetadata.groundingChunks;
+      for (const support of supports) {
+        const endIndex = support.segment.endIndex;
+        if (support.groundingChunkIndices) {
+          const citationLinks = support.groundingChunkIndices
+            .filter(i => i < chunks.length)
+            .map(i => `<a href="${chunks[i].web.uri}" target="_blank">[${i + 1}]</a>`);
+          const citationString = citationLinks.join(", ");
+          responseText = responseText.slice(0, endIndex) + citationString + responseText.slice(endIndex);
+        }
+      }
+
+       responseText = `Supreme AI: ${responseText} ${emoji}`;
+  } else {
+      responseText = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${responseText} ${emoji}`;
    }
 
-        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px       ${color};">Supreme AI:</span> ${text} ${emoji}`;
-      } catch (e) {
-        aiMsg.textContent = "Supreme AI could not connect to the server.";
-      }
+    aiMsg.innerHTML = responseText;
+
+  } catch (e) {
+    aiMsg.textContent = "Supreme AI could not connect to the server.";
+  }
 
       
 
