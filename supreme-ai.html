@@ -693,131 +693,32 @@ User message Question: "${userInput}"
           {
             google_search: {} // Enable Google Search grounding
             code_execution: {} // Enable code execution
-        function_declarations: [
-          {
-            name: "get_weather",
-            description: "Fetches current weather for a city",
-            parameters: {
-              type: "object",
-              properties: {
-                city: { type: "string" }
-              },
-              required: ["city"]
-            }
           }
-        ],
-        url_context: {}
-      }
-    ];
-
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              { text: prompt }
-            ]
-          }
-        ],
-        tools: tools
+        ]
       })
     });
-      
+
         const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
-    const groundingMetadata = data.candidates?.[0]?.groundingMetadata || {};
-    const codeExecutionResult = data.candidates?.[0]?.content?.parts?.find(part => part.executableCode || part.codeExecutionResult) || {};
-    const functionCalls = data.candidates?.[0]?.content?.parts?.filter(part => part.functionCall) || [];
-    
-    // Handle function calls
-    let functionResponseText = "";
-    if (functionCalls.length > 0) {
-      const functionResponses = [];
-      for (const fc of functionCalls) {
-        if (fc.name === "get_weather") {
-          // Simulate weather API call (replace with real API in production)
-          const weatherData = { temperature: "15°C", condition: "Partly cloudy", humidity: "70%" };
-          functionResponses.push({
-            id: fc.id,
-            name: fc.name,
-            response: { result: weatherData }
-          });
-        }
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+
+saveToSmartMemory(userInput, text, intent);
+
+
+
+        // add random color/glow
+        const colors = ["green", "orange", "red", "cyan", "yellow"];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const glow = Math.floor(Math.random() * 10);
+        let emoji = "";
+        const useEmoji = await shouldUseEmoji(userInput);
+        if (useEmoji) {
+        emoji = await detectEmojiFromHuggingFace(userInput);
+   }
+
+        aiMsg.innerHTML = `<span style="color:${color};text-shadow:0 0 ${glow}px       ${color};">Supreme AI:</span> ${text} ${emoji}`;
+      } catch (e) {
+        aiMsg.textContent = "Supreme AI could not connect to the server.";
       }
-      const followUpRes = await fetch(apiUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                { functionResponse: functionResponses }
-              ]
-            }
-          ]
-        })
-      });
-      const followUpData = await followUpRes.json();
-      functionResponseText = followUpData.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    }
-// Save to memory
-    await saveToSmartMemory(userInput, text + functionResponseText, intent);
-
-    // Add random color/glow
-    const colors = ["green", "orange", "red", "cyan", "yellow"];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const glow = Math.floor(Math.random() * 10);
-    let emoji = "";
-    const useEmoji = await shouldUseEmoji(userInput);
-    if (useEmoji) {
-      emoji = await detectEmojiFromHuggingFace(userInput);
-    }
-    // Process response
-    let responseText = text + functionResponseText;
-    if (codeExecutionResult.executableCode || codeExecutionResult.codeExecutionResult) {
-      const code = codeExecutionResult.executableCode?.code || "";
-      const executionOutput = codeExecutionResult.codeExecutionResult?.output || "";
-      responseText = `
-Supreme AI: Here's the solution for your coding query:
-
-**Generated Code**:
-\`\`\`python
-${code}
-\`\`\`
-
-**Execution Output**:
-${executionOutput || "No output (code may have failed or produced a graph)."}
-
-${text}
-`;
-    }
-
-    if (groundingMetadata.groundingSupports && groundingMetadata.groundingChunks) {
-      const supports = groundingMetadata.groundingSupports.sort((a, b) => b.segment.endIndex - a.segment.endIndex);
-      const chunks = groundingMetadata.groundingChunks;
-      for (const support of supports) {
-        const endIndex = support.segment.endIndex;
-        if (support.groundingChunkIndices) {
-          const citationLinks = support.groundingChunkIndices
-            .filter(i => i < chunks.length)
-            .map(i => `<a href="${chunks[i].web.uri}" target="_blank">[${i + 1}]</a>`);
-          const citationString = citationLinks.join(", ");
-          responseText = responseText.slice(0, endIndex) + citationString + responseText.slice(endIndex);
-        }
-      }
-
-        responseText = `Supreme AI: ${responseText} ${emoji}`;
-    } else {
-      responseText = `<span style="color:${color};text-shadow:0 0 ${glow}px ${color};">Supreme AI:</span> ${responseText} ${emoji}`;
-    }
-
-    aiMsg.innerHTML = responseText;
-
-  } catch (e) {
-    aiMsg.textContent = "Supreme AI could not connect to the server.";
-  }
 
       
 
