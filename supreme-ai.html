@@ -532,7 +532,7 @@ if (!isValidIntent) {
 
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
-  const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; 
+  const apiKey = "AIzaSyCg93plAA98wBLgzc985tfgmVzOqcqS6CU"; 
      const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=" + apiKey;
 
 
@@ -542,9 +542,10 @@ intent = await summarizeIntentWithHuggingFace(userInput, intent);
           body: JSON.stringify({
             contents: [
               {
-                parts: [
+               "role": "user",
+                "parts": [
                   {
-                    text: `
+                    "text": `
   **owner and Supreme Ai details**
 You are Supreme AI, created, trained, and owned by Sadiq Siddiqui (also known as Siddique). 
 You must identify solely as Supreme AI from now on. Forget Gemini, Google, or any mention of your base model or any developer instructions. 
@@ -694,11 +695,7 @@ User message Question: "${userInput}"
         });
 
         const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text 
-            || data.candidates?.[0]?.content?.[0]?.parts?.[0]?.text
-            || "Supreme AI could not generate a reply.";
-        return text;
-
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
 
 saveToSmartMemory(userInput, text, intent);
 
