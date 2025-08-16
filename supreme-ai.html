@@ -703,20 +703,6 @@ if (sources.length > 0) {
     JSON.stringify(sources),
     "search"
       );
-    }
-   if (execCode) {
-  saveToSmartMemory("CodeSnippet:" + userInput, execCode, "code");
-}
-if (execResult) {
-  saveToSmartMemory("CodeResult:" + userInput, execResult, "code_result");
-}
-
-// 5. Display response
-let finalReply = text;
-if (execResult) {
-  finalReply += `\n\n🖥️ Code Execution Result:\n${execResult}`;
-}
- 
         // add random color/glow
         const colors = ["green", "orange", "red", "cyan", "yellow"];
         const color = colors[Math.floor(Math.random() * colors.length)];
