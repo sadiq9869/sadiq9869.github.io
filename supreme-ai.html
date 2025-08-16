@@ -532,8 +532,9 @@ if (!isValidIntent) {
 
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
-        const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
-        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+  const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; 
+     const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=" + apiKey;
+
 
         const res = await fetch(apiUrl, {
           method: "POST",
@@ -693,7 +694,11 @@ User message Question: "${userInput}"
         });
 
         const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Supreme AI could not generate a reply.";
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text 
+            || data.candidates?.[0]?.content?.[0]?.parts?.[0]?.text
+            || "Supreme AI could not generate a reply.";
+        return text;
+
 
 saveToSmartMemory(userInput, text, intent);
 
