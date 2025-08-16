@@ -533,7 +533,7 @@ if (!isValidIntent) {
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 
         const apiKey = "AIzaSyDAm_zAas5YQdQTCI2WoxYDEOXZfwpXUDc"; // your provided key
-        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=" + apiKey;
+        const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
         const res = await fetch(apiUrl, {
           method: "POST",
