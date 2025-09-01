@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supreme AI Popup</title>
+<style>
+  body {
+    background: #0a0f1f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .popup {
+    background: linear-gradient(135deg, rgba(0,255,255,0.15), rgba(255,0,255,0.15));
+    border: 2px solid rgba(0,255,255,0.5);
+    border-radius: 20px 60px 20px 60px;
+    padding: 30px;
+    max-width: 270px;
+    text-align: center;
+    color: white;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(255,0,255,0.3);
+    transform: rotateY(15deg) scale(0.8);
+    animation: enter 1s ease forwards, breathe 3s infinite alternate ease-in-out;
+  }
+
+  @keyframes enter {
+    from { opacity: 0; transform: rotateY(90deg) scale(0.5); }
+    to { opacity: 1; transform: rotateY(0deg) scale(1); }
+  }
+
+  @keyframes breathe {
+    0% { transform: scale(1) rotateY(0deg); }
+    100% { transform: scale(1.05) rotateY(2deg); }
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: cyan;
+  }
+
+  p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 12px 100px;
+    border-radius: 50px;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 16px;
+    transition: 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    top: -50%;
+    left: -50%;
+    background: rgba(255,255,255,0.2);
+    transform: rotate(45deg) translateY(-100%);
+    transition: transform 0.5s ease;
+  }
+
+  .btn:hover::after {
+    transform: rotate(45deg) translateY(100%);
+  }
+
+  .login {
+    background: white;
+    color: black;
+    border: 2px solid cyan;
+    margin-bottom: 15px;
+  }
+
+  .signup {
+    background: black;
+    color: white;
+    border: 2px solid magenta;
+  }
+
+  .login:hover {
+    background: cyan;
+    color: black;
+  }
+
+  .signup:hover {
+    background: magenta;
+    color: white;
+  }
+</style>
+</head>
+<body>
+  <div class="popup">
+    <h1>Welcome</h1>
+    <p>Explore Supreme AI’s most powerful features and unlock the future of intelligence.</p>
+    <a href="#" class="btn login">Login</a><br>
+    <a href="signup.html" class="btn signup">Sign Up</a>
+  </div>
+</body>
+</html>
+ 
