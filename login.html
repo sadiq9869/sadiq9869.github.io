@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supreme AI login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+  body {
+    background: #0a0f1f;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: fadeInUp 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  .password-container {
+    background: linear-gradient(45deg, #0a0f1f, #1a2a44);
+    animation: gradientShift 10s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h1 {
+    margin-bottom: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    animation: glowText 5s infinite alternate;
+  }
+  @keyframes glowText {
+    0% { text-shadow: 0 0 5px #4a90e2; }
+    100% { text-shadow: 0 0 20px #4a90e2, 0 0 30px #60a5fa; }
+  }
+  p.create-account {
+    margin-bottom: 20px;
+    font-size: 25px;
+    font-weight: 600;
+    color: white;
+    white-space: wrap;
+    animation: fadeIn 0.8s ease-out 0.3s both;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  p.password-prompt {
+    margin-bottom: 15px;
+    font-size: 22px;
+    font-weight: 800;
+    color: white;
+    white-space: wrap;
+    animation: fadeIn 0.8s ease-out 0.3s both;
+    letter-spacing: 0.3px;
+    text-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .email-wrapper, .password-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    height: auto;
+  }
+  .email-wrapper input, .password-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 2px solid #aaa;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: white;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper input:focus, .password-wrapper input:focus {
+    box-shadow: 0 0 12px rgba(74, 144, 226, 0.7);
+    border-color: #60a5fa;
+    transform: scale(1.02);
+  }
+  .error-label {
+    color: #ff4d4d !important;
+  }
+  .placeholder {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper.focused .placeholder,
+  .email-wrapper.filled .placeholder,
+  .password-wrapper.focused .placeholder,
+  .password-wrapper.filled .placeholder {
+    top: 0%;
+    left: 20px;
+    transform: translateY(-50%) scale(0.85);
+    background: #0a0f1f;
+    padding: 0 5px;
+    color: #60a5fa;
+  }
+  .password-wrapper.invalid .placeholder {
+    color: #ff4d4d;
+  }
+  .email-wrapper.focused input, .password-wrapper.focused input {
+    border-color: #60a5fa;
+  }
+  .password-wrapper.invalid input {
+    border-color: #ff4d4d;
+  }
+  .edit-option {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+  .edit-option a {
+    color: #60a5fa;
+    text-decoration: underline;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .edit-option a:hover {
+    color: #a78bfa;
+    transform: scale(1.1);
+  }
+  .eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+  }
+  .eye-icon:hover {
+    color: #60a5fa;
+    transform: translateY(-50%) scale(1.2);
+  }
+  .password-wrapper.focused .eye-icon,
+  .password-wrapper.filled .eye-icon {
+    color: #60a5fa;
+  }
+  .password-wrapper.invalid .eye-icon {
+    color: #ff4d4d;
+  }
+  .password-rule {
+    display: none;
+    font-size: 12px;
+    color: #aaa;
+    text-align: left;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+    animation: bounceIn 0.5s ease-out;
+  }
+  .password-rule.valid {
+    color: #28a745;
+  }
+  .password-rule.invalid {
+    color: #ff4d4d;
+  }
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: translateY(15px); }
+    60% { opacity: 1; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .continue-btn {
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .continue-btn:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.8);
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.8); }
+    70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  }
+  .continue-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%) rotate(45deg);
+    transition: width 0.4s ease;
+  }
+  .continue-btn:hover::before {
+    width: 0;
+  }
+  .login-link {font-size: 14px; margin-bottom: 20px;}
+  .login-link a {color: #4a90e2; text-decoration: none;}
+  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0; animation: fadeIn 1s ease-out;}
+  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
+  .divider:not(:empty)::before {margin-right: .75em;}
+  .divider:not(:empty)::after {margin-left: .75em;}
+  .social-btn {
+    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
+    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
+    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: all 0.3s ease;
+    animation: fadeInUp 0.8s ease-out;
+  }
+  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.4);}
+  .social-btn img {width: 20px; height: 20px;}
+  .terms {font-size: 12px; color: #aaa; margin-top: 20px; animation: fadeIn 1s ease-out;}
+  .terms a {color: #aaa; text-decoration: underline;}
+  .forget-password {color: #4a90e2; font-size: 14px; display: block; text-align: left; margin-bottom: 15px;}
+  .forget-password:hover {color: #a78bfa;}
+  .error-message {
+    display: flex;
+    align-items: center;
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 5px;
+    gap: 6px;
+    animation: shake 0.4s ease, fadeIn 0.3s ease-in;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  .error-icon {
+    background: #ff4d4d;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .error-border {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 6px #ff4d4d !important;
+    animation: shake 0.4s ease;
+  }
+</style>
+</head>
+<body>
+  <div class="container email-container">
+    <h1>Supreme AI</h1>
+    <p class="create-account">Log in to your Supreme AI account</p>
+    <div class="email-wrapper">
+      <input type="email" id="email">
+      <span class="placeholder">Email address</span>
+    </div>
+    <button class="continue-btn" id="email-continue-btn">Continue</button>
+    <p class="login-link">Don't have an account? <a href="signup.html">Sign up</a></p>
+    <div class="divider">OR</div>
+    <button id="phone-flow-btn" class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone</button>
+    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
+    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button class="social-btn"><img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  </div>
+
+  <div class="container password-container" style="display: none;">
+    <h1>Supreme AI</h1>
+    <p class="password-prompt">Enter your Password for Supreme AI</p>
+    <div class="email-wrapper filled">
+      <input type="email" id="displayed-email" readonly>
+      <span class="placeholder">Email address</span>
+      <span class="edit-option"><a href="#" id="edit-email">Edit</a></span>
+    </div>
+    <div class="password-wrapper">
+      <input type="password" id="password">
+      <span class="placeholder">Password</span>
+      <span class="eye-icon fas fa-eye"></span>
+      <div class="password-rule" id="password-rule">Password must be at least 8 characters.</div>
+    </div>
+    <a href="#" class="forget-password">Forgot password?</a>
+    <button class="continue-btn" id="login-btn">Continue</button>
+    <div class="divider">OR</div>
+    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
+    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button class="social-btn"><img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram</button>
+    <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmQyMu-Va-Mo3utQStaz3shbxWDyIK5qw",
+      authDomain: "supreme-ai.firebaseapp.com",
+      projectId: "supreme-ai",
+      storageBucket: "supreme-ai.firebasestorage.app",
+      messagingSenderId: "586558875086",
+      appId: "1:586558875086:web:328051e411d2b76deeb79f",
+      measurementId: "G-BV6KDTHHP7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // UI Elements for Email Section
+    const emailInput = document.getElementById('email');
+    const emailWrapper = document.querySelector('.email-container .email-wrapper');
+    const emailPlaceholder = emailWrapper.querySelector('.placeholder');
+    const emailContinueBtn = document.getElementById('email-continue-btn');
+
+    // Focus/Blur/Input for Email
+    emailInput.addEventListener('focus', () => emailWrapper.classList.add('focused'));
+    emailInput.addEventListener('blur', () => {
+      emailWrapper.classList.remove('focused');
+      if (emailInput.value.trim() !== '') emailWrapper.classList.add('filled');
+      else emailWrapper.classList.remove('filled');
+    });
+    emailInput.addEventListener('input', () => {
+      const existingError = emailWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      emailInput.classList.remove('error-border');
+      emailPlaceholder.classList.remove('error-label');
+    });
+
+    // Continue Button for Email
+    emailContinueBtn.addEventListener('click', () => {
+      const emailValue = emailInput.value.trim();
+      const existingError = emailWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      emailInput.classList.remove('error-border');
+      emailPlaceholder.classList.remove('error-label');
+
+      let errorText = '';
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (emailValue === '') errorText = 'Email is required.';
+      else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+
+      if (errorText) {
+        emailInput.classList.add('error-border');
+        emailPlaceholder.classList.add('error-label');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+        emailWrapper.appendChild(errorDiv);
+        return;
+      }
+
+      // Switch to Password Section
+      document.getElementById('displayed-email').value = emailValue;
+      document.querySelector('.email-container').style.display = 'none';
+      document.querySelector('.password-container').style.display = 'block';
+    });
+
+    // UI Elements for Password Section
+    const displayedEmail = document.getElementById('displayed-email');
+    const passwordInput = document.getElementById('password');
+    const passwordWrapper = document.querySelector('.password-wrapper');
+    const passwordPlaceholder = passwordWrapper.querySelector('.placeholder');
+    const passwordRule = document.getElementById('password-rule');
+    const eyeIcon = document.querySelector('.eye-icon');
+    const editEmail = document.getElementById('edit-email');
+    const loginBtn = document.getElementById('login-btn');
+
+    // Focus/Blur/Input for Password
+    passwordInput.addEventListener('focus', () => {
+      passwordWrapper.classList.add('focused');
+      passwordRule.style.display = 'block';
+    });
+    passwordInput.addEventListener('blur', () => {
+      passwordWrapper.classList.remove('focused');
+      if (passwordInput.value.trim() === '') {
+        passwordWrapper.classList.remove('filled', 'invalid');
+        passwordRule.style.display = 'none';
+      } else {
+        passwordWrapper.classList.add('filled');
+      }
+    });
+    passwordInput.addEventListener('input', () => {
+      const existingError = passwordWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      passwordInput.classList.remove('error-border');
+      passwordPlaceholder.classList.remove('error-label');
+      
+      const passwordValue = passwordInput.value.trim();
+      passwordRule.style.display = 'block';
+      if (passwordValue.length === 0) {
+        passwordWrapper.classList.remove('invalid');
+        passwordRule.classList.remove('valid', 'invalid');
+      } else if (passwordValue.length < 8) {
+        passwordWrapper.classList.add('invalid');
+        passwordRule.classList.remove('valid');
+        passwordRule.classList.add('invalid');
+      } else {
+        passwordWrapper.classList.remove('invalid');
+        passwordRule.classList.remove('invalid');
+        passwordRule.classList.add('valid');
+      }
+    });
+
+    // Eye Icon Toggle
+    eyeIcon.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      eyeIcon.classList.toggle('fa-eye');
+      eyeIcon.classList.toggle('fa-eye-slash');
+    });
+
+    // Edit Email
+    editEmail.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.querySelector('.password-container').style.display = 'none';
+      document.querySelector('.email-container').style.display = 'block';
+      passwordInput.value = '';
+      passwordWrapper.classList.remove('filled', 'invalid');
+      passwordRule.style.display = 'none';
+      passwordRule.classList.remove('valid', 'invalid');
+    });
+
+    // login Button
+    loginBtn.addEventListener('click', async () => {
+    const passwordValue = passwordInput.value.trim();
+    const emailValue = displayedEmail.value;
+    const existingError = passwordWrapper.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    passwordInput.classList.remove('error-border');
+    passwordPlaceholder.classList.remove('error-label');
+
+      let errorText = '';
+      if (passwordValue === '') errorText = 'Password is required.';
+      else if (passwordValue.length < 8) errorText = 'Password must be at least 8 characters.';
+
+      if (errorText) {
+        passwordInput.classList.add('error-border');
+        passwordPlaceholder.classList.add('error-label');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+        passwordWrapper.appendChild(errorDiv);
+        return;
+      }
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
+        alert("Login successfully ✅ Welcome " + userCredential.user.email);
+        window.location.href = "index.html"; // redirect after login
+      } catch (error) {
+        alert("❌ Error: " + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
