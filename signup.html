@@ -1,466 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supreme AI Signup - Enhanced</title>
-    <!-- Tailwind CSS for modern styling -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Using a custom font for better aesthetics */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
-
-        body {
-            font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Prevents scrollbars during animations */
-        }
-
-        /* Custom keyframe animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes glowText {
-            0% { text-shadow: 0 0 5px #4a90e2; }
-            100% { text-shadow: 0 0 20px #4a90e2; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-        
-        @keyframes fillGreen {
-            from { background-size: 0% 100%; }
-            to { background-size: 100% 100%; }
-        }
-
-        /* Applying animations via classes */
-        .animate-fadeInUp { animation: fadeInUp 0.7s ease-out both; }
-        .animate-glowText { animation: glowText 5s infinite alternate; }
-        .animate-shake { animation: shake 0.4s ease; }
-        
-        /* Custom styles for elements that are tricky with pure Tailwind */
-        .form-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        .input-wrapper .placeholder {
-            transition: all 0.3s ease;
-        }
-
-        /* Floating label effect */
-        .input-wrapper.focused .placeholder,
-        .input-wrapper.filled .placeholder {
-            top: -10px;
-            left: 1rem;
-            transform: translateY(0) scale(0.85);
-            background: #0a0f1f; /* Match body background */
-            padding: 0 5px;
-            color: #60a5fa; /* A nice blue from Tailwind's palette */
-        }
-        
-        .otp-input.success {
-            background-image: linear-gradient(to right, #22c55e, #22c55e); /* green-500 */
-            background-repeat: no-repeat;
-            background-position: 0 0;
-            background-size: 0% 100%;
-            animation: fillGreen 0.5s ease-in-out forwards;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supreme AI Signup - Animated</title>
+<style>
+  body {
+    background: #0a0f1f;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: fadeInUp 0.8s ease-out;
+  }
+  @keyframes fadeInUp {
+    from {opacity: 0; transform: translateY(30px);} 
+    to {opacity: 1; transform: translateY(0);} 
+  }
+  h1 {
+    margin-bottom: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    animation: glowText 5s infinite alternate;
+  }
+  @keyframes glowText {
+    0% { text-shadow: 0 0 5px #4a90e2; }
+    100% { text-shadow: 0 0 20px #4a90e2; }
+  }
+  p.create-account {
+    margin-bottom: 20px;
+    font-size: 30px;
+    font-weight: normal;
+    color: white;
+    white-space: nowrap;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .email-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    height: auto;
+  }
+  .email-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 2px solid #aaa;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: white;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .email-wrapper input:focus {
+    box-shadow: 0 0 10px #4a90e2;
+  }
+  .error-label { color: red !important; }
+  .placeholder {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper.focused .placeholder,
+  .email-wrapper.filled .placeholder {
+    top: 0%;
+    left: 20px;
+    transform: translateY(-50%) scale(0.85);
+    background: #0a0f1f;
+    padding: 0 5px;
+    color: #4a90e2;
+  }
+  .email-wrapper.focused input { border-color: #4a90e2; }
+  .continue-btn {
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+    border: none;
+    padding: 9px 10px;
+    width: 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .continue-btn:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.6);
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+  }
+  .continue-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%) rotate(45deg);
+    transition: width 0.4s ease;
+  }
+  .continue-btn:hover::before { width: 0; }
+  .login-link {font-size: 14px; margin-bottom: 20px;}
+  .login-link a {color: #4a90e2; text-decoration: none;}
+  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0;}
+  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
+  .divider:not(:empty)::before {margin-right: .75em;}
+  .divider:not(:empty)::after {margin-left: .75em;}
+  .social-btn {
+    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
+    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
+    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.3);} 
+  .social-btn img {width: 20px; height: 20px;}
+  .terms {font-size: 12px; color: #aaa; margin-top: 20px;}
+  .terms a {color: #aaa; text-decoration: underline;}
+  .error-message {
+    display: flex;
+    align-items: center;
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    gap: 6px;
+    animation: shake 0.4s ease, fadeIn 0.3s ease-in;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  .error-icon {
+    background: red;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .error-border {
+    border-color: red !important;
+    box-shadow: 0 0 6px red !important;
+    animation: shake 0.4s ease;
+  }
+</style>
 </head>
-<body class="bg-[#0a0f1f] text-white flex items-center justify-center min-h-screen p-4">
-
-    <div id="signup-container" class="w-full max-w-sm">
-        <!-- Step 1: Email Input -->
-        <div id="step-email" class="step animate-fadeInUp">
-            <div class="form-container p-8 rounded-2xl shadow-2xl">
-                <h1 class="text-xl font-bold text-center mb-2 animate-glowText">Supreme AI</h1>
-                <p class="text-2xl text-center mb-6">Create an account</p>
-                
-                <div class="input-wrapper relative mb-4">
-                    <input type="email" id="email" class="w-full p-3 bg-transparent border-2 border-gray-500 rounded-full outline-none focus:border-blue-400 transition-colors duration-300 peer">
-                    <span class="placeholder absolute top-1/2 left-6 -translate-y-1/2 text-gray-400 pointer-events-none">Email address</span>
-                </div>
-                <div id="email-error" class="error-message hidden text-red-500 text-sm flex items-center gap-2 mb-3 ml-2"></div>
-                
-                <button id="email-continue-btn" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 transform transition-all duration-300 mb-4">Continue</button>
-                
-                <p class="text-center text-sm mb-4">Already have an account? <a href="#" class="text-blue-400 hover:underline">Log in</a></p>
-                
-                <div class="flex items-center text-gray-400 my-4">
-                    <hr class="flex-grow border-gray-600"><span class="px-3">OR</span><hr class="flex-grow border-gray-600">
-                </div>
-                
-                <div class="space-y-3">
-     <button id="phone-flow-btn" class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone</button>
-       <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
-      <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
-        <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
-       <button class="social-btn"><img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram</button>
-        <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
-</div>
-                
-                <div class="text-center text-xs text-gray-500 mt-6">
-                    <a href="#" class="hover:underline">Terms of Use</a> | <a href="#" class="hover:underline">Privacy Policy</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 2: Phone Input -->
-        <div id="step-phone" class="step animate-fadeInUp hidden">
-             <div class="form-container p-8 rounded-2xl shadow-2xl">
-                <h1 class="text-xl font-bold text-center mb-2 animate-glowText">Supreme AI</h1>
-                <p class="text-2xl text-center mb-6">Enter your phone</p>
-                
-                <div class="input-wrapper relative mb-4 flex items-center gap-2 border-2 border-gray-500 rounded-full focus-within:border-blue-400 transition-colors duration-300">
-                    <select id="country-code" class="bg-transparent text-white p-3 outline-none appearance-none">
-                        <option value="+91" class="text-black">🇮🇳 +91</option>
-                        <option value="+1" class="text-black">🇺🇸 +1</option>
-                        <option value="+44" class="text-black">🇬🇧 +44</option>
-                        <option value="+61" class="text-black">🇦🇺 +61</option>
-                    </select>
-                    <div class="w-px h-6 bg-gray-500"></div>
-                    <input type="tel" id="phone" class="w-full p-3 bg-transparent outline-none peer">
-                    <span class="placeholder absolute top-1/2 left-28 -translate-y-1/2 text-gray-400 pointer-events-none">Phone number</span>
-                </div>
-                <div id="phone-error" class="error-message hidden text-red-500 text-sm flex items-center gap-2 mb-3 ml-2"></div>
-                
-                <button id="phone-continue-btn" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 transform transition-all duration-300 mb-4">Continue</button>
-                
-                <p class="text-center text-sm mb-4"><a href="#" class="text-blue-400 hover:underline" onclick="showStep('step-email'); return false;">Back to all options</a></p>
-            </div>
-        </div>
-
-        <!-- Step 3: Password Input -->
-        <div id="step-password" class="step animate-fadeInUp hidden">
-            <div class="form-container p-8 rounded-2xl shadow-2xl">
-                <h1 class="text-xl font-bold text-center mb-2 animate-glowText">Supreme AI</h1>
-                <p class="text-2xl text-center mb-4">Set your password</p>
-                
-                <div class="flex items-center justify-between p-3 border-2 border-gray-500 rounded-full mb-4">
-                    <span id="email-display" class="text-gray-300"></span>
-                    <a href="#" class="text-blue-400 text-sm hover:underline" onclick="showStep('step-email'); return false;">Edit</a>
-                </div>
-
-                <div class="input-wrapper relative mb-4">
-                    <input type="password" id="password" class="w-full p-3 bg-transparent border-2 border-gray-500 rounded-full outline-none focus:border-blue-400 transition-colors duration-300 peer">
-                    <span class="placeholder absolute top-1/2 left-6 -translate-y-1/2 text-gray-400 pointer-events-none">Password</span>
-                    <button id="password-toggle" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-eye"></i></button>
-                </div>
-                <div id="password-error" class="error-message hidden text-red-500 text-sm flex items-center gap-2 mb-3 ml-2"></div>
-
-                <div id="password-rules" class="hidden bg-white text-black p-4 rounded-xl mb-4 text-sm">
-                    <p class="font-bold mb-2">Your password must contain:</p>
-                    <ul><li id="rule-length" class="transition-colors duration-300">At least 8 characters</li></ul>
-                </div>
-                
-                <button id="password-continue-btn" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white font-bold py-3 rounded-full hover:scale-105 hover:shadow-lg hover:shadow-purple-500/50 transform transition-all duration-300 mb-4">Continue</button>
-                
-                <div class="flex items-center text-gray-400 my-4">
-                    <hr class="flex-grow border-gray-600"><span class="px-3">OR</span><hr class="flex-grow border-gray-600">
-                </div>
-                
-                <div class="space-y-3">
-                    <button class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
-                </div>
-                
-                <div class="text-center text-xs text-gray-500 mt-6">
-                    <a href="#" class="hover:underline">Terms of Use</a> | <a href="#" class="hover:underline">Privacy Policy</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Step 4: OTP Input -->
-        <div id="step-otp" class="step animate-fadeInUp hidden">
-            <div class="form-container p-8 rounded-2xl shadow-2xl">
-                <h1 class="text-xl font-bold text-center mb-2 animate-glowText">Supreme AI</h1>
-                <p class="text-2xl text-center mb-2">Create your account</p>
-                <p class="text-center text-sm text-gray-400 mb-6">Enter the 5-digit code sent to your email (use 12345 for demo).</p>
-
-                <div id="otp-container" class="flex justify-center gap-2 mb-6">
-                    <input class="otp-input w-12 h-14 text-center text-2xl font-bold bg-transparent border-2 border-gray-500 rounded-xl outline-none focus:border-blue-400 transition-all duration-300" type="text" maxlength="1">
-                    <input class="otp-input w-12 h-14 text-center text-2xl font-bold bg-transparent border-2 border-gray-500 rounded-xl outline-none focus:border-blue-400 transition-all duration-300" type="text" maxlength="1">
-                    <input class="otp-input w-12 h-14 text-center text-2xl font-bold bg-transparent border-2 border-gray-500 rounded-xl outline-none focus:border-blue-400 transition-all duration-300" type="text" maxlength="1">
-                    <input class="otp-input w-12 h-14 text-center text-2xl font-bold bg-transparent border-2 border-gray-500 rounded-xl outline-none focus:border-blue-400 transition-all duration-300" type="text" maxlength="1">
-                    <input class="otp-input w-12 h-14 text-center text-2xl font-bold bg-transparent border-2 border-gray-500 rounded-xl outline-none focus:border-blue-400 transition-all duration-300" type="text" maxlength="1">
-                </div>
-                <div id="otp-error" class="hidden text-red-500 text-center text-sm mb-4">Invalid code. Please try again.</div>
-            </div>
-        </div>
-        
-        <!-- Step 5: Success -->
-        <div id="step-success" class="step animate-fadeInUp hidden">
-            <div class="form-container p-8 rounded-2xl shadow-2xl text-center">
-                 <div class="w-24 h-24 mx-auto mb-6 flex items-center justify-center bg-green-500/20 rounded-full">
-                    <i class="fas fa-check text-5xl text-green-400"></i>
-                </div>
-                <h1 class="text-3xl font-bold mb-2">Welcome!</h1>
-                <p class="text-gray-300">You have successfully created your Supreme AI account.</p>
-            </div>
-        </div>
-
+<body>
+  <div class="container">
+    <h1>Supreme AI</h1>
+    <p class="create-account">Create an account</p>
+    <div class="email-wrapper">
+      <input type="email" id="email">
+      <span class="placeholder">Email address</span>
     </div>
-    
-    <!-- Shared elements for social buttons -->
-    <template id="social-button-template">
-        <button class="w-full bg-white text-black font-semibold py-2.5 px-4 rounded-full flex items-center justify-center gap-3 hover:bg-gray-200 transform transition-all duration-200">
-            <img class="w-5 h-5" src="" alt="">
-            <span class="text-sm"></span>
-        </button>
-    </template>
+    <button class="continue-btn">Continue</button>
+    <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    <div class="divider">OR</div>
+    <button id="phone-flow-btn" class="social-btn">
+      <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone
+    </button>
+    <button id="google-btn" class="social-btn">
+      <img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google
+    </button>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft
+    </button>
+    <button class="social-btn">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub
+    </button>
+    <button class="social-btn">
+      <img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram
+    </button>
+    <button class="social-btn">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook
+    </button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- STATE & ELEMENTS ---
-    let currentStep = 'step-email';
-    const userData = { email: '', phone: '' };
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-    const steps = document.querySelectorAll('.step');
-    const emailInput = document.getElementById('email');
-    const phoneInput = document.getElementById('phone');
-    const passwordInput = document.getElementById('password');
-    const otpInputs = document.querySelectorAll('.otp-input');
+  // Firebase Config
+  const firebaseConfig = {
+    apiKey: "AIzaSyBmQyMu-Va-Mo3utQStaz3shbxWDyIK5qw",
+    authDomain: "supreme-ai.firebaseapp.com",
+    projectId: "supreme-ai",
+    storageBucket: "supreme-ai.firebasestorage.app",
+    messagingSenderId: "586558875086",
+    appId: "1:586558875086:web:328051e411d2b76deeb79f",
+    measurementId: "G-BV6KDTHHP7"
+  };
 
-    // --- HELPER FUNCTIONS ---
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-    /**
-     * Shows a specific step and hides all others.
-     * @param {string} stepId The ID of the step to show.
-     */
-    function showStep(stepId) {
-        steps.forEach(step => step.classList.add('hidden'));
-        const targetStep = document.getElementById(stepId);
-        if (targetStep) {
-            targetStep.classList.remove('hidden');
-            currentStep = stepId;
-        }
-    }
-    
-    /**
-     * Handles the floating label effect for input fields.
-     * @param {HTMLInputElement} input The input element.
-     * @param {HTMLElement} wrapper The parent wrapper element.
-     */
-    function setupInput(input, wrapper) {
-        input.addEventListener('focus', () => wrapper.classList.add('focused'));
-        input.addEventListener('blur', () => {
-            wrapper.classList.remove('focused');
-            if (input.value.trim() !== '') {
-                wrapper.classList.add('filled');
-            } else {
-                wrapper.classList.remove('filled');
-            }
-        });
-        // Handle cases where the input is pre-filled
-        if (input.value.trim() !== '') {
-            wrapper.classList.add('filled');
-        }
-    }
+  // Elements
+  const emailInput = document.getElementById('email');
+  const wrapper = document.querySelector('.email-wrapper');
+  const placeholder = document.querySelector('.placeholder');
+  const continueBtn = document.querySelector('.continue-btn');
+  const googleBtn = document.getElementById('google-btn');
 
-    /**
-     * Displays an error message for a given field.
-     * @param {string} fieldId 'email', 'phone', or 'password'
-     * @param {string} message The error message to display.
-     */
-    function showError(fieldId, message) {
-        const errorDiv = document.getElementById(`${fieldId}-error`);
-        const inputEl = document.getElementById(fieldId);
-        if (errorDiv) {
-            errorDiv.innerHTML = `<span class="w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">!</span><span>${message}</span>`;
-            errorDiv.classList.remove('hidden');
-        }
-        if (inputEl) {
-            inputEl.closest('.input-wrapper, .flex').classList.add('animate-shake');
-            inputEl.classList.add('border-red-500');
-            inputEl.classList.remove('border-gray-500');
-            setTimeout(() => inputEl.closest('.input-wrapper, .flex').classList.remove('animate-shake'), 400);
-        }
-    }
+  // Focus/blur events
+  emailInput.addEventListener('focus', () => wrapper.classList.add('focused'));
+  emailInput.addEventListener('blur', () => {
+    wrapper.classList.remove('focused');
+    if (emailInput.value.trim() !== '') wrapper.classList.add('filled');
+    else wrapper.classList.remove('filled');
+  });
 
-    /**
-     * Clears an error message for a given field.
-     * @param {string} fieldId 'email', 'phone', or 'password'
-     */
-    function clearError(fieldId) {
-        const errorDiv = document.getElementById(`${fieldId}-error`);
-        const inputEl = document.getElementById(fieldId);
-        if (errorDiv) errorDiv.classList.add('hidden');
-        if (inputEl) {
-            inputEl.classList.remove('border-red-500');
-            inputEl.classList.add('border-gray-500');
-        }
-    }
+  // Clear error while typing
+  emailInput.addEventListener('input', () => {
+    const existingError = document.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
+    placeholder.classList.remove('error-label');
+  });
 
-    // --- VALIDATION LOGIC ---
-    function validateEmail() {
-        const emailValue = emailInput.value.trim();
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailValue === '') {
-            showError('email', 'Email is required.');
-            return false;
-        }
-        if (!emailPattern.test(emailValue)) {
-            showError('email', 'Please enter a valid email address.');
-            return false;
-        }
-        return true;
+  // Email Signup
+  continueBtn.addEventListener('click', async () => {
+    const emailValue = emailInput.value.trim();
+    const existingError = document.querySelector('.error-message');
+    if (existingError) existingError.remove();
+    emailInput.classList.remove('error-border');
+    placeholder.classList.remove('error-label');
+
+    let errorText = '';
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (emailValue === '') errorText = 'Email is required.';
+    else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+
+    if (errorText) {
+      emailInput.classList.add('error-border');
+      placeholder.classList.add('error-label');
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+      wrapper.appendChild(errorDiv);
+      return;
     }
 
-    function validatePhone() {
-        const phoneValue = phoneInput.value.trim();
-        if (phoneValue === '') {
-            showError('phone', 'Phone number is required.');
-            return false;
-        }
-        if (!/^\d{7,15}$/.test(phoneValue)) {
-            showError('phone', 'Please enter a valid phone number.');
-            return false;
-        }
-        return true;
+    try {
+      const password = prompt("Enter a password for your account:");
+      const userCredential = await createUserWithEmailAndPassword(auth, emailValue, password);
+      alert("Signup successful ✅ Welcome " + userCredential.user.email);
+      window.location.href = "index.html"; // redirect after signup
+    } catch (error) {
+      alert("❌ Signup error: " + error.message);
     }
+  });
 
-    function validatePassword() {
-        const passValue = passwordInput.value.trim();
-        if (passValue === '') {
-            showError('password', 'Password is required.');
-            return false;
-        }
-        if (passValue.length < 8) {
-            showError('password', 'Password must be at least 8 characters.');
-            return false;
-        }
-        return true;
+  // Google Login
+  googleBtn.addEventListener('click', async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      alert(`✅ Google login successful! Welcome ${user.displayName}`);
+      window.location.href = "index.html"; // redirect after google login
+    } catch (error) {
+      alert("❌ Google login failed: " + error.message);
     }
-    
-    // --- EVENT LISTENERS ---
-
-    // Setup for all inputs with floating labels
-    setupInput(emailInput, emailInput.closest('.input-wrapper'));
-    setupInput(phoneInput, phoneInput.closest('.input-wrapper'));
-    setupInput(passwordInput, passwordInput.closest('.input-wrapper'));
-
-    // Clear errors on input
-    emailInput.addEventListener('input', () => clearError('email'));
-    phoneInput.addEventListener('input', () => clearError('phone'));
-    passwordInput.addEventListener('input', () => clearError('password'));
-
-    // Step 1: Email
-    document.getElementById('email-continue-btn').addEventListener('click', () => {
-        if (validateEmail()) {
-            userData.email = emailInput.value.trim();
-            document.getElementById('email-display').textContent = userData.email;
-            showStep('step-password');
-        }
-    });
-    
-    document.getElementById('phone-flow-btn').addEventListener('click', () => showStep('step-phone'));
-
-    // Step 2: Phone
-    document.getElementById('phone-continue-btn').addEventListener('click', () => {
-        if (validatePhone()) {
-            const countryCode = document.getElementById('country-code').value;
-            userData.phone = `${countryCode} ${phoneInput.value.trim()}`;
-            // For demo, we'll go to password. In a real app, this might trigger a phone OTP.
-            document.getElementById('email-display').textContent = userData.phone;
-            showStep('step-password');
-        }
-    });
-
-    // Step 3: Password
-    document.getElementById('password-continue-btn').addEventListener('click', () => {
-        if (validatePassword()) {
-            showStep('step-otp');
-            otpInputs[0].focus();
-        }
-    });
-
-    passwordInput.addEventListener('input', () => {
-        const rulesDiv = document.getElementById('password-rules');
-        const ruleLength = document.getElementById('rule-length');
-        rulesDiv.classList.toggle('hidden', passwordInput.value.length === 0);
-        ruleLength.classList.toggle('text-green-500', passwordInput.value.length >= 8);
-    });
-
-    document.getElementById('password-toggle').addEventListener('click', (e) => {
-        const icon = e.currentTarget.querySelector('i');
-        const isPassword = passwordInput.type === 'password';
-        passwordInput.type = isPassword ? 'text' : 'password';
-        icon.classList.toggle('fa-eye', !isPassword);
-        icon.classList.toggle('fa-eye-slash', isPassword);
-    });
-
-    // Step 4: OTP
-    otpInputs.forEach((input, idx) => {
-        input.addEventListener('input', (e) => {
-            // Move to next input
-            if (e.target.value && idx < otpInputs.length - 1) {
-                otpInputs[idx + 1].focus();
-            }
-            // If last input is filled, check OTP
-            if (idx === otpInputs.length - 1 && e.target.value) {
-                checkOTP();
-            }
-        });
-        input.addEventListener('keydown', (e) => {
-            // Move to previous input on backspace
-            if (e.key === 'Backspace' && !input.value && idx > 0) {
-                otpInputs[idx - 1].focus();
-            }
-        });
-    });
-
-    function checkOTP() {
-        const code = Array.from(otpInputs).map(i => i.value).join('');
-        const otpError = document.getElementById('otp-error');
-        const otpContainer = document.getElementById('otp-container');
-
-        otpError.classList.add('hidden'); // Clear previous error
-
-        if (code === '12345') {
-            otpInputs.forEach((input, idx) => {
-                setTimeout(() => input.classList.add('success'), idx * 100);
-            });
-            setTimeout(() => showStep('step-success'), otpInputs.length * 100 + 500);
-        } else {
-            otpContainer.classList.add('animate-shake');
-            otpError.classList.remove('hidden');
-            setTimeout(() => {
-                otpContainer.classList.remove('animate-shake');
-                otpInputs.forEach(i => i.value = '');
-                otpInputs[0].focus();
-            }, 500);
-        }
-    }
-    
-    // --- DYNAMICALLY CREATE SOCIAL BUTTONS (for cleaner HTML) ---
-    function createSocialButton(container, iconSrc, text) {
-        const template = document.getElementById('social-button-template');
-        const clone = template.content.cloneNode(true);
-        const button = clone.querySelector('button');
-        button.querySelector('img').src = iconSrc;
-        button.querySelector('span').textContent = text;
-        container.appendChild(button);
-    }
-    
-    // Replace placeholder social buttons with templated ones for consistency
-    document.querySelectorAll('.social-btn').forEach(btn => {
-        const container = btn.parentElement;
-        const iconSrc = btn.querySelector('img').src;
-        const text = btn.textContent;
-        btn.remove(); // remove original
-        createSocialButton(container, iconSrc, text);
-    });
-
-
-    // --- INITIALIZATION ---
-    showStep('step-email');
-});
+  });
 </script>
 </body>
 </html>
