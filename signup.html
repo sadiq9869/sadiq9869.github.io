@@ -296,7 +296,7 @@
     <button id="phone-flow-btn" class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone</button>
     <button id="google-btn-email" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
     <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
-    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button id="github-btn-email" class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
     <button class="social-btn"><img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram</button>
     <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
     <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
@@ -321,7 +321,7 @@
     <div class="divider">OR</div>
     <button id="google-btn-pass" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
     <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
-    <button class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button id="github-btn-pass" class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
     <button class="social-btn"><img src="https://raw.githubusercontent.com/sadiq9869/sadiq9869.github.io/fbfe53c80d80f77300046c100742d638e988230f/Telegram%20premium%20star.png" alt="Telegram">Continue with Telegram</button>
     <button class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
     <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
@@ -329,7 +329,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider,GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     // Firebase Config
     const firebaseConfig = {
@@ -344,7 +344,9 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    const googleProvider = new GoogleAuthProvider();
+const githubProvider = new GithubAuthProvider();
+
 
     // UI Elements for Email Section
     const emailInput = document.getElementById('email');
@@ -495,7 +497,7 @@
 
     // Google Sign-In Function
     function googleSignIn() {
-      signInWithPopup(auth, provider)
+      signInWithPopup(auth, googleProvider) 
         .then((result) => {
           const user = result.user;
           alert("Signup successful with Google ✅ Welcome in supreme AI " + user.displayName);
@@ -505,13 +507,26 @@
           alert("❌ Error: " + error.message);
         });
     }
+    // GitHub Sign-In Function
+function githubSignIn() {
+  signInWithPopup(auth, githubProvider)
+    .then((result) => {
+      const user = result.user;
+      alert("Signup successful with GitHub ✅ Welcome in supreme AI " + (user.displayName || user.email));
+      window.location.href = "index.html"; // redirect after GitHub sign up
+    })
+    .catch((error) => {
+      alert("❌ Error: " + error.message);
+    });
+}
 
     // Google Buttons
-    const googleBtnEmail = document.getElementById('google-btn-email');
-    const googleBtnPass = document.getElementById('google-btn-pass');
+    document.getElementById('google-btn-email').addEventListener('click', googleSignIn);
+document.getElementById('google-btn-pass').addEventListener('click', googleSignIn);
 
-    googleBtnEmail.addEventListener('click', googleSignIn);
-    googleBtnPass.addEventListener('click', googleSignIn);
+// GitHub Buttons
+document.getElementById('github-btn-email').addEventListener('click', githubSignIn);
+document.getElementById('github-btn-pass').addEventListener('click', githubSignIn);
   </script>
 </body>
 </html>
