@@ -50,12 +50,14 @@ No sensitive keys, API secrets, or private data are included in this public repo
 
 ## 📜 License
 
----
+© 2025 Sadiq Siddiqui — All Rights Reserved  
 
-This project is licensed under **All Rights Reserved**.
-
+This project and its source code are **proprietary**.  
+No one is allowed to **use, copy, modify, or distribute** any part of this code without explicit permission from the author.  
 
 For details, see the [LICENSE](./LICENSE) file.
+
+
 
 ---
 
