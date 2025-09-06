@@ -46,6 +46,16 @@ Supreme AI is a powerful, intelligent, and human-like conversational AI made wit
 
 This project is for educational and personal portfolio purposes only.  
 No sensitive keys, API secrets, or private data are included in this public repo.
+---
+
+## 📜 License
+
+---
+
+This project is licensed under **All Rights Reserved**.
+
+
+For details, see the [LICENSE](./LICENSE) file.
 
 ---
 
