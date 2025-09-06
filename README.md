@@ -51,7 +51,7 @@ No sensitive keys, API secrets, or private data are included in this public repo
 ## 📜 License
 
 © 2025 Sadiq Siddiqui — All Rights Reserved  
-
+The name "Supreme AI" is reserved and may not be used for any software, product, or service without explicit permission.
 This project and its source code are **proprietary**.  
 No one is allowed to **use, copy, modify, or distribute** any part of this code without explicit permission from the author.  
 
