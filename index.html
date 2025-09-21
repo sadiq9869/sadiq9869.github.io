@@ -32,10 +32,8 @@ let selectedFiles = [];  // Global to hold uploaded images
 <title>Supreme AI</title>
 <script>
   const titles = [
-    "Supreme AI - Official Website of Sadiq Siddiqui",
-    "🚀 Official Website of Sadiq Siddiqui"
+    "🚀 Supreme AI"
   ];
-  document.title = titles[Math.floor(Math.random() * titles.length)];
 </script>
 
 
@@ -314,9 +312,112 @@ let selectedFiles = [];  // Global to hold uploaded images
       opacity: 0.85;
       text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff;
     }
+
+    /* NEW: Hamburger Menu Styles */
+    .hamburger-menu {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      cursor: pointer;
+      padding: 5px;
+    }
+    .hamburger-lines {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      width: 30px;
+      height: 24px;
+      background: transparent;
+    }
+    .hamburger-lines span {
+      width: 100%;
+      height: 4px;
+      background: #00ffff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 5px #00ffff;
+    }
+    .hamburger-lines.active span:nth-child(1) {
+      transform: rotate(45deg) translate(8px, 8px);
+    }
+    .hamburger-lines.active span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-lines.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+    .nav-menu {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      transition: left 0.3s ease;
+      padding-top: 70px;
+      box-shadow: 0px 0 0px rgba(0, 255, 255, 0.3);
+    }
+    .nav-menu.open {
+      left: 0;
+    }
+    .nav-menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .nav-menu li {
+      padding: 15px 20px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    }
+    .nav-menu a {
+      color: #00ffff;
+      text-decoration: none;
+      font-size: 18px;
+      transition: color 0.3s;
+    }
+    .nav-menu a:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #00ffff;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
   </style>
 </head>
 <body>
+  <!-- NEW: Hamburger Menu -->
+  <div class="hamburger-menu" onclick="toggleMenu()">
+    <div class="hamburger-lines">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+  <div id="navMenu" class="nav-menu">
+    <ul>
+      <li><a href="#home" onclick="closeMenu()">Home</a></li>
+      <li><a href="#about" onclick="closeMenu()">About Supreme AI</a></li>
+      <li><a href="#contact" onclick="closeMenu()">Contact</a></li>
+      <li><a href="https://github.com/sadiq9869" onclick="closeMenu()">GitHub</a></li>
+      <li><a href="#settings" onclick="closeMenu()">Settings</a></li>
+    </ul>
+  </div>
+  <div id="overlay" class="overlay" onclick="closeMenu()"></div>
+
   <h1>🚀 Supreme AI</h1>
   <div id="response">
     <div id="signature" class="signature">🚀 Supreme <strong>AI</strong> ✪</div>
@@ -353,8 +454,6 @@ let selectedFiles = [];  // Global to hold uploaded images
   "url": "https://sadiq9869.github.io"
 }
 </script>
-
-
 
   <script>
     const attachBtn = document.getElementById('attachBtn');
@@ -1210,7 +1309,24 @@ function formatTimestamp(ts) {
   return "Unknown time";
 }
 
+// NEW: Hamburger Menu Functions
+function toggleMenu() {
+  const lines = document.querySelector('.hamburger-lines');
+  const navMenu = document.getElementById('navMenu');
+  const overlay = document.getElementById('overlay');
+  lines.classList.toggle('active');
+  navMenu.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
 
+function closeMenu() {
+  const lines = document.querySelector('.hamburger-lines');
+  const navMenu = document.getElementById('navMenu');
+  const overlay = document.getElementById('overlay');
+  lines.classList.remove('active');
+  navMenu.classList.remove('open');
+  overlay.classList.remove('open');
+}
 
     window.showResponse = async function() {
       const inputField = document.getElementById("chatInput");
