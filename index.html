@@ -28,18 +28,9 @@ const auth = getAuth(app);
 const storage = getStorage(app);
 </script>
 
-<title>Supreme AI</title>
-<script>
-  const titles = [
-    "Supreme AI - Official Website of Sadiq Siddiqui",
-    "🚀 Official Website of Sadiq Siddiqui"
-  ];
-  document.title = titles[Math.floor(Math.random() * titles.length)];
-</script>
-
-
   <!-- SEO Meta Tags -->
   <meta name="google-site-verification" content="PvSBjLC3MF3Ypdfs1La4Fo8zYEjRb0BCgrNoTbD8g_o" />
+<title>Supreme AI - Official Website of Sadiq Siddiqui</title>
 <meta name="description" content="Supreme AI by Sadiq Siddiqui - Your personal AI assistant with advanced features, smart search, and intelligent conversations.">
 <meta name="keywords" content="Supreme AI, AI Assistant, Sadiq Siddiqui, chatbot, smart AI, AI chatbot, AI website, Sadiq AI">
 <meta name="author" content="Sadiq Siddiqui (GitHub: sadiq9869)">
@@ -65,6 +56,7 @@ const storage = getStorage(app);
 <link rel="canonical" href="https://sadiq9869.github.io/">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🚀 Official Website of Sadiq Siddiqui</title>
    <style>
     body {
       margin: 0;
@@ -1260,6 +1252,7 @@ const deletedKnowledge = await getDocs(q);
         knowledgeMessage = "No deleted preference found to restore.";
       }
     }
+
         const res = await fetch(apiUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
