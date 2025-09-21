@@ -394,9 +394,6 @@ function generateUniqueId() {
   return newId;
 }
 
-// Global constants (put before evolveFromChat or any function)
-const apiKey = "AIzaSyCg93plAA98wBLgzc985tfgmVzOqcqS6CU";
-const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
     
     async function getMemoryContext() {
   try {
@@ -1252,6 +1249,10 @@ const deletedKnowledge = await getDocs(q);
         knowledgeMessage = "No deleted preference found to restore.";
       }
     }
+ 
+  const apiKey = "AIzaSyCeOgZbJJOFVFqGxH5NmZmedTMGPA8ZZ1o"; 
+     const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+
 
         const res = await fetch(apiUrl, {
           method: "POST",
