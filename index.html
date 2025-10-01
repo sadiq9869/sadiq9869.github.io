@@ -25,6 +25,7 @@
     // Initialize Firebase
     firebaseApp = initializeApp(firebaseConfig);
     firestore = getFirestore(firebaseApp);
+    setLogLevel("debug"); // Debug logging for production monitoring
     auth = getAuth(firebaseApp);
     storage = getStorage(firebaseApp);
     
@@ -629,7 +630,7 @@ async function saveToMemory({ user, intent, ai }) {
 }
     async function smartAnalyzeWithHuggingFace(userInput) {
   console.info('📌 Starting smart intent analysis for input:', userInput);
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
   const normalized = userInput.trim().toLowerCase();
   console.log(`📌 Normalized input: ${normalized}`);
   if (normalized.length < 3) {
@@ -646,9 +647,9 @@ async function saveToMemory({ user, intent, ai }) {
     return userInput;
   }
   const models = [
-    "google/flan-t5-xxl",
-    "bigscience/T0pp",
-    "yeniguno/bert-uncased-intent-classification"
+    "joaobarroca/distilbert-base-uncased-finetuned-massive-intent-detection-english",
+    "Falconsai/intent_classification",
+    "facebook/bart-large-mnli"
   ];
   console.log('📌 Models for analysis:', models);
 
@@ -719,7 +720,7 @@ async function saveToMemory({ user, intent, ai }) {
 }
 
 async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
-  const hf_apiKey = "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"; // Same key
+  const hf_apiKey = "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"; // Same key
   const model = "google/flan-t5-xxl";
 
   try {
@@ -746,7 +747,7 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
 
 
  async function summarizeIntentWithHuggingFace(userInput, intent) {
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
   const models = [
     "google/flan-t5-xxl",
     "facebook/bart-large-cnn",
@@ -874,7 +875,7 @@ function saveToLocalStorage(userId, userInput, intent, aiReply) {
 
 
    async function detectEmojiSmart(userInput) {
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
   const gemini_apiKey = "AIzaSyCg93plAA98wBLgzc985tfgmVzOqcqS6CU";
 
   const models = [
@@ -980,7 +981,7 @@ Return only emojis, no text.
    
    // Stronger "should use emoji?" with NLI ensemble + formality + sentiment
 async function shouldUseEmojiEnsemble(userInput) {
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
 
   // 1) NLI models for zero-shot YES/NO (emoji-appropriate vs not)
   const nliModels = [
