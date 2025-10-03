@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.2/build/css/intlTelInput.css">
 <style>
+  /* Same CSS as provided, no changes needed */
   body {
     background: #0a0f1f;
     color: white;
@@ -324,21 +325,33 @@
     background: linear-gradient(90deg, #ff4d4d, #ff4d4d);
     animation: pulse 1.5s infinite;
   }
+  .report-disposable {
+    font-size: 12px;
+    color: #60a5fa;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 5px;
+    display: none;
+  }
+  .report-disposable:hover {
+    color: #a78bfa;
+  }
 </style>
 </head>
 <body>
   <div class="container email-container">
     <h1>Supreme AI</h1>
-    <p class="create-account">Create an account</p>
+    <p class="create-account">Create an Account</p>
     <div class="email-wrapper">
       <input type="email" id="email">
-      <span class="placeholder">Email address</span>
+      <span class="placeholder">Email Address</span>
       <input type="text" class="honeypot" id="honeypot" tabindex="-1" autocomplete="off">
+      <span class="report-disposable" id="report-disposable">Report as non-disposable email</span>
     </div>
     <button class="continue-btn" id="email-continue-btn">Continue</button>
-    <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    <p class="login-link">Already have an account? <a href="login.html">Log In</a></p>
     <div class="divider">OR</div>
-    <button id="phone-flow-btn" class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with phone</button>
+    <button id="phone-flow-btn" class="social-btn"><img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" alt="Phone">Continue with Phone</button>
     <button id="google-btn-email" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
     <button id="microsoft-btn-email" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
     <button id="github-btn-email" class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
@@ -349,10 +362,10 @@
 
   <div class="container password-container" style="display: none;">
     <h1>Supreme AI</h1>
-    <p class="password-prompt">Create a Strong Password for Supreme AI</p>
+    <p class="password-prompt">Create a Strong Password</p>
     <div class="email-wrapper filled">
       <input type="email" id="displayed-email" readonly>
-      <span class="placeholder">Email address</span>
+      <span class="placeholder">Email Address</span>
       <span class="edit-option"><a href="#" id="edit-email">Edit</a></span>
     </div>
     <div class="password-wrapper">
@@ -362,7 +375,6 @@
       <div class="password-rule" id="password-rule">Password must be at least 8 characters.</div>
     </div>
     <button class="continue-btn" id="signup-btn">Continue</button>
-    <button class="back-btn" id="back-btn">Back</button>
     <div class="divider">OR</div>
     <button id="google-btn-pass" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
     <button id="microsoft-btn-pass" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
@@ -395,7 +407,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, OAuthProvider, signInWithPhoneNumber, signInWithPopup, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink, RecaptchaVerifier, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, deleteDoc, Timestamp, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getAnalytics, logEvent as firebaseLogEvent } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
     // Firebase Config
@@ -427,6 +439,8 @@
       minPasswordLength: 8,
       signupEmailKey: "emailForSignup",
       signupTokenCollection: "signupTokens",
+      disposableDomainsCollection: "disposableDomains",
+      reportedDomainsCollection: "reportedDomains",
       redirectUrl: "https://sadiq9869.github.io/signup.html"
     };
 
@@ -436,6 +450,7 @@
     const emailWrapper = document.querySelector('.email-container .email-wrapper');
     const emailPlaceholder = emailWrapper.querySelector('.placeholder');
     const emailContinueBtn = document.getElementById('email-continue-btn');
+    const reportDisposable = document.getElementById('report-disposable');
 
     // UI Elements for Phone Section
     const phoneContainer = document.querySelector('.phone-container');
@@ -477,6 +492,60 @@
       if (pwd.length < validationConfig.minPasswordLength)
         return `Password must be at least ${validationConfig.minPasswordLength} characters.`;
       return "";
+    }
+
+    async function isDisposableEmail(email) {
+      console.log(`[Debug] Checking if email is disposable: ${email}`);
+      const domain = email.split('@')[1]?.toLowerCase();
+      if (!domain) {
+        console.log(`[Debug] No domain found for email: ${email}`);
+        return false;
+      }
+      console.log(`[Debug] Querying disposableDomains for domain: ${domain}`);
+      try {
+        const domainDoc = await getDoc(doc(db, validationConfig.disposableDomainsCollection, domain));
+        const isDisposable = domainDoc.exists();
+        console.log(`[Debug] Domain ${domain} disposable: ${isDisposable}`);
+        return isDisposable;
+      } catch (error) {
+        console.error(`[Debug] Error checking disposable domain: ${error.message}, code: ${error.code}`);
+        logEvent("disposable_check_error", { email, domain, error: error.message, code: error.code });
+        showError("Unable to verify email domain. Please try again later.");
+        return false; // Fallback to false to avoid blocking valid users
+      }
+    }
+
+    async function reportNonDisposableEmail(email) {
+      console.log(`[Debug] Starting reportNonDisposableEmail for email: ${email}`);
+      const domain = email.split('@')[1]?.toLowerCase();
+      if (!domain) {
+        console.log(`[Debug] No domain found for email: ${email}`);
+        showError("Invalid email format.");
+        return;
+      }
+      try {
+        const reportRef = doc(db, validationConfig.reportedDomainsCollection, domain);
+        const reportSnap = await getDoc(reportRef);
+        console.log(`[Debug] Checking existing report for domain: ${domain}, exists: ${reportSnap.exists()}`);
+        if (reportSnap.exists() && reportSnap.data().reportedAt.toMillis() > Date.now() - 24 * 60 * 60 * 1000) {
+          console.log(`[Debug] Domain ${domain} recently reported, timestamp: ${reportSnap.data().reportedAt.toMillis()}`);
+          showError("This domain was recently reported. Please try again later.");
+          return;
+        }
+        console.log(`[Debug] Reporting domain: ${domain}`);
+        await setDoc(reportRef, {
+          domain,
+          reportedAt: Timestamp.now(),
+          status: 'pending'
+        });
+        console.log(`[Debug] Domain ${domain} reported successfully`);
+        logEvent("non_disposable_reported", { domain, timestamp: Date.now() });
+        showSuccess("Thank you for reporting! We will review your email domain.");
+      } catch (error) {
+        console.error(`[Debug] Error reporting non-disposable domain: ${error.message}, code: ${error.code}`);
+        showError("Failed to report the domain. Please try again.");
+        logEvent("report_disposable_error", { email, domain, error: error.message });
+      }
     }
 
     function showToast(type, message) {
@@ -534,7 +603,7 @@
     function isRateLimited() {
       const now = Date.now();
       if (now - lastClickTime < 3000) {
-        showError("Thodi der wait karo, bhai!");
+        showError("Please wait a moment before trying again.");
         return true;
       }
       lastClickTime = now;
@@ -571,22 +640,33 @@
       if (existingError) existingError.remove();
       emailInput.classList.remove('error-border');
       emailPlaceholder.classList.remove('error-label');
+      reportDisposable.style.display = 'none';
     });
 
     // Continue Button for Email
-    emailContinueBtn.addEventListener('click', () => {
+    emailContinueBtn.addEventListener('click', async () => {
+      if (isRateLimited()) return;
+
       const emailValue = emailInput.value.trim();
       const honeypotValue = honeypotInput.value.trim();
       const existingError = emailWrapper.querySelector('.error-message');
       if (existingError) existingError.remove();
       emailInput.classList.remove('error-border');
       emailPlaceholder.classList.remove('error-label');
+      reportDisposable.style.display = 'none';
 
       let errorText = '';
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (honeypotValue !== '') errorText = 'Bot detected!';
+      if (honeypotValue !== '') errorText = 'Bot detected.';
       else if (emailValue === '') errorText = 'Email is required.';
-      else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+      else if (!emailPattern.test(emailValue)) errorText = 'Please enter a valid email address.';
+      else {
+        const isDisposable = await isDisposableEmail(emailValue);
+        if (isDisposable) {
+          errorText = 'Disposable email addresses are not allowed. Please use a permanent email.';
+          reportDisposable.style.display = 'block';
+        }
+      }
 
       if (errorText) {
         emailInput.classList.add('error-border');
@@ -601,6 +681,11 @@
       document.getElementById('displayed-email').value = emailValue;
       document.querySelector('.email-container').style.display = 'none';
       document.querySelector('.password-container').style.display = 'block';
+    });
+
+    // Report Disposable Email
+    reportDisposable.addEventListener('click', () => {
+      reportNonDisposableEmail(emailInput.value.trim());
     });
 
     // Focus/Blur/Input for Password
@@ -649,17 +734,6 @@
 
     // Edit Email
     editEmail.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.querySelector('.password-container').style.display = 'none';
-      document.querySelector('.email-container').style.display = 'block';
-      passwordInput.value = '';
-      passwordWrapper.classList.remove('filled', 'invalid');
-      passwordRule.style.display = 'none';
-      passwordRule.classList.remove('valid', 'invalid');
-    });
-
-    // Back Button for Password Section
-    document.getElementById('back-btn').addEventListener('click', (e) => {
       e.preventDefault();
       document.querySelector('.password-container').style.display = 'none';
       document.querySelector('.email-container').style.display = 'block';
@@ -720,7 +794,7 @@
         phonePlaceholder.classList.add('error-label');
         const errorDiv = document.createElement('div');
         errorDiv.className = 'error-message';
-        errorDiv.innerHTML = `<span class="error-icon">!</span> Enter a valid phone number with country code.`;
+        errorDiv.innerHTML = `<span class="error-icon">!</span> Please enter a valid phone number with country code.`;
         phoneWrapper.appendChild(errorDiv);
         return;
       }
@@ -734,14 +808,14 @@
         otpWrapper.style.display = 'block';
         otpVerifyBtn.style.display = 'block';
         otpInput.focus();
-        showSuccess("OTP sent to your phone!");
+        showSuccess("OTP sent to your phone.");
         logEvent("phone_otp_sent", { phone: phoneValue, timestamp: Date.now() });
       } catch (error) {
         const errorMessages = {
-          'auth/invalid-phone-number': 'Invalid phone number format. Use +countrycode followed by number.',
-          'auth/too-many-requests': 'Too many attempts. Try again later.',
-          'auth/quota-exceeded': 'SMS quota exceeded. Contact support or try again tomorrow.',
-          'auth/operation-not-allowed': 'Phone authentication not enabled in Firebase Console.'
+          'auth/invalid-phone-number': 'Invalid phone number format. Please use +countrycode followed by the number.',
+          'auth/too-many-requests': 'Too many attempts. Please try again later.',
+          'auth/quota-exceeded': 'SMS quota exceeded. Please try again tomorrow.',
+          'auth/operation-not-allowed': 'Phone authentication is not enabled in Firebase Console.'
         };
         showError(errorMessages[error.code] || `Error: ${error.message}`);
         logEvent("phone_otp_error", { phone: phoneValue, error: error.message, code: error.code });
@@ -774,13 +848,13 @@
         setLoadingState(otpVerifyBtn, true, "Verifying OTP...", "Verify OTP");
         const result = await window.confirmationResult.confirm(otpValue);
         const user = result.user;
-        showSuccess(`Signup successful with Phone ✅ Welcome to Supreme AI ${user.phoneNumber}`);
+        showSuccess(`Signup successful with phone. Welcome to Supreme AI, ${user.phoneNumber}`);
         logEvent("signup_success_phone", { phone: user.phoneNumber, uid: user.uid, timestamp: Date.now() });
         window.location.href = "index.html";
       } catch (error) {
         const errorMessages = {
-          'auth/invalid-verification-code': 'Invalid OTP. Try again.',
-          'auth/code-expired': 'OTP expired. Request a new one.'
+          'auth/invalid-verification-code': 'Invalid OTP. Please try again.',
+          'auth/code-expired': 'OTP has expired. Please request a new one.'
         };
         showError(errorMessages[error.code] || `Error: ${error.message}`);
         logEvent("phone_otp_verify_error", { error: error.message, code: error.code });
@@ -831,7 +905,7 @@
         // Step 1: Create user
         const userCredential = await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
         const user = userCredential.user;
-        await auth.signOut(); // Sign out immediately to require email verification
+        await auth.signOut();
 
         // Step 2: Generate secure token
         let token, tokenRef, existing;
@@ -840,7 +914,7 @@
           tokenRef = doc(db, validationConfig.signupTokenCollection, token);
           existing = await getDoc(tokenRef);
           if (!existing.exists()) break;
-          if (i === 2) throw new Error("Token collision. Try again, bhai!");
+          if (i === 2) throw new Error("Token collision. Please try again.");
         }
 
         const expiryTime = new Date(Date.now() + 2 * 60 * 1000);
@@ -864,11 +938,11 @@
         localStorage.setItem(validationConfig.signupEmailKey, emailValue);
         autoDeleteLocalStorageEmail(validationConfig.signupEmailKey, 2 * 60 * 1000);
 
-        showSuccess(`Signup link bheja <b>${emailValue}</b> pe! Verify karo aur login page pe jao.`);
+        showSuccess(`A signup link has been sent to ${emailValue}. Please verify your email to continue.`);
         logEvent("signup_link_sent", { email: emailValue, token, timestamp: Date.now() });
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
-          showError("Email already in use. Try logging in or use a different email.");
+          showError("This email is already in use. Please log in or use a different email.");
         } else {
           showError(`Error: ${error.message}`);
         }
@@ -880,61 +954,87 @@
     });
 
     // Handle Email Link Authentication
-    if (isSignInWithEmailLink(auth, window.location.href)) {
-      let email = localStorage.getItem(validationConfig.signupEmailKey);
-      if (!email) {
-        email = window.prompt("Apna email confirm karo, bhai!");
-      }
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const tokenFromUrl = urlParams.get("signupToken");
-
-      const tokenRef = doc(db, validationConfig.signupTokenCollection, tokenFromUrl);
-      getDoc(tokenRef).then(async (tokenSnap) => {
-        if (!tokenSnap.exists()) {
-          showError("Link galat ya expire ho gaya!");
-          logEvent("signup_token_invalid", { email, token: tokenFromUrl });
-          return;
-        }
-
-        const tokenData = tokenSnap.data();
-        if (tokenData.expiry.toMillis() < Date.now()) {
-          await deleteDoc(tokenRef);
-          showError("Link expire ho gaya. Dobara try kar!");
-          logEvent("signup_token_expired", { email, token: tokenFromUrl });
-          return;
-        }
-
-        try {
-          const result = await signInWithEmailLink(auth, email, window.location.href);
-          await deleteDoc(tokenRef);
-          showSuccess(`🎉 Signup ho gaya: <b>${result.user.email}</b>`);
-          logEvent("signup_success_email_link", { email });
-          localStorage.removeItem(validationConfig.signupEmailKey);
-          window.location.href = "index.html";
-        } catch (error) {
-          if (error.code === 'auth/invalid-email' || error.code === 'auth/invalid-action-code') {
-            await deleteDoc(tokenRef);
-            showError("Invalid or expired link. Try signing up again.");
-          } else {
-            showError(`Signup nahi hua: ${error.message}`);
-          }
-          logEvent("signup_error_email_link", { email, error: error.message });
-        }
-      });
+    // Email link check karte waqt
+if (isSignInWithEmailLink(auth, window.location.href)) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenFromUrl = urlParams.get("signupToken");
+  
+  // STEP 1: Firebase se token validate karo (NO AUTH NEEDED NOW)
+  let email = null;
+  
+  try {
+    const tokenRef = doc(db, validationConfig.signupTokenCollection, tokenFromUrl);
+    const tokenSnap = await getDoc(tokenRef);
+    
+    if (!tokenSnap.exists()) {
+      showError("Invalid or expired link.");
+      return;
     }
+    
+    const tokenData = tokenSnap.data();
+    
+    // Expiry check
+    if (tokenData.expiry.toMillis() < Date.now()) {
+      await deleteDoc(tokenRef);  // Cleanup
+      showError("Link expired. Please signup again.");
+      return;
+    }
+    
+    // STEP 2: Email mil gaya Firebase se! (Primary source)
+    email = tokenData.email;
+    console.log(`✅ Email from Firebase: ${email}`);
+    
+  } catch (error) {
+    console.error("Firebase token read failed:", error);
+    
+    // STEP 3: Fallback to localStorage
+    email = localStorage.getItem(validationConfig.signupEmailKey);
+    console.log(`⚠️ Fallback to localStorage: ${email}`);
+    
+    if (!email) {
+      // STEP 4: Last resort - prompt user
+      email = window.prompt("Please confirm your email:");
+      console.log(`⚠️ User prompted email: ${email}`);
+    }
+  }
+  
+  if (!email) {
+    showError("Unable to verify email. Please try again.");
+    return;
+  }
+  
+  // STEP 5: Sign in with email link
+  try {
+    const result = await signInWithEmailLink(auth, email, window.location.href);
+    
+    // STEP 6: Cleanup token (now user is authenticated)
+    if (tokenFromUrl) {
+      const tokenRef = doc(db, validationConfig.signupTokenCollection, tokenFromUrl);
+      await deleteDoc(tokenRef);
+      console.log(`✅ Token deleted: ${tokenFromUrl}`);
+    }
+    
+    showSuccess(`Welcome ${result.user.email}!`);
+    localStorage.removeItem(validationConfig.signupEmailKey);
+    window.location.href = "index.html";
+    
+  } catch (error) {
+    showError(`Signup failed: ${error.message}`);
+    logEvent("signup_error_email_link", { email, error: error.message });
+  }
+}
 
     // Google Sign-In Function
     function googleSignIn() {
       signInWithPopup(auth, googleProvider)
         .then((result) => {
           const user = result.user;
-          showSuccess(`Signup successful with Google ✅ Welcome to Supreme AI ${user.displayName || user.email}`);
+          showSuccess(`Signup successful with Google. Welcome to Supreme AI, ${user.displayName || user.email}`);
           logEvent("signup_success_google", { email: user.email });
           window.location.href = "index.html";
         })
         .catch((error) => {
-          showError(`❌ Error: ${error.message}`);
+          showError(`Error: ${error.message}`);
           logEvent("signup_error_google", { error: error.message });
         });
     }
@@ -944,12 +1044,12 @@
       signInWithPopup(auth, githubProvider)
         .then((result) => {
           const user = result.user;
-          showSuccess(`Signup successful with GitHub ✅ Welcome to Supreme AI ${user.displayName || user.email}`);
+          showSuccess(`Signup successful with GitHub. Welcome to Supreme AI, ${user.displayName || user.email}`);
           logEvent("signup_success_github", { email: user.email });
           window.location.href = "index.html";
         })
         .catch((error) => {
-          showError(`❌ Error: ${error.message}`);
+          showError(`Error: ${error.message}`);
           logEvent("signup_error_github", { error: error.message });
         });
     }
@@ -968,16 +1068,16 @@
         const result = await signInWithPopup(auth, appleProvider);
         const user = result.user;
         const displayName = user.displayName || 'User';
-        showSuccess(`Signup successful with Apple ✅ Welcome to Supreme AI ${displayName}`);
+        showSuccess(`Signup successful with Apple. Welcome to Supreme AI, ${displayName}`);
         logEvent("signup_success_apple", { email: user.email || 'anonymous', uid: user.uid, timestamp: Date.now() });
         window.location.href = "index.html";
       } catch (error) {
         const errorMessages = {
-          'auth/popup-blocked': 'Popup blocked! Allow popups and try again.',
-          'auth/invalid-credential': 'Invalid Apple credentials. Check Service ID and Private Key in Firebase Console.',
-          'auth/operation-not-allowed': 'Apple Sign-In not enabled in Firebase Console!',
-          'auth/missing-or-invalid-nonce': 'Invalid nonce. Try again!',
-          'auth/invalid-client': 'Invalid Service ID or Return URL. Verify in Apple Developer Portal.',
+          'auth/popup-blocked': 'Popup blocked. Please allow popups and try again.',
+          'auth/invalid-credential': 'Invalid Apple credentials. Please check Service ID and Private Key in Firebase Console.',
+          'auth/operation-not-allowed': 'Apple Sign-In is not enabled in Firebase Console.',
+          'auth/missing-or-invalid-nonce': 'Invalid nonce. Please try again.',
+          'auth/invalid-client': 'Invalid Service ID or Return URL. Please verify in Apple Developer Portal.',
           'auth/invalid-web-redirect-url': 'Invalid Return URL. Ensure https://supreme-ai.firebaseapp.com/__/auth/handler is set in Apple Developer Portal.'
         };
         showError(errorMessages[error.code] || `Error: ${error.message}`);
@@ -987,12 +1087,12 @@
 
     // Placeholder for Microsoft Sign-In (Unimplemented)
     function microsoftSignIn() {
-      showError("Microsoft Sign-In abhi available nahi hai, bhai!");
+      showError("Microsoft Sign-In is not available yet.");
     }
 
     // Placeholder for Facebook Sign-In (Unimplemented)
     function facebookSignIn() {
-      showError("Facebook Sign-In abhi available nahi hai, bhai!");
+      showError("Facebook Sign-In is not available yet.");
     }
 
     // Attach event listeners for social logins
