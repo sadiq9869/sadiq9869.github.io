@@ -21,11 +21,24 @@
       appId: "1:586558875086:web:328051e411d2b76deeb79f",
       measurementId: "G-BV6KDTHHP7"
     };
+    try {
+        await getDocs(collection(firestore, "test"));
+        console.info('✅ Firestore connection successful');
+      } catch (testErr) {
+        console.error('❌ Firestore connection test failed:', testErr.message, testErr.stack);
+      }
 
     // Initialize Firebase
     firebaseApp = initializeApp(firebaseConfig);
-    firestore = getFirestore(firebaseApp);
+    firestore = getFirestore(firebaseApp, "(default)"); // Confirmed for production
     setLogLevel("debug"); // Debug logging for production monitoring
+    try {
+        const testCollection = collection(firestore, "test");
+        const testSnapshot = await getDocs(query(testCollection, limit(1)));
+        console.info('✅ Firestore connection test successful - Found', testSnapshot.size, 'documents');
+      } catch (testErr) {
+        console.error('❌ Firestore connection test failed:', testErr.message, testErr.stack);
+      }
     auth = getAuth(firebaseApp);
     storage = getStorage(firebaseApp);
     
@@ -630,7 +643,7 @@ async function saveToMemory({ user, intent, ai }) {
 }
     async function smartAnalyzeWithHuggingFace(userInput) {
   console.info('📌 Starting smart intent analysis for input:', userInput);
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
   const normalized = userInput.trim().toLowerCase();
   console.log(`📌 Normalized input: ${normalized}`);
   if (normalized.length < 3) {
@@ -647,9 +660,9 @@ async function saveToMemory({ user, intent, ai }) {
     return userInput;
   }
   const models = [
-    "joaobarroca/distilbert-base-uncased-finetuned-massive-intent-detection-english",
-    "Falconsai/intent_classification",
-    "facebook/bart-large-mnli"
+    "google/flan-t5-xxl",
+    "bigscience/T0pp",
+    "yeniguno/bert-uncased-intent-classification"
   ];
   console.log('📌 Models for analysis:', models);
 
@@ -720,7 +733,7 @@ async function saveToMemory({ user, intent, ai }) {
 }
 
 async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
-  const hf_apiKey = "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"; // Same key
+  const hf_apiKey = "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"; // Same key
   const model = "google/flan-t5-xxl";
 
   try {
@@ -747,7 +760,7 @@ async function isIntentMeaningfulWithHuggingFace(userInput, intent) {
 
 
  async function summarizeIntentWithHuggingFace(userInput, intent) {
-  const  = "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";
+  const hf_apiKey = "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";
   const models = [
     "google/flan-t5-xxl",
     "facebook/bart-large-cnn",
@@ -875,7 +888,7 @@ function saveToLocalStorage(userId, userInput, intent, aiReply) {
 
 
    async function detectEmojiSmart(userInput) {
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
   const gemini_apiKey = "AIzaSyCg93plAA98wBLgzc985tfgmVzOqcqS6CU";
 
   const models = [
@@ -981,7 +994,7 @@ Return only emojis, no text.
    
    // Stronger "should use emoji?" with NLI ensemble + formality + sentiment
 async function shouldUseEmojiEnsemble(userInput) {
-  const hf_apiKey = "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";
+  const hf_apiKey = "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";
 
   // 1) NLI models for zero-shot YES/NO (emoji-appropriate vs not)
   const nliModels = [
