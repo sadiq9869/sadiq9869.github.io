@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supreme AI Login</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+  body {
+    background: #0a0f1f;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    animation: fadeInUp 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+  .password-container {
+    background: linear-gradient(45deg, #0a0f1f, #1a2a44);
+    animation: gradientShift 10s ease infinite;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  h1 {
+    margin-bottom: 25px;
+    font-size: 14px;
+    font-weight: bold;
+    animation: glowText 5s infinite alternate;
+  }
+  @keyframes glowText {
+    0% { text-shadow: 0 0 5px #4a90e2; }
+    100% { text-shadow: 0 0 20px #4a90e2, 0 0 30px #60a5fa; }
+  }
+  p.create-account, p.password-prompt {
+    margin-bottom: 20px;
+    font-size: 25px;
+    font-weight: 600;
+    color: white;
+    white-space: wrap;
+    animation: fadeIn 0.8s ease-out 0.3s both;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .email-wrapper, .password-wrapper {
+    position: relative;
+    margin-bottom: 10px;
+    width: 100%;
+    height: auto;
+  }
+  .email-wrapper input, .password-wrapper input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 2px solid #aaa;
+    border-radius: 25px;
+    outline: none;
+    font-size: 16px;
+    background: transparent;
+    color: white;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper input:focus, .password-wrapper input:focus {
+    box-shadow: 0 0 12px rgba(74, 144, 226, 0.7);
+    border-color: #60a5fa;
+    transform: scale(1.02);
+  }
+  .error-label {
+    color: #ff4d4d !important;
+  }
+  .placeholder {
+    position: absolute;
+    top: 50%;
+    left: 20px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.4s ease;
+  }
+  .email-wrapper.focused .placeholder,
+  .email-wrapper.filled .placeholder,
+  .password-wrapper.focused .placeholder,
+  .password-wrapper.filled .placeholder {
+    top: 0%;
+    left: 20px;
+    transform: translateY(-50%) scale(0.85);
+    background: #0a0f1f;
+    padding: 0 5px;
+    color: #60a5fa;
+  }
+  .password-wrapper.invalid .placeholder {
+    color: #ff4d4d;
+  }
+  .email-wrapper.focused input, .password-wrapper.focused input {
+    border-color: #60a5fa;
+  }
+  .password-wrapper.invalid input {
+    border-color: #ff4d4d;
+  }
+  .edit-option {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+  }
+  .edit-option a {
+    color: #60a5fa;
+    text-decoration: underline;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  .edit-option a:hover {
+    color: #a78bfa;
+    transform: scale(1.1);
+  }
+  .eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    z-index: 1;
+  }
+  .eye-icon:hover {
+    color: #60a5fa;
+    transform: translateY(-50%) scale(1.2);
+  }
+  .password-wrapper.focused .eye-icon,
+  .password-wrapper.filled .eye-icon {
+    color: #60a5fa;
+  }
+  .password-wrapper.invalid .eye-icon {
+    color: #ff4d4d;
+  }
+  .password-rule {
+    display: none;
+    font-size: 12px;
+    color: #aaa;
+    text-align: left;
+    margin-top: 5px;
+    transition: all 0.3s ease;
+    animation: bounceIn 0.5s ease-out;
+  }
+  .password-rule.valid {
+    color: #28a745;
+  }
+  .password-rule.invalid {
+    color: #ff4d4d;
+  }
+  @keyframes bounceIn {
+    0% { opacity: 0; transform: translateY(15px); }
+    60% { opacity: 1; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .continue-btn {
+    background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+    border: none;
+    padding: 10px;
+    width: 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .continue-btn:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.8);
+    background: linear-gradient(90deg, #a78bfa, #60a5fa);
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.8); }
+    70% { box-shadow: 0 0 0 15px rgba(139, 92, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); }
+  }
+  .continue-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translate(-50%, -50%) rotate(45deg);
+    transition: width 0.4s ease;
+  }
+  .continue-btn:hover::before {
+    width: 0;
+  }
+  .login-link {font-size: 14px; margin-bottom: 20px;}
+  .login-link a {color: #4a90e2; text-decoration: none;}
+  .divider {display: flex; align-items: center; color: #aaa; margin: 20px 0; animation: fadeIn 1s ease-out;}
+  .divider::before, .divider::after {content: ''; flex: 1; border-bottom: 1px solid #555;}
+  .divider:not(:empty)::before {margin-right: .75em;}
+  .divider:not(:empty)::after {margin-left: .75em;}
+  .social-btn {
+    background: white; color: black; padding: 10px 60px 10px 10px; border-radius: 70px;
+    display: flex; align-items: center; justify-content: flex-start; cursor: pointer; font-weight: bold; gap: 10px;
+    border: none; outline: none; width: 100%; margin-bottom: 10px; transition: all 0.3s ease;
+    animation: fadeInUp 0.8s ease-out;
+  }
+  .social-btn:hover {transform: translateY(-3px) scale(1.02); box-shadow: 0 5px 15px rgba(255,255,255,0.4);}
+  .social-btn img {width: 20px; height: 20px;}
+  .terms {font-size: 12px; color: #aaa; margin-top: 20px; animation: fadeIn 1s ease-out;}
+  .terms a {color: #aaa; text-decoration: underline;}
+  .forget-password {color: #4a90e2; font-size: 14px; display: block; text-align: left; margin-bottom: 15px;}
+  .forget-password:hover {color: #a78bfa;}
+  .error-message {
+    display: flex;
+    align-items: center;
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: 5px;
+    gap: 6px;
+    animation: shake 0.4s ease, fadeIn 0.3s ease-in;
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+  }
+  .error-icon {
+    background: #ff4d4d;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 12px;
+  }
+  .error-border {
+    border-color: #ff4d4d !important;
+    box-shadow: 0 0 6px #ff4d4d !important;
+    animation: shake 0.4s ease;
+  }
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+  .toast.success { background: #28a745; }
+  .toast.error { background: #ff4d4d; }
+  .toast.fade-out { opacity: 0; }
+  .honeypot { display: none; }
+</style>
+</head>
+<body>
+  <div class="container email-container">
+    <h1>Supreme AI</h1>
+    <p class="create-account">Log in to your Supreme AI account</p>
+    <div class="email-wrapper">
+      <input type="email" id="email">
+      <span class="placeholder">Email address</span>
+      <input type="text" class="honeypot" id="honeypot" tabindex="-1" autocomplete="off">
+    </div>
+    <button class="continue-btn" id="email-continue-btn">Continue</button>
+    <p class="login-link">Don't have an account? <a href="signup.html">Sign up</a></p>
+    <div class="divider">OR</div>
+    <button id="google-btn-email" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
+    <button id="microsoft-btn-email" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
+    <button id="github-btn-email" class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button id="apple-btn-email" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">Continue with Apple</button>
+    <button id="facebook-btn-email" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  </div>
+
+  <div class="container password-container" style="display: none;">
+    <h1>Supreme AI</h1>
+    <p class="password-prompt">Enter your Password for Supreme AI</p>
+    <div class="email-wrapper filled">
+      <input type="email" id="displayed-email" readonly>
+      <span class="placeholder">Email address</span>
+      <span class="edit-option"><a href="#" id="edit-email">Edit</a></span>
+    </div>
+    <div class="password-wrapper">
+      <input type="password" id="password">
+      <span class="placeholder">Password</span>
+      <span class="eye-icon fas fa-eye"></span>
+      <div class="password-rule" id="password-rule">Password must be at least 8 characters.</div>
+    </div>
+    <a href="#" class="forget-password">Forgot password?</a>
+    <button class="continue-btn" id="login-btn">Continue</button>
+    <div class="divider">OR</div>
+    <button id="google-btn-pass" class="social-btn"><img src="https://img.icons8.com/?size=100&id=17949&format=png&color=000000" alt="Google">Continue with Google</button>
+    <button id="microsoft-btn-pass" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft">Continue with Microsoft</button>
+    <button id="github-btn-pass" class="social-btn"><img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub">Continue with GitHub</button>
+    <button id="apple-btn-pass" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple">Continue with Apple</button>
+    <button id="facebook-btn-pass" class="social-btn"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6c/Facebook_Logo_2023.png" alt="Facebook">Continue with Facebook</button>
+    <div class="terms"><a href="#">Terms of Use</a> | <a href="#">Privacy Policy</a></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, deleteDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider, FacebookAuthProvider, signInWithEmailAndPassword, sendPasswordResetEmail, sendSignInLinkToEmail, isSignInWithEmailLink, signInWithEmailLink } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getAnalytics, logEvent as firebaseLogEvent } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+
+    console.log('[Debug] Script module started loading.');
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBmQyMu-Va-Mo3utQStaz3shbxWDyIK5qw",
+      authDomain: "supreme-ai.firebaseapp.com",
+      projectId: "supreme-ai",
+      storageBucket: "supreme-ai.firebasestorage.app",
+      messagingSenderId: "586558875086",
+      appId: "1:586558875086:web:328051e411d2b76deeb79f",
+      measurementId: "G-BV6KDTHHP7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    console.log('[Debug] Firebase app initialized.');
+
+    const auth = getAuth(app);
+    console.log('[Debug] Firebase auth initialized.');
+
+    const db = getFirestore(app);
+    console.log('[Debug] Firebase firestore initialized.');
+
+    const analytics = getAnalytics(app);
+    console.log('[Debug] Firebase analytics initialized.');
+
+    // Providers
+    const googleProvider = new GoogleAuthProvider();
+    console.log('[Debug] Google provider created.');
+
+    const githubProvider = new GithubAuthProvider();
+    console.log('[Debug] Github provider created.');
+
+    const appleProvider = new OAuthProvider('apple.com');
+    console.log('[Debug] Apple provider created.');
+
+    const microsoftProvider = new OAuthProvider('microsoft.com');
+    console.log('[Debug] Microsoft provider created.');
+
+    const facebookProvider = new FacebookAuthProvider();
+    console.log('[Debug] Facebook provider created.');
+
+    githubProvider.addScope('user:email');
+    console.log('[Debug] Github scope added.');
+
+    appleProvider.addScope('email');
+    appleProvider.addScope('name');
+    console.log('[Debug] Apple scopes added.');
+
+    microsoftProvider.addScope('openid email profile');
+    console.log('[Debug] Microsoft scopes added.');
+
+    facebookProvider.addScope('public_profile email');
+    console.log('[Debug] Facebook scopes added.');
+
+    // Configuration
+    const validationConfig = {
+      minPasswordLength: 8,
+      redirectUrl: "https://sadiq9869.github.io/login.html",
+      resetUrl: "https://sadiq9869.github.io/password.html",
+      tokenCollection: "loginTokens",
+      resetTokenCollection: "resetTokens",
+      emailKey: "emailForSignIn",
+      resetEmailKey: "emailForReset"
+    };
+    console.log('[Debug] Validation config set.');
+
+    // UI Elements for Email Section
+    const emailInput = document.getElementById('email');
+    console.log('[Debug] Email input selected.');
+
+    const honeypotInput = document.getElementById('honeypot');
+    console.log('[Debug] Honeypot input selected.');
+
+    const emailWrapper = document.querySelector('.email-container .email-wrapper');
+    console.log('[Debug] Email wrapper selected.');
+
+    const emailPlaceholder = emailWrapper.querySelector('.placeholder');
+    console.log('[Debug] Email placeholder selected.');
+
+    const emailContinueBtn = document.getElementById('email-continue-btn');
+    console.log('[Debug] Email continue button selected.');
+
+    // UI Elements for Password Section
+    const displayedEmail = document.getElementById('displayed-email');
+    console.log('[Debug] Displayed email selected.');
+
+    const passwordInput = document.getElementById('password');
+    console.log('[Debug] Password input selected.');
+
+    const passwordWrapper = document.querySelector('.password-wrapper');
+    console.log('[Debug] Password wrapper selected.');
+
+    const passwordPlaceholder = passwordWrapper.querySelector('.placeholder');
+    console.log('[Debug] Password placeholder selected.');
+
+    const passwordRule = document.getElementById('password-rule');
+    console.log('[Debug] Password rule selected.');
+
+    const eyeIcon = document.querySelector('.eye-icon');
+    console.log('[Debug] Eye icon selected.');
+
+    const editEmail = document.getElementById('edit-email');
+    console.log('[Debug] Edit email selected.');
+
+    const loginBtn = document.getElementById('login-btn');
+    console.log('[Debug] Login button selected.');
+
+    // Helper Functions
+    function validatePassword(pwd) {
+      console.log('[Debug] validatePassword started with pwd length:', pwd ? pwd.length : 'empty');
+      if (!pwd) {
+        console.log('[Debug] validatePassword: Password is required.');
+        return "Password is required.";
+      }
+      if (pwd.length < validationConfig.minPasswordLength) {
+        console.log('[Debug] validatePassword: Password too short.');
+        return `Password must be at least ${validationConfig.minPasswordLength} characters.`;
+      }
+      console.log('[Debug] validatePassword: Password valid.');
+      return "";
+    }
+
+    function clearPasswordErrors() {
+      console.log('[Debug] clearPasswordErrors started.');
+      const existingError = passwordWrapper.querySelector(".error-message");
+      if (existingError) {
+        console.log('[Debug] Removing existing password error.');
+        existingError.remove();
+      }
+      passwordInput.classList.remove("error-border");
+      passwordPlaceholder.classList.remove("error-label");
+      console.log('[Debug] clearPasswordErrors ended.');
+    }
+
+    function showPasswordError(message) {
+      console.log('[Debug] showPasswordError started with message:', message);
+      passwordInput.classList.add("error-border");
+      passwordPlaceholder.classList.add("error-label");
+      const errorDiv = document.createElement("div");
+      errorDiv.className = "error-message";
+      errorDiv.innerHTML = `<span class="error-icon">!</span> ${message}`;
+      passwordWrapper.appendChild(errorDiv);
+      console.log('[Debug] showPasswordError ended.');
+    }
+
+    function showToast(type, message) {
+      console.log(`[Debug] showToast started: type=${type}, message=${message}`);
+      const existingToast = document.querySelector(".toast");
+      if (existingToast) {
+        console.log('[Debug] Removing existing toast.');
+        existingToast.remove();
+      }
+      const toast = document.createElement("div");
+      toast.className = `toast ${type}`;
+      toast.setAttribute("role", "alert");
+      toast.innerHTML = `<span class="toast-icon">${type === "success" ? "✅" : "❌"}</span> ${message}`;
+      document.body.appendChild(toast);
+      console.log('[Debug] Toast appended.');
+      setTimeout(() => {
+        console.log('[Debug] Adding fade-out to toast.');
+        toast.classList.add("fade-out");
+      }, 4500);
+      setTimeout(() => {
+        console.log('[Debug] Removing toast.');
+        toast.remove();
+      }, 5000);
+      console.log('[Debug] showToast ended.');
+    }
+
+    function showSuccess(msg) {
+      console.log('[Debug] showSuccess called with:', msg);
+      showToast("success", msg);
+    }
+
+    function showError(msg) {
+      console.log('[Debug] showError called with:', msg);
+      showToast("error", msg);
+    }
+
+    function setLoadingState(button, isLoading, loadingText, defaultText) {
+      console.log(`[Debug] setLoadingState: button=${button.id}, isLoading=${isLoading}`);
+      button.disabled = isLoading;
+      button.innerText = isLoading ? loadingText : defaultText;
+      button.classList.toggle("loading", isLoading);
+      console.log('[Debug] setLoadingState ended.');
+    }
+
+    function generateUUID() {
+      console.log('[Debug] generateUUID started.');
+      if (crypto && crypto.randomUUID) {
+        const uuid = crypto.randomUUID();
+        console.log('[Debug] UUID generated using crypto:', uuid);
+        return uuid;
+      }
+      const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+      console.log('[Debug] UUID generated fallback:', uuid);
+      return uuid;
+    }
+
+    async function sha256(message) {
+      console.log('[Debug] sha256 started with message length:', message.length);
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      console.log('[Debug] sha256 hash generated.');
+      return hash;
+    }
+
+    function generateNonce() {
+      console.log('[Debug] generateNonce started.');
+      const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      let result = '';
+      for (let i = 0; i < 32; i++) {
+        result += charset[Math.floor(Math.random() * charset.length)];
+      }
+      console.log('[Debug] Nonce generated.');
+      return result;
+    }
+
+    function logEvent(eventName, payload = {}) {
+      console.log(`[Analytics] ${eventName}`, payload);
+      firebaseLogEvent(analytics, eventName, payload);
+      console.log('[Debug] logEvent called.');
+    }
+
+    let lastClickTime = 0;
+    function isRateLimited() {
+      console.log('[Debug] isRateLimited started.');
+      const now = Date.now();
+      if (now - lastClickTime < 3000) {
+        console.log('[Debug] Rate limited: true');
+        showError("Thodi der wait karo, bhai!");
+        return true;
+      }
+      lastClickTime = now;
+      console.log('[Debug] Rate limited: false');
+      return false;
+    }
+
+    function autoDeleteLocalStorageEmail(key, delay) {
+      console.log(`[Debug] autoDeleteLocalStorageEmail started for key: ${key}, delay: ${delay}`);
+      setTimeout(() => {
+        localStorage.removeItem(key);
+        console.log(`[Debug] Removed from localStorage: ${key}`);
+        logEvent("local_storage_email_cleared", { key, timestamp: Date.now() });
+      }, delay);
+      console.log('[Debug] autoDeleteLocalStorageEmail scheduled.');
+    }
+
+    // Focus/Blur/Input for Email
+    emailInput.addEventListener('focus', () => {
+      console.log('[Debug] Email input focused.');
+      emailWrapper.classList.add('focused');
+    });
+    emailInput.addEventListener('blur', () => {
+      console.log('[Debug] Email input blurred.');
+      emailWrapper.classList.remove('focused');
+      if (emailInput.value.trim() !== '') emailWrapper.classList.add('filled');
+      else emailWrapper.classList.remove('filled');
+    });
+    emailInput.addEventListener('input', () => {
+      console.log('[Debug] Email input changed.');
+      const existingError = emailWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      emailInput.classList.remove('error-border');
+      emailPlaceholder.classList.remove('error-label');
+    });
+
+    // Continue Button for Email
+    emailContinueBtn.addEventListener('click', () => {
+      console.log('[Debug] Email continue button clicked.');
+      if (isRateLimited()) return;
+
+      const emailValue = emailInput.value.trim();
+      console.log('[Debug] Email value:', emailValue);
+      const honeypotValue = honeypotInput.value.trim();
+      console.log('[Debug] Honeypot value:', honeypotValue);
+      const existingError = emailWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      emailInput.classList.remove('error-border');
+      emailPlaceholder.classList.remove('error-label');
+
+      let errorText = '';
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (honeypotValue !== '') errorText = 'Bot detected!';
+      else if (emailValue === '') errorText = 'Email is required.';
+      else if (!emailPattern.test(emailValue)) errorText = 'Email is not valid.';
+
+      if (errorText) {
+        console.log('[Debug] Email validation error:', errorText);
+        emailInput.classList.add('error-border');
+        emailPlaceholder.classList.add('error-label');
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.innerHTML = `<span class="error-icon">!</span> ${errorText}`;
+        emailWrapper.appendChild(errorDiv);
+        return;
+      }
+
+      document.getElementById('displayed-email').value = emailValue;
+      console.log('[Debug] Displayed email set.');
+      document.querySelector('.email-container').style.display = 'none';
+      document.querySelector('.password-container').style.display = 'block';
+      console.log('[Debug] Switched to password container.');
+    });
+
+    // Focus/Blur/Input for Password
+    passwordInput.addEventListener('focus', () => {
+      console.log('[Debug] Password input focused.');
+      passwordWrapper.classList.add('focused');
+      passwordRule.style.display = 'block';
+    });
+    passwordInput.addEventListener('blur', () => {
+      console.log('[Debug] Password input blurred.');
+      passwordWrapper.classList.remove('focused');
+      if (passwordInput.value.trim() === '') {
+        passwordWrapper.classList.remove('filled', 'invalid');
+        passwordRule.style.display = 'none';
+      } else {
+        passwordWrapper.classList.add('filled');
+      }
+    });
+    passwordInput.addEventListener('input', () => {
+      console.log('[Debug] Password input changed.');
+      const existingError = passwordWrapper.querySelector('.error-message');
+      if (existingError) existingError.remove();
+      passwordInput.classList.remove('error-border');
+      passwordPlaceholder.classList.remove('error-label');
+
+      const passwordValue = passwordInput.value.trim();
+      passwordRule.style.display = 'block';
+      if (passwordValue.length === 0) {
+        passwordWrapper.classList.remove('invalid');
+        passwordRule.classList.remove('valid', 'invalid');
+      } else if (passwordValue.length < 8) {
+        passwordWrapper.classList.add('invalid');
+        passwordRule.classList.remove('valid');
+        passwordRule.classList.add('invalid');
+      } else {
+        passwordWrapper.classList.remove('invalid');
+        passwordRule.classList.remove('invalid');
+        passwordRule.classList.add('valid');
+      }
+    });
+
+    // Eye Icon Toggle
+    eyeIcon.addEventListener('click', () => {
+      console.log('[Debug] Eye icon clicked.');
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      eyeIcon.classList.toggle('fa-eye');
+      eyeIcon.classList.toggle('fa-eye-slash');
+    });
+
+    // Edit Email
+    editEmail.addEventListener('click', (e) => {
+      console.log('[Debug] Edit email clicked.');
+      e.preventDefault();
+      document.querySelector('.password-container').style.display = 'none';
+      document.querySelector('.email-container').style.display = 'block';
+      passwordInput.value = '';
+      passwordWrapper.classList.remove('filled', 'invalid');
+      passwordRule.style.display = 'none';
+      passwordRule.classList.remove('valid', 'invalid');
+    });
+
+    // Google Login
+    function googleLogin() {
+      console.log('[Debug] googleLogin started.');
+      if (isRateLimited()) return;
+      signInWithPopup(auth, googleProvider)
+        .then((result) => {
+          const user = result.user;
+          console.log('[Debug] Google login success:', user.uid);
+          showSuccess(`Login successful with Google ✅ Welcome to Supreme AI ${user.displayName || user.email}`);
+          logEvent("login_success_google", { email: user.email });
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          console.log('[Debug] Google login error:', error.message);
+          showError(`❌ Error: ${error.message}`);
+          logEvent("login_error_google", { error: error.message });
+        });
+      console.log('[Debug] googleLogin ended.');
+    }
+
+    // GitHub Login
+    function githubLogin() {
+      console.log('[Debug] githubLogin started.');
+      if (isRateLimited()) return;
+      signInWithPopup(auth, githubProvider)
+        .then((result) => {
+          const user = result.user;
+          console.log('[Debug] Github login success:', user.uid);
+          showSuccess(`Login successful with GitHub ✅ Welcome to Supreme AI ${user.displayName || user.email}`);
+          logEvent("login_success_github", { email: user.email });
+          window.location.href = "index.html";
+        })
+        .catch((error) => {
+          console.log('[Debug] Github login error:', error.message);
+          showError(`❌ Error: ${error.message}`);
+          logEvent("login_error_github", { error: error.message });
+        });
+      console.log('[Debug] githubLogin ended.');
+    }
+
+    // Apple Login
+    async function appleLogin() {
+      console.log('[Debug] appleLogin started.');
+      if (isRateLimited()) return;
+
+      try {
+        const rawNonce = generateNonce();
+        console.log('[Debug] Raw nonce generated.');
+        const hashedNonce = await sha256(rawNonce);
+        console.log('[Debug] Hashed nonce generated.');
+        appleProvider.setCustomParameters({
+          nonce: hashedNonce
+        });
+
+        const result = await signInWithPopup(auth, appleProvider);
+        const user = result.user;
+        console.log('[Debug] Apple login success:', user.uid);
+        const displayName = user.displayName || 'User';
+        showSuccess(`Login successful with Apple ✅ Welcome to Supreme AI ${displayName}`);
+        logEvent("login_success_apple", { email: user.email || 'anonymous', uid: user.uid, timestamp: Date.now() });
+        window.location.href = "index.html";
+      } catch (error) {
+        console.log('[Debug] Apple login error:', error.code, error.message);
+        const errorMessages = {
+          'auth/popup-blocked': 'Popup blocked! Allow popups and try again.',
+          'auth/invalid-credential': 'Invalid Apple credentials. Check Service ID and Private Key in Firebase Console.',
+          'auth/operation-not-allowed': 'Apple Sign-In not enabled in Firebase Console!',
+          'auth/missing-or-invalid-nonce': 'Invalid nonce. Try again!',
+          'auth/invalid-client': 'Invalid Service ID or Return URL. Verify in Apple Developer Portal.',
+          'auth/invalid-web-redirect-url': 'Invalid Return URL. Ensure https://supreme-ai.firebaseapp.com/__/auth/handler is set in Apple Developer Portal.'
+        };
+        showError(errorMessages[error.code] || `Error: ${error.message}`);
+        logEvent("login_error_apple", { error: error.message, code: error.code });
+      } finally {
+        console.log('[Debug] appleLogin ended.');
+      }
+    }
+
+    // Microsoft Login
+    async function microsoftLogin() {
+      console.log('[Debug] microsoftLogin started.');
+      if (isRateLimited()) return;
+
+      try {
+        const rawNonce = generateNonce();
+        console.log('[Debug] Raw nonce generated.');
+        const hashedNonce = await sha256(rawNonce);
+        console.log('[Debug] Hashed nonce generated.');
+        microsoftProvider.setCustomParameters({
+          nonce: hashedNonce
+        });
+
+        const result = await signInWithPopup(auth, microsoftProvider);
+        const user = result.user;
+        console.log('[Debug] Microsoft login success:', user.uid);
+        const displayName = user.displayName || 'User';
+        showSuccess(`Login successful with Microsoft ✅ Welcome to Supreme AI ${displayName}`);
+        logEvent("login_success_microsoft", { email: user.email || 'anonymous', uid: user.uid, timestamp: Date.now() });
+        window.location.href = "index.html";
+      } catch (error) {
+        console.log('[Debug] Microsoft login error:', error.code, error.message);
+        const errorMessages = {
+          'auth/popup-blocked': 'Popup blocked. Please allow popups and try again.',
+          'auth/invalid-credential': 'Invalid Microsoft credentials. Please check Client ID and Secret in Firebase Console.',
+          'auth/operation-not-allowed': 'Microsoft Sign-In is not enabled in Firebase Console.',
+          'auth/missing-or-invalid-nonce': 'Invalid nonce. Please try again.'
+        };
+        showError(errorMessages[error.code] || `Error: ${error.message}`);
+        logEvent("login_error_microsoft", { error: error.message, code: error.code });
+      } finally {
+        console.log('[Debug] microsoftLogin ended.');
+      }
+    }
+
+    // Facebook Login
+    async function facebookLogin() {
+      console.log('[Debug] facebookLogin started.');
+      if (isRateLimited()) return;
+
+      try {
+        const rawNonce = generateNonce();
+        console.log('[Debug] Raw nonce generated.');
+        const hashedNonce = await sha256(rawNonce);
+        console.log('[Debug] Hashed nonce generated.');
+        facebookProvider.setCustomParameters({
+          nonce: hashedNonce
+        });
+
+        const result = await signInWithPopup(auth, facebookProvider);
+        const user = result.user;
+        console.log('[Debug] Facebook login success:', user.uid);
+        const displayName = user.displayName || 'User';
+        showSuccess(`Login successful with Facebook ✅ Welcome to Supreme AI ${displayName}`);
+        logEvent("login_success_facebook", { email: user.email || 'anonymous', uid: user.uid, timestamp: Date.now() });
+        window.location.href = "index.html";
+      } catch (error) {
+        console.log('[Debug] Facebook login error:', error.code, error.message);
+        const errorMessages = {
+          'auth/popup-blocked': 'Popup blocked. Please allow popups and try again.',
+          'auth/invalid-credential': 'Invalid Facebook credentials. Please check App ID and Secret in Firebase Console.',
+          'auth/operation-not-allowed': 'Facebook Sign-In is not enabled in Firebase Console.',
+          'auth/account-exists-with-different-credential': 'An account already exists with the same email. Please link accounts or use another method.'
+        };
+        showError(errorMessages[error.code] || `Error: ${error.message}`);
+        logEvent("login_error_facebook", { error: error.message, code: error.code });
+      } finally {
+        console.log('[Debug] facebookLogin ended.');
+      }
+    }
+
+    // Email/Password + Token + Email Link Login
+    loginBtn.addEventListener("click", async () => {
+      console.log('[Debug] Login button clicked.');
+      if (isRateLimited()) return;
+
+      const email = displayedEmail.value.trim();
+      console.log('[Debug] Email for login:', email);
+      const password = passwordInput.value.trim();
+      console.log('[Debug] Password length:', password.length);
+      clearPasswordErrors();
+      setLoadingState(loginBtn, true, "Verifying...", "Continue");
+
+      const validationError = validatePassword(password);
+      if (validationError) {
+        console.log('[Debug] Password validation error:', validationError);
+        showPasswordError(validationError);
+        setLoadingState(loginBtn, false, "Verifying...", "Continue");
+        return;
+      }
+
+      try {
+        logEvent("login_attempt", { email, timestamp: Date.now() });
+
+        // Step 1: Verify credentials
+        console.log('[Debug] Signing in with email and password.');
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('[Debug] Credentials verified, signing out temporarily.');
+        await auth.signOut();
+
+        // Step 2: Generate secure token
+        let token, tokenRef, existing;
+        for (let i = 0; i < 3; i++) {
+          token = generateUUID();
+          tokenRef = doc(db, validationConfig.tokenCollection, token);
+          existing = await getDoc(tokenRef);
+          if (!existing.exists()) break;
+          if (i === 2) throw new Error("Token collision. Try again, bhai!");
+        }
+        console.log('[Debug] Token generated:', token);
+
+        const expiryTime = new Date(Date.now() + 2 * 60 * 1000);
+        const tokenDoc = {
+          email,
+          token,
+          expiry: Timestamp.fromDate(expiryTime),
+          createdAt: Timestamp.now()
+        };
+
+        // Step 3: Store token in Firestore
+        console.log('[Debug] Storing token in Firestore.');
+        await setDoc(tokenRef, tokenDoc);
+        logEvent("token_created", { email, token, timestamp: Date.now() });
+
+        // Step 4: Send email with token link
+        console.log('[Debug] Sending sign-in link to email.');
+        const actionCodeSettings = {
+          url: `${validationConfig.redirectUrl}?token=${token}`,
+          handleCodeInApp: true
+        };
+        await sendSignInLinkToEmail(auth, email, actionCodeSettings);
+        localStorage.setItem(validationConfig.emailKey, email);
+        console.log('[Debug] Email stored in localStorage.');
+
+        // Step 5: Auto-delete email from localStorage
+        autoDeleteLocalStorageEmail(validationConfig.emailKey, 2 * 60 * 1000);
+
+        showSuccess(`Password sahi hai! Login link bheja <b>${email}</b> pe.`);
+        logEvent("link_sent", { email, token, timestamp: Date.now() });
+      } catch (err) {
+        console.log('[Debug] Login error:', err.code, err.message);
+        showError(`Login nahi hua: ${err.message}`);
+        logEvent("login_error", { email, error: err.message, timestamp: Date.now() });
+        localStorage.removeItem(validationConfig.emailKey);
+      } finally {
+        setLoadingState(loginBtn, false, "Verifying...", "Continue");
+        console.log('[Debug] Login process ended.');
+      }
+    });
+
+    // Handle Email Link Authentication
+    (async () => {
+      console.log('[Debug] Email link authentication check started.');
+      if (isSignInWithEmailLink(auth, window.location.href)) {
+        let email = localStorage.getItem(validationConfig.emailKey);
+        console.log(`[Debug] Email from localStorage: ${email}`);
+        if (!email) {
+          email = window.prompt("Apna email confirm karo, bhai!");
+          console.log(`[Debug] Email prompted: ${email}`);
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get("token");
+        console.log(`[Debug] Token from URL: ${tokenFromUrl}`);
+
+        const tokenRef = doc(db, validationConfig.tokenCollection, tokenFromUrl);
+        const tokenSnap = await getDoc(tokenRef);
+
+        if (!tokenSnap.exists()) {
+          console.log(`[Debug] Token does not exist: ${tokenFromUrl}`);
+          showError("Link galat ya expire ho gaya!");
+          logEvent("token_invalid", { email, token: tokenFromUrl });
+          return;
+        }
+
+        const tokenData = tokenSnap.data();
+        console.log(`[Debug] Token data: ${JSON.stringify(tokenData)}`);
+
+        if (tokenData.expiry.toMillis() < Date.now()) {
+          console.log('[Debug] Token expired.');
+          await deleteDoc(tokenRef);
+          showError("Link expire ho gaya. Dobara try kar!");
+          logEvent("token_expired", { email, token: tokenFromUrl });
+          return;
+        }
+
+        try {
+          console.log('[Debug] Signing in with email link.');
+          const result = await signInWithEmailLink(auth, email, window.location.href);
+          console.log('[Debug] Sign-in successful.');
+          await deleteDoc(tokenRef);
+          console.log('[Debug] Token deleted.');
+          showSuccess(`🎉 Login ho gaya: <b>${result.user.email}</b>`);
+          logEvent("login_success_email_link", { email });
+          localStorage.removeItem(validationConfig.emailKey);
+          console.log('[Debug] Removed sign-in email from localStorage.');
+          window.location.href = "index.html";
+        } catch (error) {
+          console.log('[Debug] Sign-in failed:', error.code, error.message);
+          showError(`Login nahi hua: ${error.message}`);
+          logEvent("login_error_email_link", { email, error: error.message });
+        }
+      }
+      console.log('[Debug] Email link authentication check ended.');
+    })();
+
+    // Forgot Password with Token
+    document.querySelector('.forget-password').addEventListener('click', async (e) => {
+      console.log('[Debug] Forgot password clicked.');
+      e.preventDefault();
+      if (isRateLimited()) return;
+
+      const email = displayedEmail.value.trim();
+      console.log('[Debug] Email for reset:', email);
+      const honeypotValue = honeypotInput.value.trim();
+      if (honeypotValue !== '') {
+        console.log('[Debug] Bot detected in forgot password.');
+        showError("Bot detected!");
+        logEvent("bot_detected", { email, timestamp: Date.now() });
+        return;
+      }
+      if (!email) {
+        showError("Pehle email daal, bhai!");
+        return;
+      }
+
+      try {
+        logEvent("reset_password_attempt", { email, timestamp: Date.now() });
+
+        // Generate secure token
+        let token, tokenRef, existing;
+        for (let i = 0; i < 3; i++) {
+          token = generateUUID();
+          tokenRef = doc(db, validationConfig.resetTokenCollection, token);
+          existing = await getDoc(tokenRef);
+          if (!existing.exists()) break;
+          if (i === 2) throw new Error("Token collision. Try again, bhai!");
+        }
+        console.log('[Debug] Reset token generated:', token);
+
+        const expiryTime = new Date(Date.now() + 2 * 60 * 1000);
+        const tokenDoc = {
+          email,
+          token,
+          expiry: Timestamp.fromDate(expiryTime),
+          createdAt: Timestamp.now(),
+          oobCode: token
+        };
+
+        // Store token in Firestore
+        console.log('[Debug] Storing reset token in Firestore.');
+        await setDoc(tokenRef, tokenDoc);
+        logEvent("reset_token_created", { email, token, timestamp: Date.now() });
+
+        // Send reset email with token
+        console.log('[Debug] Sending password reset link.');
+        const actionCodeSettings = {
+          url: `${validationConfig.resetUrl}?token=${token}`,
+          handleCodeInApp: true
+        };
+        await sendPasswordResetEmail(auth, email, actionCodeSettings);
+        localStorage.setItem(validationConfig.resetEmailKey, email);
+        console.log('[Debug] Reset email stored in localStorage.');
+        autoDeleteLocalStorageEmail(validationConfig.resetEmailKey, 2 * 60 * 1000);
+
+        showSuccess(`Reset link bheja <b>${email}</b> pe!`);
+        logEvent("reset_link_sent", { email, token, timestamp: Date.now() });
+      } catch (error) {
+        console.log('[Debug] Reset password error:', error.code, error.message);
+        showError(`Error: ${error.message}`);
+        logEvent("reset_password_error", { email, error: error.message });
+        localStorage.removeItem(validationConfig.resetEmailKey);
+      } finally {
+        console.log('[Debug] Forgot password process ended.');
+      }
+    });
+
+    // Attach event listeners for social logins
+    document.getElementById('google-btn-email').addEventListener('click', googleLogin);
+    console.log('[Debug] Google email btn listener attached.');
+
+    document.getElementById('google-btn-pass').addEventListener('click', googleLogin);
+    console.log('[Debug] Google pass btn listener attached.');
+
+    document.getElementById('github-btn-email').addEventListener('click', githubLogin);
+    console.log('[Debug] Github email btn listener attached.');
+
+    document.getElementById('github-btn-pass').addEventListener('click', githubLogin);
+    console.log('[Debug] Github pass btn listener attached.');
+
+    document.getElementById('apple-btn-email').addEventListener('click', appleLogin);
+    console.log('[Debug] Apple email btn listener attached.');
+
+    document.getElementById('apple-btn-pass').addEventListener('click', appleLogin);
+    console.log('[Debug] Apple pass btn listener attached.');
+
+    document.getElementById('microsoft-btn-email').addEventListener('click', microsoftLogin);
+    console.log('[Debug] Microsoft email btn listener attached.');
+
+    document.getElementById('microsoft-btn-pass').addEventListener('click', microsoftLogin);
+    console.log('[Debug] Microsoft pass btn listener attached.');
+
+    document.getElementById('facebook-btn-email').addEventListener('click', facebookLogin);
+    console.log('[Debug] Facebook email btn listener attached.');
+
+    document.getElementById('facebook-btn-pass').addEventListener('click', facebookLogin);
+    console.log('[Debug] Facebook pass btn listener attached.');
+
+    console.log('[Debug] Script module fully loaded.');
+  </script>
+</body>
+</html>
