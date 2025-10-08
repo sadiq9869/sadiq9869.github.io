@@ -203,76 +203,81 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6KDTHHP7">
-// 🚀 YAHAN ADD KAR: Redirect logic directly here – instant!
-console.info('🔥 Starting auto-redirect logic inside module!');
+// 🚀 YAHAN ADD KAR: Optimized Redirect Logic
+console.info('🔥 Starting optimized auto-redirect logic!');
 
-// Ensure auth is available before proceeding
-if (!auth) {
-  console.error('❌ Firebase auth is not initialized');
-  console.warn('⚠️ Skipping redirect logic due to missing auth');
-} else {
-  // Immediate check for current user
-  const checkAndRedirect = (user) => {
-    try {
-      console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
-      
-      if (user && user.isAnonymous) {
-        console.info('✅ Anonymous user detected', { uid: user.uid, isAnonymous: user?.isAnonymous });
-        
-        // Random delay 4 to 8 seconds
-        const randomDelay = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
-        console.log(`📌 Random delay set to ${randomDelay}ms for anonymous user`);
+// Flag to prevent multiple redirects
+let isRedirectScheduled = false;
 
-        setTimeout(() => {
-          console.info('⏰ Timeout fired – starting redirect!');
-          console.info('🚀 Initiating redirect to auth.html');
-          try {
-            window.location.assign('https://sadiq9869.github.io/auth.html');
-            console.info('✅ Redirect executed successfully');
-          } catch (redirectErr) {
-            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
-          }
-        }, randomDelay);
-      } else if (user) {
-        console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
-      } else {
-        console.warn('⚠️ No user detected, treating as anonymous');
-        
-        // Random delay 4 to 8 seconds for non-logged-in
-        const randomDelay = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
-        console.log(`📌 Random delay set to ${randomDelay}ms for non-logged-in user`);
-
-        setTimeout(() => {
-          console.info('⏰ Timeout fired – starting redirect for non-user!');
-          console.info('🚀 Initiating redirect to auth.html for non-logged-in user');
-          try {
-            window.location.assign('https://sadiq9869.github.io/auth.html');
-            console.info('✅ Redirect executed successfully');
-          } catch (redirectErr) {
-            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
-          }
-        }, randomDelay);
-      }
-    } catch (err) {
-      console.error('❌ Error in auth state check:', err.message, err.stack);
+// Immediate check for current user
+const checkAndRedirect = (user) => {
+  try {
+    // Skip if redirect already scheduled
+    if (isRedirectScheduled) {
+      console.info('📌 Redirect already scheduled, skipping...');
+      return;
     }
-  };
 
-  // Immediate check only if auth is defined
-  if (auth.currentUser !== undefined) {
-    checkAndRedirect(auth.currentUser);
-  } else {
-    console.warn('⚠️ Auth currentUser not yet available, waiting for auth state change');
+    // Check if user has already logged in this session
+    const hasLoggedIn = sessionStorage.getItem('hasLoggedIn');
+    console.info('🔍 Checking session login state:', hasLoggedIn ? 'Logged in' : 'Not logged in');
+
+    if (hasLoggedIn) {
+      console.info('✅ User already logged in this session, skipping redirect');
+      return;
+    }
+
+    console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
+
+    if (user && !user.isAnonymous) {
+      // Logged-in user (not anonymous)
+      console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
+      sessionStorage.setItem('hasLoggedIn', 'true'); // Mark as logged in
+      return;
+    }
+
+    // Anonymous user or no user
+    console.info('✅ Anonymous or no user detected, proceeding with redirect', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
+
+    // Random delay 4-9s
+    const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
+    console.log(`📌 Random delay set to ${randomDelay}ms`);
+
+    isRedirectScheduled = true; // Set flag to prevent multiple redirects
+    console.info('📌 Redirect scheduled, flag set to true');
+
+    setTimeout(() => {
+      console.info('⏰ Timeout fired – starting redirect!');
+      console.info('🚀 Initiating redirect to auth.html');
+      try {
+        window.location.assign('https://sadiq9869.github.io/auth.html');
+        console.info('✅ Redirect executed successfully');
+      } catch (redirectErr) {
+        console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
+        isRedirectScheduled = false; // Reset flag on failure
+      }
+    }, randomDelay);
+  } catch (err) {
+    console.error('❌ Error in auth state check:', err.message, err.stack);
+    isRedirectScheduled = false; // Reset flag on error
   }
+};
 
-  // Listener for auth state changes
-  auth.onAuthStateChanged((user) => {
-    console.info('🔍 Auth state changed, checking user:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
-    checkAndRedirect(user);
-  }, (authErr) => {
-    console.error('❌ Firebase auth state listener failed:', authErr.message, authErr.stack);
-  });
+// Immediate check only if auth is initialized
+if (auth && auth.currentUser !== undefined) {
+  console.info('📌 Running immediate auth check');
+  checkAndRedirect(auth.currentUser);
+} else {
+  console.warn('⚠️ Auth not ready, waiting for state change');
 }
+
+// Listener for auth state changes
+auth.onAuthStateChanged((user) => {
+  console.info('🔍 Auth state changed:', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
+  checkAndRedirect(user);
+}, (authErr) => {
+  console.error('❌ Firebase auth state listener failed:', authErr.message, authErr.stack);
+});
 </script>
    <style>
     body {
