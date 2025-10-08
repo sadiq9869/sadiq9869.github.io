@@ -57,6 +57,65 @@
       
       window.firebaseAuth = auth;
   console.info('✅ Firebase auth exported to window');
+  // 🚀 YAHAN ADD KAR: Redirect logic directly here – instant!
+  console.info('🔥 Starting auto-redirect logic inside module!');
+  
+  // Immediate check for current user
+  const checkAndRedirect = (user) => {
+    try {
+      console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
+      
+      if (user && user.isAnonymous) {
+        console.info('✅ Anonymous user detected', { uid: user.uid, isAnonymous: user.isAnonymous });
+        
+        // Random delay 4-9s
+        const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
+        console.log(`📌 Random delay set to ${randomDelay}ms for anonymous user`);
+
+        setTimeout(() => {
+          console.info('⏰ Timeout fired – starting redirect!');
+          console.info('🚀 Initiating redirect to auth.html');
+          try {
+            window.location.assign('https://sadiq9869.github.io/auth.html');
+            console.info('✅ Redirect executed successfully');
+          } catch (redirectErr) {
+            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
+          }
+        }, randomDelay);
+      } else if (user) {
+        console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
+      } else {
+        console.warn('⚠️ No user detected, treating as anonymous');
+        
+        // Random delay for non-logged-in
+        const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
+        console.log(`📌 Random delay set to ${randomDelay}ms for non-logged-in user`);
+
+        setTimeout(() => {
+          console.info('⏰ Timeout fired – starting redirect for non-user!');
+          console.info('🚀 Initiating redirect to auth.html for non-logged-in user');
+          try {
+            window.location.assign('https://sadiq9869.github.io/auth.html');
+            console.info('✅ Redirect executed successfully');
+          } catch (redirectErr) {
+            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
+          }
+        }, randomDelay);
+      }
+    } catch (err) {
+      console.error('❌ Error in auth state check:', err.message, err.stack);
+    }
+  };
+
+  // Immediate check
+  checkAndRedirect(auth.currentUser);
+
+  // Listener for future changes (optional, if needed)
+  auth.onAuthStateChanged((user) => {
+    checkAndRedirect(user);
+  }, (authErr) => {
+    console.error('❌ Firebase auth state listener failed:', authErr.message, authErr.stack);
+  });
   
     } catch (authErr) {
       console.error('❌ Firebase authentication failed:', authErr.message, authErr.stack);
@@ -107,11 +166,13 @@
 <title>Supreme AI</title>
 <script>
   const titles = [
-    "Supreme AI - Official Website of Sadiq Siddiqui",
-    "🚀 Official Website of Sadiq Siddiqui"
+    "🚀 Supreme AI - Official Website of Supreme AI",
+    "🚀 Official Website of Supreme AI"
   ];
   document.title = titles[Math.floor(Math.random() * titles.length)];
 </script>
+
+
 
 
   <!-- SEO Meta Tags -->
@@ -141,12 +202,77 @@
 <link rel="canonical" href="https://sadiq9869.github.io/">
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6KDTHHP7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-BV6KDTHHP7');
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6KDTHHP7">
+// 🚀 YAHAN ADD KAR: Redirect logic directly here – instant!
+console.info('🔥 Starting auto-redirect logic inside module!');
+
+// Ensure auth is available before proceeding
+if (!auth) {
+  console.error('❌ Firebase auth is not initialized');
+  console.warn('⚠️ Skipping redirect logic due to missing auth');
+} else {
+  // Immediate check for current user
+  const checkAndRedirect = (user) => {
+    try {
+      console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
+      
+      if (user && user.isAnonymous) {
+        console.info('✅ Anonymous user detected', { uid: user.uid, isAnonymous: user?.isAnonymous });
+        
+        // Random delay 4 to 8 seconds
+        const randomDelay = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
+        console.log(`📌 Random delay set to ${randomDelay}ms for anonymous user`);
+
+        setTimeout(() => {
+          console.info('⏰ Timeout fired – starting redirect!');
+          console.info('🚀 Initiating redirect to auth.html');
+          try {
+            window.location.assign('https://sadiq9869.github.io/auth.html');
+            console.info('✅ Redirect executed successfully');
+          } catch (redirectErr) {
+            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
+          }
+        }, randomDelay);
+      } else if (user) {
+        console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
+      } else {
+        console.warn('⚠️ No user detected, treating as anonymous');
+        
+        // Random delay 4 to 8 seconds for non-logged-in
+        const randomDelay = Math.floor(Math.random() * (8000 - 4000 + 1)) + 4000;
+        console.log(`📌 Random delay set to ${randomDelay}ms for non-logged-in user`);
+
+        setTimeout(() => {
+          console.info('⏰ Timeout fired – starting redirect for non-user!');
+          console.info('🚀 Initiating redirect to auth.html for non-logged-in user');
+          try {
+            window.location.assign('https://sadiq9869.github.io/auth.html');
+            console.info('✅ Redirect executed successfully');
+          } catch (redirectErr) {
+            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
+          }
+        }, randomDelay);
+      }
+    } catch (err) {
+      console.error('❌ Error in auth state check:', err.message, err.stack);
+    }
+  };
+
+  // Immediate check only if auth is defined
+  if (auth.currentUser !== undefined) {
+    checkAndRedirect(auth.currentUser);
+  } else {
+    console.warn('⚠️ Auth currentUser not yet available, waiting for auth state change');
+  }
+
+  // Listener for auth state changes
+  auth.onAuthStateChanged((user) => {
+    console.info('🔍 Auth state changed, checking user:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
+    checkAndRedirect(user);
+  }, (authErr) => {
+    console.error('❌ Firebase auth state listener failed:', authErr.message, authErr.stack);
+  });
+}
 </script>
    <style>
     body {
@@ -214,7 +340,7 @@
     }
     .ai-msg {
       align-self: flex-start;
-      background-color: rgba(0,0,0,0.5);
+      background-color: rgba(0,0,0,0.3);
       padding: 8px 15px;
       border-radius: 15px;
       max-width: 80%;
@@ -428,6 +554,8 @@
   "url": "https://sadiq9869.github.io"
 }
 </script>
+
+
 
 
 
@@ -1534,7 +1662,9 @@ function formatTimestamp(ts) {
       // call Gemini
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
-      aiMsg.textContent = "Supreme AI is typing..."; // loading placeholder
+      const webSearchKeywords = /\b(latest|news|current|trending|weather|update|stock|price)\b/i;
+const isWebSearch = webSearchKeywords.test(userInput);
+aiMsg.textContent = isWebSearch ? "Searching the web" : "Supreme AI is typing";
       responseBox.appendChild(aiMsg);
     
 
@@ -1782,8 +1912,11 @@ ${knowledgeMessage ? `Knowledge update: ${knowledgeMessage}` : ""}
     }
     
 // 2. Extract grounded search snippets (if any)
-let grounding = data.candidates?.[0]?.groundingMetadata?.groundingChunks 
-  || [];
+// Check if web search results are present
+        let grounding = data.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+        if (grounding.length > 0) {
+          aiMsg.textContent = "Searching the web..."; // Update to web search text
+        }
 
 let sources = grounding
   .map(chunk => chunk.web?.title + " - " + chunk.web?.uri)
