@@ -161,220 +161,6 @@
   };
   
   document.head.appendChild(mathJaxScript);
-
-
-  
- 
-  
-  const loadMarkedScript = (attempt = 1, maxRetries = 3) => {
-    console.info(`📌 Attempting to load Marked.js (Attempt ${attempt}/${maxRetries})`);
-
-    const markedScript = document.createElement('script');
-    const localSrc = '/scripts/marked.umd.js'; // Local copy
-    const primarySrc = 'https://cdn.jsdelivr.net/npm/marked@16.4.0/lib/marked.umd.js';
-    const fallbackSrc = 'https://cdnjs.cloudflare.com/ajax/libs/marked/16.4.0/marked.umd.min.js';
-    markedScript.src = attempt === 1 ? localSrc : attempt === 2 ? primarySrc : fallbackSrc;
-    markedScript.async = true;
-
-    console.log('📌 Loading script:', { src: markedScript.src });
-
-    markedScript.onload = function() {
-      console.info('✅ Script loaded from', markedScript.src);
-      try {
-        console.log('📌 Global marked state:', typeof window.marked, window.marked?.version);
-        setTimeout(() => {
-          if (typeof window.marked === 'function') {
-            console.info('✅ Marked.js fully loaded and defined');
-            console.log('📌 Marked.js version:', window.marked.version || '16.4.0');
-            renderTestMarkdown();
-          } else {
-            console.error('❌ window.marked not defined – forcing fallback');
-            initFallbackMarked();
-          }
-        }, 300);
-      } catch (err) {
-        console.error('❌ Onload error:', err.message);
-        initFallbackMarked();
-      }
-    };
-
-    markedScript.onerror = function(error) {
-      console.error('❌ Failed to load Marked.js from', markedScript.src, error);
-      if (markedScript.src.startsWith('http')) {
-        fetch(markedScript.src, { method: 'HEAD' })
-          .then(res => console.error('❌ CDN Status:', res.status, res.statusText))
-          .catch(err => console.error('❌ CDN Check Failed:', err.message));
-      }
-
-      console.warn(`⚠️ Markdown rendering may be limited (Attempt ${attempt}/${maxRetries})`);
-
-      if (attempt < maxRetries) {
-        console.info(`📌 Retrying with ${attempt === 1 ? 'primary CDN' : 'cdnjs CDN'} in ${attempt * 1000}ms...`);
-        setTimeout(() => loadMarkedScript(attempt + 1, maxRetries), attempt * 1000);
-      } else {
-        console.warn('⚠️ All retries failed, using enhanced fallback');
-        initFallbackMarked();
-      }
-    };
-
-    function renderTestMarkdown() {
-      try {
-        const aiResponse = `# Supreme AI Response
-- Hello bro! 😎
-- **Bold** *italic*
-\`\`\`js
-console.log('code');
-\`\`\`
-> Quote this
-| Col1 | Col2 |
-|------|------|
-| A    | B    |`;
-        const htmlOutput = window.marked.parse(aiResponse);
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'ai-msg';
-        aiMsg.innerHTML = htmlOutput;
-        document.getElementById('response').appendChild(aiMsg);
-        console.log('📌 Rendered Markdown:', htmlOutput);
-      } catch (err) {
-        console.error('❌ Render error:', err.message);
-        initFallbackMarked();
-      }
-    }
-
-    // ✅ FIXED FALLBACK SECTION (Android Safe)
-    function initFallbackMarked() {
-      window.marked = {
-        version: 'Fallback v1.6 (Supreme AI - Android)',
-        parse: (text) => {
-          try {
-            let output = text
-              // Headings
-              .replace(/^# (.+)$/gm, '<h1>$1</h1>')
-              .replace(/^## (.+)$/gm, '<h2>$1</h2>')
-              // Bold / Italic
-              .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-              .replace(/\*(.+?)\*/g, '<em>$1</em>')
-              // Lists
-              .replace(/^- (.+)$/gm, '<li>$1</li>')
-              .replace(/(<li>[\s\S]*?<\/li>)/gm, '<ul>$1</ul>')
-              // Code blocks
-              .replace(/```(\w+)?\n([\s\S]*?)\n```/gm, '<pre><code class="language-$1">$2</code></pre>')
-              // Inline code
-              .replace(/`([^`]+)`/g, '<code>$1</code>')
-              // Blockquote
-              .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
-
-            // Simplified table parser (Android-safe)
-            if (text.includes('|')) {
-              const lines = text.split('\n').filter(line => line.includes('|') && !line.match(/^\s*$/));
-              if (lines.length >= 2 && lines[1].includes('---')) {
-                const headerCells = lines[0].split('|').filter(h => h.trim()).map(h => `<th>${h.trim()}</th>`).join('');
-                const rowCells = lines.slice(2).map(row =>
-                  `<tr>${row.split('|').filter(r => r.trim()).map(r => `<td>${r.trim()}</td>`).join('')}</tr>`
-                ).join('');
-                const tableHtml = `<table><thead><tr>${headerCells}</tr></thead><tbody>${rowCells}</tbody></table>`;
-                const tableStart = text.indexOf(lines[0]);
-                const tableEnd = text.indexOf(lines[lines.length - 1]) + lines[lines.length - 1].length;
-                output = text.slice(0, tableStart) + tableHtml + text.slice(tableEnd);
-              }
-            }
-
-            return output;
-          } catch (err) {
-            console.error('❌ Fallback parse error:', err.message);
-            return text;
-          }
-        }
-      };
-
-      // Test fallback
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'ai-msg';
-      aiMsg.innerHTML = window.marked.parse(
-        '# Fallback Power!\n- **Bold** *Italic*\n> Yo bro\n```js\nconsole.log("Supreme!");\n```\n| A | B |\n| --- | --- |\n| 1 | 2 |'
-      );
-      document.getElementById('response').appendChild(aiMsg);
-      console.info('✅ Enhanced Fallback Marked initialized');
-    }
-
-    try {
-      document.head.appendChild(markedScript);
-    } catch (err) {
-      console.error('❌ Append error:', err.message);
-      initFallbackMarked();
-    }
-  };
-
-  // Start loading
-  try {
-    loadMarkedScript();
-  } catch (err) {
-    console.error('❌ Load initiation error:', err.message);
-  }
-
-
-
-
-
-
-
-
-
-  const fuseScript = document.createElement('script');
-  fuseScript.src = 'https://cdn.jsdelivr.net/npm/fuse.js@6.6.2/dist/fuse.min.js';
-  fuseScript.async = true;
-
-  fuseScript.onload = function() {
-    console.info('✅ Fuse.js loaded successfully');
-    console.log('📌 Fuse.js version:', Fuse.version || 'Unknown');
-
-    // Example: Fuzzy search in chat history
-    const chatHistory = [
-      { id: 1, message: 'Hello, how are you?' },
-      { id: 2, message: 'What is the weather like?' },
-      { id: 3, message: 'Hey, tell me a joke!' }
-    ];
-    const fuse = new Fuse(chatHistory, { keys: ['message'], threshold: 0.3 });
-    const results = fuse.search('helo');
-    console.log('📌 Fuzzy search results:', results.map(r => r.item.message));
-  };
-
-  fuseScript.onerror = function(error) {
-    console.error('❌ Failed to load Fuse.js:', error);
-    console.warn('⚠️ Search functionality may be limited');
-  };
-
-  document.head.appendChild(fuseScript);
-
-
-  class UtilityManager {
-    static async loadUtility(name, src, onLoadCallback) {
-      console.info(`📌 Loading utility: ${name}`);
-      const script = document.createElement('script');
-      script.src = src;
-      script.async = true;
-
-      script.onload = () => {
-        console.info(`✅ ${name} loaded successfully`);
-        onLoadCallback?.();
-      };
-      script.onerror = (error) => {
-        console.error(`❌ Failed to load ${name}:`, error);
-        console.warn(`⚠️ ${name} functionality may be limited`);
-      };
-
-      document.head.appendChild(script);
-    }
-  }
-
-  // Example: Load Lodash and Marked.js dynamically
-  UtilityManager.loadUtility('Lodash', 'https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js', () => {
-    console.log('📌 Using Lodash:', _.uniq(['hi', 'hi', 'hello'])); // ['hi', 'hello']
-  });
-
-  UtilityManager.loadUtility('Marked.js', 'https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.min.js', () => {
-    console.log('📌 Using Marked.js:', marked.parse('# Hello')); // <h1>Hello</h1>
-  });
 </script>
 
 <title>Supreme AI</title>
@@ -391,21 +177,21 @@ console.log('code');
 
   <!-- SEO Meta Tags -->
   <meta name="google-site-verification" content="PvSBjLC3MF3Ypdfs1La4Fo8zYEjRb0BCgrNoTbD8g_o" />
-<meta name="description" content="Supreme AI by Sadiq Siddiqui - Your personal AI assistant with advanced features, smart search, and intelligent conversations.">
+<meta name="description" content="official website of Supreme AI - Your personal AI assistant with advanced features, smart search, and intelligent conversations.">
 <meta name="keywords" content="Supreme AI, AI Assistant, Sadiq Siddiqui, chatbot, smart AI, AI chatbot, AI website, Sadiq AI">
 <meta name="author" content="Sadiq Siddiqui (GitHub: sadiq9869)">
 
 <!-- Open Graph for Social Media -->
-<meta property="og:title" content="Supreme AI - Official Website of Sadiq Siddiqui">
-<meta property="og:description" content="Supreme AI by Sadiq Siddiqui - Your smart AI assistant for intelligent conversations and advanced search.">
+<meta property="og:title" content="Supreme AI - Official Website">
+<meta property="og:description" content="official website of Supreme AI - Your smart AI assistant for intelligent conversations and advanced search.">
 <meta property="og:image" content="https://sadiq9869.github.io/images/supreme-ai-banner.jpg">
 <meta property="og:url" content="https://sadiq9869.github.io/">
 <meta property="og:type" content="website">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Supreme AI - Official Website of Sadiq Siddiqui">
-<meta name="twitter:description" content="Supreme AI by Sadiq Siddiqui - Your smart AI assistant for intelligent conversations and advanced search.">
+<meta name="twitter:title" content="Supreme AI - Official Wbsite">
+<meta name="twitter:description" content="official website of Supreme AI - Your smart AI assistant for intelligent conversations and advanced search.">
 <meta name="twitter:image" content="https://sadiq9869.github.io/images/supreme-ai-banner.jpg">
 <meta name="twitter:creator" content="@SSidiqui99935">
 
