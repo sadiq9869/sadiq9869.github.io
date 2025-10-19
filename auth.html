@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Supreme AI • Welcome</title>
   <style>
     /* ---------- Base Styles ---------- */
@@ -17,7 +17,7 @@
       align-items: flex-end;
       padding-bottom: 30px;
       overflow: hidden;
-      position: relative; /* Stars ke liye add kiya */
+      position: relative; /* Stars in background */
     }
 
     /* ---------- Stars in Background ---------- */
@@ -29,7 +29,6 @@
       animation: twinkle 3s ease-in-out infinite alternate, drift 25s linear infinite;
       box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     }
-
     .star::before {
       content: '';
       position: absolute;
@@ -42,23 +41,19 @@
       transform: translate(-50%, -50%) scale(0);
       animation: sparkle 1.5s ease-in-out infinite alternate;
     }
-
     @keyframes twinkle {
       0% { opacity: 0.3; }
       100% { opacity: 1; }
     }
-
     @keyframes sparkle {
       0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
       100% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
     }
-
     @keyframes drift {
       0% { transform: translate(0, 0) rotate(0deg); }
       100% { transform: translate(var(--drift-x, 100px), var(--drift-y, 50px)) rotate(360deg); }
     }
-
-    /* Different sizes and positions for variety */
+    /* Star positions */
     .star:nth-child(1) { width: 2px; height: 2px; top: 10%; left: 15%; --drift-x: 50px; --drift-y: 20px; animation-delay: 0s; }
     .star:nth-child(2) { width: 1px; height: 1px; top: 15%; left: 30%; --drift-x: -30px; --drift-y: 40px; animation-delay: 1s; }
     .star:nth-child(3) { width: 3px; height: 3px; top: 20%; left: 50%; --drift-x: 80px; --drift-y: -10px; animation-delay: 2s; }
@@ -95,7 +90,6 @@
       z-index: 10; /* Stars ke upar popup rahe */
     }
 
-    /* ---------- Enhanced Animations ---------- */
     @keyframes slideUp {
       to {
         transform: translateX(-50%) translateY(0);
@@ -104,11 +98,11 @@
     }
 
     @keyframes morphPulse {
-      0% { 
+      0% {
         box-shadow: 0 0 20px #00ffff, inset 0 0 10px rgba(0, 255, 255, 0.2);
         border-radius: 50px;
       }
-      100% { 
+      100% {
         box-shadow: 0 0 35px #00ffff, inset 0 0 18px rgba(0, 255, 255, 0.4);
         border-radius: 55px 45px 55px 45px;
       }
@@ -133,22 +127,30 @@
       from { width: 0; }
       to { width: 100%; }
     }
-
     @keyframes blink {
       0%, 50% { border-color: #00ffff; }
       51%, 100% { border-color: transparent; }
     }
-
     @keyframes cursorFadeOut {
-      to { 
-        border-right-color: transparent; 
-        border-right-width: 0; 
+      to {
+        border-right-color: transparent;
+        border-right-width: 0;
       }
     }
-
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Welcome Message Styling ---------- */
+    .welcome-msg {
+      font-size: 15px;
+      color: #00ffff;
+      font-weight: 600;
+      margin: 0 0 10px;
+      text-shadow: 0 0 8px #00ffff;
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.8s both;
     }
 
     /* ---------- Staggered Text Fade-In ---------- */
@@ -187,8 +189,6 @@
       cursor: pointer;
       text-shadow: 0 0 8px currentColor;
     }
-
-    /* Animated Gradient Background */
     .btn::before {
       content: '';
       position: absolute;
@@ -199,12 +199,9 @@
       background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent);
       transition: left 0.7s;
     }
-
     .btn:hover::before {
       left: 100%;
     }
-
-    /* Pulsing Border Effect */
     .btn::after {
       content: '';
       position: absolute;
@@ -214,45 +211,38 @@
       transition: opacity 0.4s;
       pointer-events: none;
     }
-
     .btn:hover::after {
       opacity: 1;
       animation: pulse 1.5s infinite;
     }
-
     @keyframes pulse {
-      0%, 100% { 
-        transform: scale(1); 
-        opacity: 0.8; 
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.8;
       }
-      50% { 
-        transform: scale(1.05); 
-        opacity: 0.4; 
+      50% {
+        transform: scale(1.05);
+        opacity: 0.4;
       }
     }
-
-    /* Slide & Scale Animation for Login */
-    .btn:nth-child(1) { 
+    @keyframes slideInScale {
+      0% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.8) rotate(-5deg);
+      }
+      60% {
+        transform: translateY(10px) scale(1.05) rotate(2deg);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+      }
+    }
+    .btn:nth-child(1) {
       animation: slideInScale 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.8s both;
     }
-
-    /* Slide & Scale Animation for Signup (delayed) */
-    .btn:nth-child(2) { 
+    .btn:nth-child(2) {
       animation: slideInScale 0.7s cubic-bezier(0.68, -0.55, 0.265, 1.55) 2.2s both;
-    }
-
-    @keyframes slideInScale {
-      0% { 
-        opacity: 0; 
-        transform: translateY(-50px) scale(0.8) rotate(-5deg); 
-      }
-      60% { 
-        transform: translateY(10px) scale(1.05) rotate(2deg); 
-      }
-      100% { 
-        opacity: 1; 
-        transform: translateY(0) scale(1) rotate(0deg); 
-      }
     }
 
     /* Login Button Styling */
@@ -262,11 +252,9 @@
       border: 3px solid #00ffff;
       box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), inset 0 0 15px rgba(0, 255, 255, 0.1);
     }
-
     .login::after {
       background: radial-gradient(circle, rgba(0, 255, 255, 0.6) 0%, transparent 70%);
     }
-
     .login:hover {
       background: linear-gradient(135deg, #00ffff 0%, #00ccff 100%);
       color: #000;
@@ -274,7 +262,6 @@
       box-shadow: 0 8px 35px rgba(0, 255, 255, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.3);
       border-color: #66ffff;
     }
-
     .login:active {
       transform: translateY(-2px) scale(1.02);
     }
@@ -286,11 +273,9 @@
       border: 3px solid #ff00ff;
       box-shadow: 0 0 20px rgba(255, 0, 255, 0.4), inset 0 0 15px rgba(255, 0, 255, 0.1);
     }
-
     .signup::after {
       background: radial-gradient(circle, rgba(255, 0, 255, 0.6) 0%, transparent 70%);
     }
-
     .signup:hover {
       background: linear-gradient(135deg, #ff00ff 0%, #cc00ff 100%);
       color: #fff;
@@ -298,7 +283,6 @@
       box-shadow: 0 8px 35px rgba(255, 0, 255, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.2);
       border-color: #ff66ff;
     }
-
     .signup:active {
       transform: translateY(-2px) scale(1.02);
     }
@@ -308,7 +292,6 @@
       0%, 100% { transform: translateY(0px); }
       50% { transform: translateY(-5px); }
     }
-
     .btn:hover {
       animation: floatIcon 0.8s ease-in-out infinite;
     }
@@ -321,27 +304,25 @@
       animation: floatRotate 8s infinite ease-in-out;
       opacity: 0.6;
       box-shadow: 0 0 10px #00ffff;
-      z-index: 5; /* Stars ke neeche rahe neon particles */
+      z-index: 5;
     }
-
     @keyframes floatRotate {
-      0%, 100% { 
-        transform: translateY(0) rotate(0deg) scale(1); 
-        opacity: 0.6; 
+      0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0.6;
         filter: hue-rotate(0deg);
       }
-      33% { 
-        transform: translateY(-15px) rotate(120deg) scale(1.3); 
-        opacity: 0.9; 
+      33% {
+        transform: translateY(-15px) rotate(120deg) scale(1.3);
+        opacity: 0.9;
         filter: hue-rotate(90deg);
       }
-      66% { 
-        transform: translateY(-30px) rotate(240deg) scale(0.8); 
-        opacity: 0.7; 
+      66% {
+        transform: translateY(-30px) rotate(240deg) scale(0.8);
+        opacity: 0.7;
         filter: hue-rotate(180deg);
       }
     }
-
     .particle1 { width: 8px; height: 8px; top: 60%; left: 20%; animation-delay: 0s; }
     .particle2 { width: 6px; height: 6px; top: 70%; left: 60%; animation-delay: 2s; }
     .particle3 { width: 10px; height: 10px; top: 65%; left: 45%; animation-delay: 4s; }
@@ -356,20 +337,28 @@
         bottom: 20px;
       }
       h1 { font-size: 22px; }
-      p { 
-        font-size: 13px; 
+      .welcome-msg {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      p {
+        font-size: 13px;
         margin-bottom: 20px;
       }
-      .btn { 
+      .btn {
         width: 220px;
-        font-size: 14px; 
+        font-size: 14px;
         padding: 14px 0;
         border-width: 2.5px;
       }
-      .btn:nth-child(1) { animation: slideInScale 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.2s both; }
-      .btn:nth-child(2) { animation: slideInScale 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.6s both; }
+      .btn:nth-child(1) {
+        animation: slideInScale 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.2s both;
+      }
+      .btn:nth-child(2) {
+        animation: slideInScale 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 1.6s both;
+      }
       .neon-particle { display: none; }
-      .star { /* Mobile pe stars chhote rakhe */
+      .star {
         width: 1.5px !important;
         height: 1.5px !important;
       }
@@ -377,7 +366,7 @@
   </style>
 </head>
 <body>
-  <!-- Stars in Background (15 stars add kiye, move + twinkle kar rahe) -->
+  <!-- Stars in Background -->
   <div class="star"></div>
   <div class="star"></div>
   <div class="star"></div>
@@ -394,17 +383,18 @@
   <div class="star"></div>
   <div class="star"></div>
 
-  <!-- Enhanced Neon particles for ambient glow -->
+  <!-- Neon ambient glow particles -->
   <div class="neon-particle particle1"></div>
   <div class="neon-particle particle2"></div>
   <div class="neon-particle particle3"></div>
   <div class="neon-particle particle4"></div>
   <div class="neon-particle particle5"></div>
 
-  <!-- Main Popup -->
+  <!-- Popup Card -->
   <div class="popup">
     <h1>🚀 Supreme AI</h1>
-    <p>Welcome to the next era of intelligence.<br>Login or Sign Up to begin your journey.</p>
+    <p class="welcome-msg">Welcome to Supreme AI — your personal intelligent assistant!</p>
+    <p>Get smarter responses, upload files, upload images, create images and more — by logging in.</p>
     <div class="button-container">
       <a href="https://sadiq9869.github.io/login.html" class="btn login">Login</a>
       <a href="https://sadiq9869.github.io/signup.html" class="btn signup">Sign Up</a>
