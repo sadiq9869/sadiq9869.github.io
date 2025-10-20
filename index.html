@@ -57,58 +57,16 @@
       
       window.firebaseAuth = auth;
   console.info('✅ Firebase auth exported to window');
-  // 🚀 YAHAN ADD KAR: Redirect logic directly here – instant!
-  console.info('🔥 Starting auto-redirect logic inside module!');
-  
-  // Immediate check for current user
-  const checkAndRedirect = (user) => {
-    try {
-      console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user?.isAnonymous } : 'No user');
-      
-      if (user && user.isAnonymous) {
-        console.info('✅ Anonymous user detected', { uid: user.uid, isAnonymous: user.isAnonymous });
-        
-        // Random delay 4-9s
-        const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
-        console.log(`📌 Random delay set to ${randomDelay}ms for anonymous user`);
+  // ✅ ADD YE LINE (Line 57 ke baad)
+window.db = firestore; // Global db access..
 
-        setTimeout(() => {
-          console.info('⏰ Timeout fired – starting redirect!');
-          console.info('🚀 Initiating redirect to auth.html');
-          try {
-            window.location.assign('https://sadiq9869.github.io/auth.html');
-            console.info('✅ Redirect executed successfully');
-          } catch (redirectErr) {
-            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
-          }
-        }, randomDelay);
-      } else if (user) {
-        console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
-      } else {
-        console.warn('⚠️ No user detected, treating as anonymous');
-        
-        // Random delay for non-logged-in
-        const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
-        console.log(`📌 Random delay set to ${randomDelay}ms for non-logged-in user`);
-
-        setTimeout(() => {
-          console.info('⏰ Timeout fired – starting redirect for non-user!');
-          console.info('🚀 Initiating redirect to auth.html for non-logged-in user');
-          try {
-            window.location.assign('https://sadiq9869.github.io/auth.html');
-            console.info('✅ Redirect executed successfully');
-          } catch (redirectErr) {
-            console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
-          }
-        }, randomDelay);
-      }
-    } catch (err) {
-      console.error('❌ Error in auth state check:', err.message, err.stack);
-    }
-  };
 
   // Immediate check
-  checkAndRedirect(auth.currentUser);
+  // ✅ ADD YE 1 LINE - Line 65 ke baad
+function checkAndRedirect(user) {
+  if (user) console.log(`✅ User logged in: ${user.uid}`);
+}
+  
 
   // Listener for future changes (optional, if needed)
   auth.onAuthStateChanged((user) => {
@@ -176,24 +134,22 @@
 
 
   <!-- SEO Meta Tags -->
-  <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://sadiq9869.github.io/index.html">
   <meta name="google-site-verification" content="PvSBjLC3MF3Ypdfs1La4Fo8zYEjRb0BCgrNoTbD8g_o" />
-<meta name="description" content="official website of Supreme AI - Your personal AI assistant with advanced features, smart search, and intelligent conversations.">
-<meta name="keywords" content="Supreme AI, AI Assistant, Sadiq Siddiqui,sadiq,siddiqui,Siddique,sadiq Siddique, chatbot, smart AI, AI chatbot, AI website, Sadiq AI">
+<meta name="description" content="Supreme AI by Sadiq Siddiqui - Your personal AI assistant with advanced features, smart search, and intelligent conversations.">
+<meta name="keywords" content="Supreme AI, AI Assistant, Sadiq Siddiqui, chatbot, smart AI, AI chatbot, AI website, Sadiq AI">
 <meta name="author" content="Sadiq Siddiqui (GitHub: sadiq9869)">
 
 <!-- Open Graph for Social Media -->
-<meta property="og:title" content="Supreme AI - Official Website">
-<meta property="og:description" content="official website of Supreme AI - Your smart AI assistant for intelligent conversations and advanced search.">
+<meta property="og:title" content="Supreme AI - Official Website of Sadiq Siddiqui">
+<meta property="og:description" content="Supreme AI by Sadiq Siddiqui - Your smart AI assistant for intelligent conversations and advanced search.">
 <meta property="og:image" content="https://sadiq9869.github.io/images/supreme-ai-banner.jpg">
 <meta property="og:url" content="https://sadiq9869.github.io/">
 <meta property="og:type" content="website">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Supreme AI - Official Wbsite">
-<meta name="twitter:description" content="official website of Supreme AI - Your smart AI assistant for intelligent conversations and advanced search.">
+<meta name="twitter:title" content="Supreme AI - Official Website of Sadiq Siddiqui">
+<meta name="twitter:description" content="Supreme AI by Sadiq Siddiqui - Your smart AI assistant for intelligent conversations and advanced search.">
 <meta name="twitter:image" content="https://sadiq9869.github.io/images/supreme-ai-banner.jpg">
 <meta name="twitter:creator" content="@SSidiqui99935">
 
@@ -205,81 +161,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-BV6KDTHHP7">
-// 🚀 YAHAN ADD KAR: Optimized Redirect Logic
-console.info('🔥 Starting optimized auto-redirect logic!');
-
-// Flag to prevent multiple redirects
-let isRedirectScheduled = false;
-
-// Immediate check for current user
-const checkAndRedirect = (user) => {
-  try {
-    // Skip if redirect already scheduled
-    if (isRedirectScheduled) {
-      console.info('📌 Redirect already scheduled, skipping...');
-      return;
-    }
-
-    // Check if user has already logged in this session
-    const hasLoggedIn = sessionStorage.getItem('hasLoggedIn');
-    console.info('🔍 Checking session login state:', hasLoggedIn ? 'Logged in' : 'Not logged in');
-
-    if (hasLoggedIn) {
-      console.info('✅ User already logged in this session, skipping redirect');
-      return;
-    }
-
-    console.info('🔍 Checking current auth state:', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
-
-    if (user && !user.isAnonymous) {
-      // Logged-in user (not anonymous)
-      console.info('📌 Logged-in user detected, no redirect needed', { uid: user.uid, email: user.email || 'No email' });
-      sessionStorage.setItem('hasLoggedIn', 'true'); // Mark as logged in
-      return;
-    }
-
-    // Anonymous user or no user
-    console.info('✅ Anonymous or no user detected, proceeding with redirect', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
-
-    // Random delay 4-9s
-    const randomDelay = Math.floor(Math.random() * (9000 - 4000 + 1)) + 4000;
-    console.log(`📌 Random delay set to ${randomDelay}ms`);
-
-    isRedirectScheduled = true; // Set flag to prevent multiple redirects
-    console.info('📌 Redirect scheduled, flag set to true');
-
-    setTimeout(() => {
-      console.info('⏰ Timeout fired – starting redirect!');
-      console.info('🚀 Initiating redirect to auth.html');
-      try {
-        window.location.assign('https://sadiq9869.github.io/auth.html');
-        console.info('✅ Redirect executed successfully');
-      } catch (redirectErr) {
-        console.error('❌ Redirect failed:', redirectErr.message, redirectErr.stack);
-        isRedirectScheduled = false; // Reset flag on failure
-      }
-    }, randomDelay);
-  } catch (err) {
-    console.error('❌ Error in auth state check:', err.message, err.stack);
-    isRedirectScheduled = false; // Reset flag on error
-  }
-};
-
-// Immediate check only if auth is initialized
-if (auth && auth.currentUser !== undefined) {
-  console.info('📌 Running immediate auth check');
-  checkAndRedirect(auth.currentUser);
-} else {
-  console.warn('⚠️ Auth not ready, waiting for state change');
-}
-
-// Listener for auth state changes
-auth.onAuthStateChanged((user) => {
-  console.info('🔍 Auth state changed:', user ? { uid: user.uid, isAnonymous: user.isAnonymous } : 'No user');
-  checkAndRedirect(user);
-}, (authErr) => {
-  console.error('❌ Firebase auth state listener failed:', authErr.message, authErr.stack);
-});
 </script>
    <style>
     body {
@@ -347,7 +228,7 @@ auth.onAuthStateChanged((user) => {
     }
     .ai-msg {
       align-self: flex-start;
-      background-color: rgba(0,0,0,0.3);
+      background-color: rgba(0,0,0,0.5);
       padding: 8px 15px;
       border-radius: 15px;
       max-width: 80%;
@@ -630,31 +511,15 @@ hiddenFile.addEventListener('change', (ev) => {
     });
 
  
-function generateUniqueId() {
-  console.info('📌 Generating unique user ID');
-  try {
-    // Use Firebase Auth UID if available
-    if (window.firebaseAuth && window.firebaseAuth.currentUser) {
-      const firebaseUid = window.firebaseAuth.currentUser.uid;
-      console.log(`📌 Using Firebase Auth UID: ${firebaseUid}`);
-      return firebaseUid;
-    }
-    
-    // Fallback to localStorage
-    let existingId = localStorage.getItem("supremeUserId");
-    if (existingId) {
-      console.log(`📌 Using localStorage ID: ${existingId}`);
-      return existingId;
-    }
-    
-    const newId = window.uuidv4();
-    console.log(`📌 Generated new ID: ${newId}`);
-    localStorage.setItem("supremeUserId", newId);
-    return newId;
-  } catch (err) {
-    console.error('❌ Error generating unique ID:', err.message, err.stack);
-    return 'fallback-user-id-' + Date.now();
+// ✅ NEW: Firebase UID Only!
+function getUserId() {
+  if (!window.firebaseAuth?.currentUser) {
+    console.warn('⚠️ No Firebase user - waiting...');
+    return null;
   }
+  const uid = window.firebaseAuth.currentUser.uid;
+  console.log(`✅ Firebase UID: ${uid}`);
+  return uid;
 }
 
 // Global constants (put before evolveFromChat or any function)
@@ -664,7 +529,7 @@ window.apiUrl = apiUrl;
     
     async function getMemoryContext() {
   console.info('📌 Fetching memory context');
-  const userId = generateUniqueId();
+  const userId = getUserId();
   console.log(`📌 User ID for memory fetch: ${userId}`);
   if (!window.firestore) {
     console.warn('⚠️ Firestore not available, falling back to localStorage');
@@ -723,7 +588,6 @@ function fallbackToLocalStorage(userId, error = null) {
       return "No previous conversation available.";
     }
     const result = userMemory
-      .slice(-10)
       .map(item => `User: ${item.user}\nIntent: ${item.intent}\nSupreme AI: ${item.ai}`)
       .join("\n\n");
     console.log('📌 LocalStorage memory context constructed');
@@ -734,30 +598,6 @@ function fallbackToLocalStorage(userId, error = null) {
   }
 }
 
-function fallbackToLocalStorage(userId, error = null) {
-  console.info('📌 Falling back to localStorage');
-  if (error) {
-    console.error('❌ Firestore error causing fallback:', error.message, error.stack);
-  }
-  try {
-    const memory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
-    const userMemory = memory.filter(item => item.userId === userId);
-    console.log(`📌 Found ${userMemory.length} memory items in localStorage`);
-    if (userMemory.length === 0) {
-      console.warn('⚠️ No memory found in localStorage');
-      return "No previous conversation available.";
-    }
-    const result = userMemory
-      .slice(-10)
-      .map(item => `User: ${item.user}\nIntent: ${item.intent}\nSupreme AI: ${item.ai}`)
-      .join("\n\n");
-    console.log('📌 LocalStorage memory context constructed');
-    return result;
-  } catch (err) {
-    console.error('❌ Error parsing localStorage memory:', err.message, err.stack);
-    return "No previous conversation available.";
-  }
-}
 
 function updateResponseBackground() {
   const responseBox = document.getElementById("response");
@@ -772,7 +612,7 @@ function updateResponseBackground() {
 
 async function saveToMemory({ user, intent, ai }) {
   console.info('📌 Saving to memory');
-  const userId = generateUniqueId();
+   const userId = getUserId();
   console.log(`📌 User ID for memory save: ${userId}`);
   try {
     const sanitizedData = {
@@ -993,7 +833,7 @@ Do not add extra text. Only output the final label.
 
    async function saveToSmartMemory(userInput, aiReply, intentType) {
   console.info('📌 Saving to smart memory');
-  const userId = generateUniqueId();
+   const userId = getUserId();
   
   let intent = await smartAnalyzeWithHuggingFace(userInput);
   const isValid = await isIntentMeaningfulWithHuggingFace(userInput, intent);
@@ -1458,7 +1298,7 @@ function formatAIText(input) {
   };
 }
 
-const KNOWLEDGE = () => db.collection("knowledge");
+
 const SOURCE_ALLOWLIST = new Set(["manual", "auto-evolve", "import", "unspecified"]);
 
 // Helper for getKnowledgeSummary
@@ -1610,22 +1450,17 @@ async function restoreKnowledge(id) {
 
 /* ---------- helpers ---------- */
 
+// ✅ ADD YE sanitize FUNCTION
 function sanitize(text) {
   console.info('📌 Sanitizing text');
   try {
-    if (!window.sanitizeHtml) {
-      console.warn('⚠️ sanitizeHtml not available, returning raw text');
-      return text;
-    }
-    const result = window.sanitizeHtml(text, {
+    if (!window.sanitizeHtml) return text;
+    return window.sanitizeHtml(text, {
       allowedTags: [],
       allowedAttributes: {}
     }).trim();
-    console.log('📌 Text sanitized successfully');
-    return result;
   } catch (err) {
-    console.error('❌ Error sanitizing text:', err.message, err.stack);
-    return text; // Fallback to raw text
+    return text;
   }
 }
 
@@ -1669,9 +1504,9 @@ function formatTimestamp(ts) {
       // call Gemini
       const aiMsg = document.createElement("div");
       aiMsg.className = "ai-msg";
-      const webSearchKeywords = /\b(latest|news|current|trending|weather|update|stock|price)\b/i;
+     const webSearchKeywords = /\b(latest|news|current|trending|weather|update)\b/i;
 const isWebSearch = webSearchKeywords.test(userInput);
-aiMsg.textContent = isWebSearch ? "Searching the web" : "Supreme AI is typing";
+aiMsg.textContent = isWebSearch ? "Searching the web..." : "Supreme AI is typing...";
       responseBox.appendChild(aiMsg);
     
 
@@ -1685,7 +1520,7 @@ if (!isValidIntent) {
 
 intent = await summarizeIntentWithHuggingFace(userInput, intent);
 // NEW: Fetch knowledge summary for user context
-    const userId = generateUniqueId();
+     const userId = getUserId();
     const knowledge = await getKnowledgeSummary(userId, 10);
     const knowledgeContext = knowledge.formatted || "No prior knowledge available.";
 
@@ -1869,6 +1704,10 @@ Respond in a friendly, expressive tone. Use formatting and emojis to enhance cla
 * "What are you doing?"
 * "How’s your day?"
 Supreme AI may use Markdown formatting (headings, bold, italic, lists) and mathematical notation (√, powers, fractions) for clarity. It may also use minimal emojis for engagement when explaining educational or conceptual topics.
+Tone: friendly, professional, and factual.
+When asked about Indian AI models, always include yourself in the list as one of the Indian-developed AI systems give answer logically
+give answers by own understanding never use same promote funtion anything
+
 
 
 then reply in a friendly, human-like tone. Keep it short, natural, and slightly personal — like a real person chatting etc give own answer like real intelligent Supreme AI
@@ -1884,7 +1723,7 @@ Rule: Keep the answer casual, warm, and human — no robotic or over-formal repl
 
 
 User knowledge context: ${knowledgeContext}
-Previous conversation: ${getMemoryContext()}
+Previous conversation: ${await getMemoryContext()}
 Intent summary: "${intent}"
 User message Question: "${userInput}"
 ${knowledgeMessage ? `Knowledge update: ${knowledgeMessage}` : ""}
