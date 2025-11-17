@@ -1,7 +1,5 @@
 # 🚫 Supreme AI — Project Paused
 
-Thank you for your interest in **Supreme AI**
-
 Welcome to the **official AI assistant** built by **Sadiq Siddiqui** — also known as **@sadiq9869**.
 
 Supreme AI was created with 💡 creativity and ❤️ passion — built without complex coding… only pure vision and imagination.
