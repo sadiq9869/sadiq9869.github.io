@@ -11,6 +11,23 @@ Supreme AI was created with 💡 creativity and ❤️ passion — built without
 **📢 I have currently stopped working on this project.**  
 Maybe in the future, I will continue it with a new and better version — but for now, development is paused.
 
+---
+
+## 🗂 Removed Project Files (For Safety)
+
+To prevent **illegal copying, misuse, modification, or unauthorized use**,  
+the following **main pages of Supreme AI have been fully removed**:
+
+- ❌ `index.html` (Main Supreme AI interface)  
+- ❌ `login.html`  
+- ❌ `signup.html`  
+- ❌ `auth.html` (Login/Signup button page)
+
+These files were removed because they could be **copied, reused, or modified illegally**,  
+which could harm the project and violate its proprietary rights.
+
+---
+
 ## 🎭 A Small Shayari (About Pausing the Project)
 
 "Safar yahin rukaa hai, manzil nahi bhooli,  
