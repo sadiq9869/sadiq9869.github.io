@@ -1168,7 +1168,7 @@ function formatAIText(input) {
   };
 
   try {
-    const { data } = await fetchWithFallbackKeys(fallbackApiKeys, baseApiUrl, options);
+    const { data } = await fetchWithFallbackKeys(null, null, options);
     
     const learningRaw = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
     const learning = learningRaw.charAt(0).toUpperCase() + learningRaw.slice(1);
@@ -1731,7 +1731,7 @@ ${knowledgeMessage ? `Knowledge update: ${knowledgeMessage}` : ""}
   })
 };
 
-     const { data } = await fetchWithFallbackKeys(fallbackApiKeys, baseApiUrl, options);
+     const { data } = await fetchWithFallbackKeys(null, null, options);
     let text = data.candidates?.[0]?.content?.parts?.[0]?.text 
 || "Supreme AI could not generate a reply.";
 
